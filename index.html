@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.rawgit.com/konvajs/konva/1.7.6/konva.min.js"></script>
+  <meta charset="utf-8">
+  <title>Konva TextPath Demo</title>
+  <link href="https://fonts.googleapis.com/css?family=Assistant|Rubik"
+  rel="stylesheet"> 
+  <style>
+    canvas { direction: rtl; }
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #F0F0F0;
+    }
+  </style>
+</head>
+<body>
+  <div id="container" dir="rtl"></div>
+  <script>
+  var bio = {
+    name: 'גיזה גולדפארב',
+    date_of_birth: '10.2.1914',
+    place_of_birth: 'טרנוב',
+    date_of_passing: '17.04.2008',
+    place_of_passing: 'נתניה',
+    cover_photo: 'https://s3.eu-central-1.amazonaws.com/tsvi.bio/img/cover.png',
+    periods: [[
+      {name: 'טרנוב',
+       start_age: 0,
+       end_age: 22,
+      },
+      {name: 'נתניה',
+       start_age: 22,
+       end_age: 29,
+      },
+      {name: 'יד מרדכי',
+       start_age: 29,
+       end_age: 32,
+      },
+      {name: 'נתניה',
+       start_age: 32,
+       end_age: 94,
+      }],[
+      {name: 'השומר הצעיר',
+       start_age: 14,
+       end_age: 32,
+      },
+      {name: 'עם וולוק',
+       start_age: 32,
+       end_age: 90,
+      },
+      {name: 'לשכת העבודה',
+       start_age: 40,
+       end_age: 67,
+      }, ]
+    ]
+  };
+
+  var container = document.querySelector('#container');
+
+  var stageWidth = 1000,
+      x2y = 1,
+      stageHeight = stageWidth*x2y;
+  var ringRadius = stageHeight/12;
+  var scale = {x: container.offsetWidth / stageWidth,
+               y: (window.innerHeight-30)/ stageHeight};
+
+  var stage = new Konva.Stage({
+    container: 'container',
+    width: stageWidth,
+    height: stageHeight,
+    scaleeee: scale
+  });
+
+
+  var layer = new Konva.Layer();
+	var maxAge = 94,
+			totalDeg = 360,
+		  years2deg = totalDeg/maxAge;
+
+	for (var ring=0; ring < bio.periods.length; ring++) {
+		var ringPeriods = bio.periods[ring];
+		for (var i=0; i < ringPeriods.length; i++) {
+      var period = ringPeriods[i],
+          len = period.end_age-period.start_age;
+      var arc =  new Konva.Arc({
+        angle: len * years2deg,
+        x: stageWidth/2,
+        y: stageHeight/2,
+        outerRadius: stageWidth/2 - ring*ringRadius,
+        innerRadius: stageWidth/2 - (ring+1)*ringRadius,
+        fill: 'red',
+        stroke: 'black',
+        strokeWidth: 5,
+        rotation: period.start_age*years2deg-90
+
+      });
+      console.log({
+        angle: len * years2deg,
+        x: stageWidth/2,
+        y: stageHeight/2,
+        outerRadius: stageWidth/2 - ring*ringRadius,
+        innerRadius: stageWidth/2 - (ring+1)*ringRadius,
+        fill: 'red',
+        stroke: 'black',
+        strokeWidth: 5,
+        rotation: period.start_age*years2deg-90
+
+      });
+      var text = new Konva.TextPath({});
+      layer.add(arc, text);
+		}
+	}
+    var textpath = new Konva.TextPath({
+      x: 0,
+      y: 50,
+      fill: '#333',
+      fontSize: 20,
+      fontFamily: 'Assitant',
+      text: 'למה, למה,למה מכרת לי אשליות?',
+			// data: "M"+x+" "+y+" Q "+stageWidth/2+" "+stageHeight/2+" "+x2+" "+y2
+      data: 'M10,10 C0,0 10,150 100,100 S300,150 400,50',
+      dir: 'rtl'
+    });
+
+
+    // add the layer to the stage
+    stage.add(layer);
+  </script>
+
+</body>
+</html>
