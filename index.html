@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css?family=Assistant|Rubik"
   rel="stylesheet"> 
   <style>
-    canvas { direction: rtl; }
     body {
       margin: 0;
       padding: 0;
@@ -17,7 +16,7 @@
   </style>
 </head>
 <body>
-  <div id="container" dir="rtl"></div>
+  <div id="container"></div>
   <script>
   var bio = {
     name: 'גיזה גולדפארב',
@@ -58,20 +57,25 @@
     ]
   };
 
+document.addEventListener("DOMContentLoaded", function() {
+  // draw the biochronus
   var container = document.querySelector('#container');
 
-  var stageWidth = 1000,
-      x2y = 1,
-      stageHeight = stageWidth*x2y;
-  var ringRadius = stageHeight/12;
-  var scale = {x: container.offsetWidth / stageWidth,
-               y: (window.innerHeight-30)/ stageHeight};
+  var stageLen = 1000,
+      stageRadius = stageLen/2,
+      ringRadius = stageLen/12;
+
+  console.log(window.innerHeight, container.innerHeight);
+  debugger;
+  var scale = {x: container.offsetWidth / stageLen,
+               y: window.innerHeight / stageLen};
+
 
   var stage = new Konva.Stage({
     container: 'container',
-    width: stageWidth,
-    height: stageHeight,
-    scaleeee: scale
+    width: container.offsetWidth,
+    height: window.innerHeight,
+    scale: scale
   });
 
 
@@ -87,28 +91,30 @@
           len = period.end_age-period.start_age;
       var arc =  new Konva.Arc({
         angle: len * years2deg,
-        x: stageWidth/2,
-        y: stageHeight/2,
-        outerRadius: stageWidth/2 - ring*ringRadius,
-        innerRadius: stageWidth/2 - (ring+1)*ringRadius,
+        x: stageRadius,
+        y: stageRadius,
+        outerRadius: stageRadius - ring*ringRadius,
+        innerRadius: stageRadius - (ring+1)*ringRadius,
         fill: 'red',
         stroke: 'black',
         strokeWidth: 5,
         rotation: period.start_age*years2deg-90
 
       });
+      /*
       console.log({
         angle: len * years2deg,
-        x: stageWidth/2,
-        y: stageHeight/2,
-        outerRadius: stageWidth/2 - ring*ringRadius,
-        innerRadius: stageWidth/2 - (ring+1)*ringRadius,
+        x: stageRadius,
+        y: stageRadius,
+        outerRadius: stageRadius - ring*ringRadius,
+        innerRadius: stageRadius - (ring+1)*ringRadius,
         fill: 'red',
         stroke: 'black',
         strokeWidth: 5,
         rotation: period.start_age*years2deg-90
 
       });
+      */
       var text = new Konva.TextPath({});
       layer.add(arc, text);
 		}
@@ -120,14 +126,33 @@
       fontSize: 20,
       fontFamily: 'Assitant',
       text: 'למה, למה,למה מכרת לי אשליות?',
-			// data: "M"+x+" "+y+" Q "+stageWidth/2+" "+stageHeight/2+" "+x2+" "+y2
+			// data: "M"+x+" "+y+" Q "+stageRadius+" "+stageRadius+" "+x2+" "+y2
       data: 'M10,10 C0,0 10,150 100,100 S300,150 400,50',
       dir: 'rtl'
     });
 
 
     // add the layer to the stage
-    stage.add(layer);
+  stage.add(layer);
+  function fitStage2Container() {
+                var container = document.querySelector('#container');
+
+                // now we need to fit stage into parent
+                var containerWidth = container.offsetWidth;
+                // to do this we need to scale the stage
+    var scale = {x: container.offsetWidth / stageLen,
+                 y: window.innerHeight / stageLen};
+
+
+
+                stage.width(stageLen * scale.x);
+                stage.height(stageLen * scale.y);
+                stage.scale(scale);
+                stage.draw();
+  }
+  fitStage2Container();
+  window.addEventListener('resize', fitStage2Container);
+});
   </script>
 
 </body>
