@@ -10,13 +10,13 @@
   var bio = {
     first_name: 'גיזה',
     last_name: 'גולדפרב',
-    date_of_birth: '10.2.1914',
+		date_of_birth: '1914.2.10', // we will need to store iso here and convert
     place_of_birth: 'טרנוב',
     date_of_passing: '17.04.2008',
     place_of_passing: 'נתניה',
     cover_photo: 'https://s3.eu-central-1.amazonaws.com/tsvi.bio/img/cover.png',
     periods: [[
-      {name: 'טרנוב',
+      {name: 'טרנוב פולין',
        start_age: 0,
        end_age: 22,
       },
@@ -36,11 +36,11 @@
        start_age: 14,
        end_age: 32,
       },
-      {name: 'עם וולוק',
+      {name: '\u2764 וולוק \u2764',
        start_age: 32,
        end_age: 90,
       }],[
-      {name: 'עם אלו',
+      {name: '\u2764 אלו \u2764',
        start_age: 22,
        end_age: 30,
       },
@@ -84,7 +84,7 @@ function getPath(config) {
 }
 
 function getHeader() {
-	var fontSize = 40;
+	var fontSize = 44;
 	return [
           new Konva.TextPath({
               x: stageRadius,
@@ -93,7 +93,7 @@ function getHeader() {
               fontSize: fontSize,
               fontFamily: 'Assitant',
               text: reverse(bio.last_name),
-              data: getPath({ring: 1, startDeg: 0, endDeg: 180}),
+              data: getPath({ring: 1, startDeg: 10, endDeg: 180}),
            }),
           new Konva.TextPath({
               x: stageRadius,
@@ -102,7 +102,7 @@ function getHeader() {
               fontSize: fontSize,
               fontFamily: 'Assitant',
               text: reverse(bio.first_name),
-              data: getPath({ring: 1, startDeg: 180, endDeg: 360})
+              data: getPath({ring: 1, startDeg: 230, endDeg: 500})
            }),
 	];
 }
@@ -116,8 +116,8 @@ function getDials() {
 	 age = Math.round((i*2+1)*maxAge/8);
 	 ret.push(new Konva.Text({
               // x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
-              x: stageRadius*(1+xs[i]),
-              y: stageRadius*(1+ys[i]),
+              x: stageRadius*(1+xs[i]*1.1),
+              y: stageRadius*(1+ys[i]*1.1),
               stroke: color,
               fontSize: fontSize,
               fontFamily: 'Rubik',
@@ -126,7 +126,8 @@ function getDials() {
             }),
 					  new Konva.Line({
 							points: [stageRadius*(1+xs[i]*0.95), stageRadius*(1+ys[i]*0.95),
-									     stageRadius*(1+xs[i]*0.9), stageRadius*(1+ys[i]*0.9)],
+									     stageRadius*(1+xs[i]*0.6), stageRadius*(1+ys[i]*0.6)],
+						  dash: [5, 5],
 							stroke: color,
 							strokeWidth: 4,
 							lineCap: 'round',
@@ -143,7 +144,7 @@ function getPeriodArcs(period, ring) {
  
   // a period arc is made of an arc the size of the period and the name
   // of the period written inside
-  return [
+  var shapes = [
           new Konva.Arc({
             angle: endDeg-startDeg,
             x: stageRadius,
@@ -154,22 +155,45 @@ function getPeriodArcs(period, ring) {
             stroke: '#222',
             strokeWidth: 3,
             rotation: startDeg
-          }),
-          new Konva.TextPath({
+          })];
+	if (period.name == 'יד מרדכי')
+      shapes.push(new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
               stroke: 'green',
-              fontSize: 20,
+              fill: 'green',
+              fontSize: 32,
+              fontFamily: 'Assitant',
+              text: reverse(period.name),
+              data: getPath({ring: ring-2.2, startDeg: startDeg+10, endDeg: endDeg+90}),
+              direction: 'rtl'
+           }))
+	else
+      shapes.push(new Konva.TextPath({
+              x: stageRadius,
+              y: stageRadius,
+              stroke: 'green',
+              fill: 'green',
+              fontSize: 32,
               fontFamily: 'Assitant',
               text: reverse(period.name),
               data: getPath({ring: ring, startDeg: startDeg, endDeg: endDeg}),
               direction: 'rtl'
-           })
-  ];
+           }));
+	return shapes;
 }
 document.addEventListener("DOMContentLoaded", function() {
   // draw the biochronus
   var container = document.getElementById('container');
+  var dates = document.getElementById('dates');
+
+	var dob = document.createElement('h1');
+	dob.innerHTML = '|' + bio.date_of_birth;
+	dates.appendChild(dob);
+
+	var dop = document.createElement('h2');
+	dop.innerHTML = bio.date_of_passing;
+	dates.appendChild(dop);
 
   var stage = new Konva.Stage({
     container: 'container',
@@ -181,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function fitStage2Container() {
 
     var scale = {x: container.offsetWidth / stageLen,
-                 y: window.innerHeight / stageLen};
+                 y: (window.innerHeight - 46) / stageLen};
 
     stage.width(stageLen * scale.x);
     stage.height(stageLen * scale.y);
@@ -210,8 +234,16 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
   for (i=0; i < shapes.length; i++) {
-	layer.add(shapes[i]);
+			layer.add(shapes[i]);
   }
+	layer.add(
+					  new Konva.Line({
+							points: [920,720, 815, 750],
+							stroke: '#222',
+							strokeWidth: 4,
+							lineCap: 'round',
+							lineJoin: 'round'
+						}))
   fitStage2Container();
 
   window.layer = layer;
