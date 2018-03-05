@@ -39,13 +39,25 @@
       {name: 'עם וולוק',
        start_age: 32,
        end_age: 90,
+      }],[
+      {name: 'עם אלו',
+       start_age: 22,
+       end_age: 30,
       },
       {name: 'לשכת העבודה',
        start_age: 40,
        end_age: 67,
+      },
+      {name: 'גמלאות',
+       start_age: 67,
+       end_age: 94,
       }, ]
     ]
   };
+
+function reverse(s){
+        return s.split("").reverse().join("");
+}
 
 function toRad (angle) {
   return angle * (Math.PI / 180);
@@ -68,8 +80,7 @@ function getPath(config) {
     ret += x+" "+y+" L ";
   }
   ret = ret.slice(0,-3);
-  console.log(config, ret);
-  return (ret);
+  return ret;
 }
 
 function getPeriodArcs(period, ring) {
@@ -79,16 +90,16 @@ function getPeriodArcs(period, ring) {
  
   // a period arc is made of an arc the size of the period and the name
   // of the period written inside
-  return ([
+  return [
           new Konva.Arc({
             angle: endDeg-startDeg,
             x: stageRadius,
             y: stageRadius,
             outerRadius: (ring+1)*ringHeight,
             innerRadius: ring*ringHeight,
-            fill: 'red',
-            stroke: 'black',
-            strokeWidth: 5,
+            fill: '#ccc',
+            stroke: '#222',
+            strokeWidth: 3,
             rotation: startDeg
           }),
           new Konva.TextPath({
@@ -97,11 +108,11 @@ function getPeriodArcs(period, ring) {
               stroke: 'green',
               fontSize: 20,
               fontFamily: 'Assitant',
-              text: period.name,
+              text: reverse(period.name),
               data: getPath({ring: ring, startDeg: startDeg, endDeg: endDeg}),
               direction: 'rtl'
            })
-  ]);
+  ];
 }
 document.addEventListener("DOMContentLoaded", function() {
   // draw the biochronus
