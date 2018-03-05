@@ -106,6 +106,36 @@ function getHeader() {
            }),
 	];
 }
+function getDials() {
+	var fontSize = 30,
+	    color = '#222';
+	var xs = [0.8, 0.8, -0.8, -0.8];
+	var ys = [-0.8, 0.8, 0.8, -0.8];
+	var ret =[], i, age, x, y;
+	for (i=0; i < 4; i++) {
+	 age = Math.round((i*2+1)*maxAge/8);
+	 ret.push(new Konva.Text({
+              // x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
+              x: stageRadius*(1+xs[i]),
+              y: stageRadius*(1+ys[i]),
+              stroke: color,
+              fontSize: fontSize,
+              fontFamily: 'Rubik',
+							align: 'center',
+              text: age
+            }),
+					  new Konva.Line({
+							points: [stageRadius*(1+xs[i]*0.95), stageRadius*(1+ys[i]*0.95),
+									     stageRadius*(1+xs[i]*0.9), stageRadius*(1+ys[i]*0.9)],
+							stroke: color,
+							strokeWidth: 4,
+							lineCap: 'round',
+							lineJoin: 'round'
+						}));
+  }
+	return ret;
+}
+
 function getPeriodArcs(period, ring) {
   var endDeg = period.end_age*years2deg-90,
       startDeg = period.start_age*years2deg-90;
@@ -170,7 +200,8 @@ document.addEventListener("DOMContentLoaded", function() {
   stage.add(layer);
 
   // add the period reings
-  var shapes = getHeader();
+  var shapes = getHeader().concat(getDials());
+		console.log(shapes);
 	console.log(shapes);
   for (ring=0; ring < bio.periods.length; ring++) {
     ringPeriods = bio.periods[ring];
