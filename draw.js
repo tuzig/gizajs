@@ -83,6 +83,29 @@ function getPath(config) {
   return ret;
 }
 
+function getHeader() {
+	var fontSize = 40;
+	return [
+          new Konva.TextPath({
+              x: stageRadius,
+              y: stageRadius,
+              stroke: 'blue',
+              fontSize: fontSize,
+              fontFamily: 'Assitant',
+              text: reverse(bio.last_name),
+              data: getPath({ring: 1, startDeg: 0, endDeg: 180}),
+           }),
+          new Konva.TextPath({
+              x: stageRadius,
+              y: stageRadius,
+              stroke: 'blue',
+              fontSize: fontSize,
+              fontFamily: 'Assitant',
+              text: reverse(bio.first_name),
+              data: getPath({ring: 1, startDeg: 180, endDeg: 360})
+           }),
+	];
+}
 function getPeriodArcs(period, ring) {
   var endDeg = period.end_age*years2deg-90,
       startDeg = period.start_age*years2deg-90;
@@ -147,15 +170,17 @@ document.addEventListener("DOMContentLoaded", function() {
   stage.add(layer);
 
   // add the period reings
-  var arcs = [];
+  var shapes = getHeader();
+	console.log(shapes);
   for (ring=0; ring < bio.periods.length; ring++) {
     ringPeriods = bio.periods[ring];
     for (i=0; i < ringPeriods.length; i++) {
-      arcs = arcs.concat(getPeriodArcs(ringPeriods[i], 11-ring));
+      shapes = shapes.concat(getPeriodArcs(ringPeriods[i], 11-ring));
     }
   }
-  for (i=0; i < arcs.length; i++) {
-    layer.add(arcs[i]); }
+  for (i=0; i < shapes.length; i++) {
+	layer.add(shapes[i]);
+  }
   fitStage2Container();
 
   window.layer = layer;
