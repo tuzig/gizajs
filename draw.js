@@ -52,16 +52,24 @@ function toRad (angle) {
 }
 
 function getPath(config) {
-  var startAgeRad = toRad(config.startDeg),
-      endAgeRad = toRad(config.endDeg),
-      myRingWidth = config.ring * ringHeight;
 
-  var x = Math.round(Math.cos(startAgeRad)*myRingWidth),
-      y = Math.round(Math.sin(startAgeRad)*myRingWidth),
-      x2 = Math.round(Math.cos(endAgeRad)*myRingWidth),
-      y2 = Math.round(Math.sin(endAgeRad)*myRingWidth);
+  var myRingWidth = (config.ring+0.5) * ringHeight;
 
-  return ("M"+x+" "+y+" Q "+stageRadius+" "+stageRadius+" "+x2+" "+y2);
+  var deg, rad, x, y;
+
+  var ret = "M ";
+
+  for (deg=config.startDeg+2; deg < config.endDeg; deg++) {
+
+    
+    rad = toRad(deg);
+    x = Math.round(Math.cos(rad)*myRingWidth);
+    y = Math.round(Math.sin(rad)*myRingWidth);
+    ret += x+" "+y+" L ";
+  }
+  ret = ret.slice(0,-3);
+  console.log(config, ret);
+  return (ret);
 }
 
 function getPeriodArcs(period, ring) {
@@ -86,7 +94,7 @@ function getPeriodArcs(period, ring) {
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              fill: '#333',
+              stroke: 'green',
               fontSize: 20,
               fontFamily: 'Assitant',
               text: period.name,
@@ -114,11 +122,10 @@ document.addEventListener("DOMContentLoaded", function() {
     stage.width(stageLen * scale.x);
     stage.height(stageLen * scale.y);
     stage.scale(scale);
-    stage.draw();
     stage.visible(true);
+    stage.draw();
   }
 
-  fitStage2Container();
   window.addEventListener('resize', fitStage2Container);
 
   var layer = new Konva.Layer(),
@@ -138,5 +145,8 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   for (i=0; i < arcs.length; i++) {
     layer.add(arcs[i]); }
+  fitStage2Container();
+
+  window.layer = layer;
 
 });
