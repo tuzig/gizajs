@@ -138,8 +138,10 @@ function getDials() {
 }
 
 function getPeriodArcs(period, ring) {
-  var endDeg = period.end_age*years2deg-90,
+	var span = period.end_age-period.start_age,
+			endDeg = period.end_age*years2deg-90,
       startDeg = period.start_age*years2deg-90;
+	var text, i;
 
  
   // a period arc is made of an arc the size of the period and the name
@@ -168,7 +170,10 @@ function getPeriodArcs(period, ring) {
               data: getPath({ring: ring-2.2, startDeg: startDeg+10, endDeg: endDeg+90}),
               direction: 'rtl'
            }))
-	else
+	else {
+			text = '';
+		  for (i=0; i < span; i=i+18) 
+					text += reverse(period.name) + '                             ';
       shapes.push(new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
@@ -176,10 +181,11 @@ function getPeriodArcs(period, ring) {
               fill: 'green',
               fontSize: 32,
               fontFamily: 'Assitant',
-              text: reverse(period.name),
+              text: text,
               data: getPath({ring: ring, startDeg: startDeg, endDeg: endDeg}),
               direction: 'rtl'
            }));
+	}
 	return shapes;
 }
 document.addEventListener("DOMContentLoaded", function() {
