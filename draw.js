@@ -55,7 +55,7 @@ var bio = {
     ]
   };
 
-var layer;
+var layer, gallery;
 
 function reverse(s){
         return s.split("").reverse().join("");
@@ -112,6 +112,13 @@ function addImages() {
                     x: 0 - images[i].frame.x,
                     y: 0 - images[i].frame.y
 			});
+			img.i = i;
+			img.on('click', function() {
+				  gallery = new PhotoSwipe(document.getElementById('photos'),
+					  PhotoSwipeUI_Default, window.images, {index: this.i } );
+				  gallery.init();
+
+			})
 			layer.add(img);
             ring++;
             if (ring === ringMax)
