@@ -5,7 +5,7 @@
       ringHeight = stageRadius/12,
       totalDeg = 360,
       maxAge = 95,
-	  years2deg = totalDeg/95; // 95 is giza's age, should come from bio
+	  years2deg = totalDeg/95*0.98; // 95 is giza's age, should come from bio
 
   var bio = {
     first_name: 'גיזה',
@@ -165,7 +165,7 @@ function getPeriodArcs(period, ring) {
               stroke: 'green',
               fill: 'green',
               fontSize: 20,
-              fontFamily: 'Assitant',
+              fontFamily: 'Assistant',
               text: reverse(period.name),
               data: getPath({ring: ring, startDeg: startDeg, endDeg: endDeg}),
               direction: 'rtl'
@@ -180,7 +180,7 @@ function getPeriodArcs(period, ring) {
               stroke: 'green',
               fill: 'green',
               fontSize: 32,
-              fontFamily: 'Assitant',
+              fontFamily: 'Assistant',
               text: text,
               data: getPath({ring: ring, startDeg: startDeg, endDeg: endDeg}),
               direction: 'rtl'
