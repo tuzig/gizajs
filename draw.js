@@ -75,7 +75,7 @@ function getPoint(age, ring) {
 
 function addImages() {
     var ageRE = /^age_(\d+)/;
-    var images = window.images.frames;
+    var images = window.sprites.frames;
 
     // sort the thumbs according to age
     images.sort(function (a,b) {
@@ -84,7 +84,7 @@ function addImages() {
         return aAge-bAge;
     })
 
-    var sprites = new Image(window.images.meta.width, window.images.meta.width);
+    var sprites = new Image(window.sprites.meta.width, window.sprites.meta.width);
     sprites.onload = function () {
         var ringMin = 1,
             ringMax = 8,
@@ -119,7 +119,7 @@ function addImages() {
         }
 		layer.draw()
     }
-    sprites.src = window.images.meta.sprite_path;
+    sprites.src = window.sprites.meta.sprite_path;
 }
 
 function getPath(config) {
@@ -210,7 +210,7 @@ function getDials() {
             }),
                       new Konva.Line({
                             points: [stageRadius*(1+xs[i]*0.95), stageRadius*(1+ys[i]*0.95),
-                                         stageRadius*(1+xs[i]*0.6), stageRadius*(1+ys[i]*0.6)],
+                                         stageRadius*(1+xs[i]*0.2), stageRadius*(1+ys[i]*0.2)],
                           dash: [5, 5],
                             stroke: color,
                             strokeWidth: 4,
