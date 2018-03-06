@@ -169,7 +169,7 @@ function getHeader() {
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
               text: bio.date_of_passing,
-              data: getPath({ring: 8.2, startDeg: maxAge*years2deg-102, endDeg: 350})
+              data: getPath({ring: 8.2, startDeg: maxAge*years2deg-99.5, endDeg: 350})
            }),
 		  new Konva.Line({
 				points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
