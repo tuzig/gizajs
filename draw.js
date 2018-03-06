@@ -10,7 +10,7 @@ var stageLen = 1000,
 var bio = {
     first_name: 'גיזה',
     last_name: 'גולדפרב',
-    date_of_birth: '1914.2.10', // we will need to store iso here and convert
+    date_of_birth: '10.2.1914', // we will need to store iso here and convert
     place_of_birth: 'טרנוב',
     date_of_passing: '17.4.2009',
     place_of_passing: 'נתניה',
@@ -86,8 +86,8 @@ function addImages() {
 
     var sprites = new Image(window.images.meta.width, window.images.meta.width);
     sprites.onload = function () {
-        var ringMin = 3,
-            ringMax = 9,
+        var ringMin = 1,
+            ringMax = 8,
             ring = ringMin,
             i,
             age,
@@ -143,28 +143,50 @@ function getPath(config) {
 }
 
 function getHeader() {
-    var fontSize = 44;
+    var fontSize = 30;
+	var maxAgeDialStart = getPoint(maxAge, 11);
+	var maxAgeDialEnd = getPoint(maxAge, 9.5);
+
+	var minAgeDialStart = getPoint(0, 11);
+	var minAgeDialEnd = getPoint(0, 10.5);
+
     return [
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              fill: 'blue',
+              fill: 'black',
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
-              text: reverse(bio.last_name),
-              data: getPath({ring: 1, startDeg: 10, endDeg: 180}),
+              text: bio.date_of_birth,
+              data: getPath({ring: 9.2, startDeg: -98, endDeg: 180}),
            }),
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              fill: 'blue',
+              fill: 'black',
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
-              text: reverse(bio.first_name),
-              data: getPath({ring: 1, startDeg: 230, endDeg: 500})
+              text: bio.date_of_passing,
+              data: getPath({ring: 8.2, startDeg: maxAge*years2deg-102, endDeg: 350})
            }),
+		  new Konva.Line({
+				points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
+			    dash: [5, 5],
+				stroke: '#222',
+				strokeWidth: 4,
+				lineCap: 'round',
+				lineJoin: 'round'
+			}),
+		  new Konva.Line({
+				points: [minAgeDialStart.x, minAgeDialStart.y, minAgeDialEnd.x, minAgeDialEnd.y], 
+			    dash: [5, 5],
+				stroke: '#222',
+				strokeWidth: 4,
+				lineCap: 'round',
+				lineJoin: 'round'
+			})
     ];
 }
 function getDials() {
@@ -259,12 +281,8 @@ document.addEventListener("DOMContentLoaded", function() {
       i;
 
     var dob = document.createElement('h1');
-    dob.innerHTML = '| ' + bio.date_of_birth;
+    dob.innerHTML = bio.first_name + ' ' + bio.last_name;
     dates.appendChild(dob);
-
-    var dop = document.createElement('h2');
-    dop.innerHTML = bio.date_of_passing + ' ';
-    dates.appendChild(dop);
 
     var stage = new Konva.Stage({
         container: 'container',
@@ -276,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function fitStage2Container() {
 
     var scale = {x: container.offsetWidth / stageLen,
-                 y: (window.innerHeight - 46) / stageLen};
+				 y: (window.innerHeight * 0.91) / stageLen};
 
     stage.width(stageLen * scale.x);
     stage.height(stageLen * scale.y);
