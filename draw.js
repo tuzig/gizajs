@@ -86,8 +86,8 @@ function addImages() {
 
     var sprites = new Image(window.images.meta.width, window.images.meta.width);
     sprites.onload = function () {
-        var ringMin = 2,
-            ringMax = 8,
+        var ringMin = 3,
+            ringMax = 9,
             ring = ringMin,
             i,
             age,
@@ -96,25 +96,26 @@ function addImages() {
 
         for (i = 0; i < images.length; i++) {
             age = Number(images[i].filename.match(ageRE)[1]);
-            loc = getPoint(age, ring)
-			console.log(0-images[i].frame.x,0-images[i].frame.y)
+            loc = getPoint(age, ring);
             img = new Konva.Image({
                 x: loc.x,
                 y: loc.y,
                 width: images[i].frame.w,
                 height: images[i].frame.h,
+				strokeWidth: 1,
+				stroke: '#222',
                 image: sprites
-            })
+            });
             img.crop({
                     width: images[i].frame.w,
                     height: images[i].frame.h,
-                    x: 0-images[i].frame.x,
-                    y: 0-images[i].frame.y
+                    x: 0 - images[i].frame.x,
+                    y: 0 - images[i].frame.y
 			});
 			layer.add(img);
             ring++;
-            if (ring==ringMax)
-                ring = ringMin
+            if (ring === ringMax)
+                ring = ringMin;
         }
 		layer.draw()
     }
@@ -147,18 +148,20 @@ function getHeader() {
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              stroke: 'blue',
+              fill: 'blue',
               fontSize: fontSize,
               fontFamily: 'Assistant',
+			  fontStyle: 'bold',
               text: reverse(bio.last_name),
               data: getPath({ring: 1, startDeg: 10, endDeg: 180}),
            }),
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              stroke: 'blue',
+              fill: 'blue',
               fontSize: fontSize,
               fontFamily: 'Assistant',
+			  fontStyle: 'bold',
               text: reverse(bio.first_name),
               data: getPath({ring: 1, startDeg: 230, endDeg: 500})
            }),
