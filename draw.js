@@ -175,10 +175,11 @@ function getDials() {
     var ret =[], i, age, x, y;
     for (i=0; i < 4; i++) {
      age = Math.round((i*2+1)*maxAge/8);
+	 if (i===0) age = "בת\n"+age;
      ret.push(new Konva.Text({
               // x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
-              x: stageRadius*(1+xs[i]*1.1),
-              y: stageRadius*(1+ys[i]*1.1),
+              x: stageRadius*(1+xs[i]*1.05),
+              y: stageRadius*(1+ys[i]*1.05),
               stroke: color,
               fontSize: fontSize,
               fontFamily: 'Rubik',
