@@ -4,15 +4,15 @@
       stageRadius = stageLen/2,
       ringHeight = stageRadius/12,
       totalDeg = 360,
-      maxAge = 94,
-	  years2deg = totalDeg/94; // 94 is giza's age, should come from bio
+      maxAge = 95,
+	  years2deg = totalDeg/95; // 95 is giza's age, should come from bio
 
   var bio = {
     first_name: 'גיזה',
     last_name: 'גולדפרב',
 		date_of_birth: '1914.2.10', // we will need to store iso here and convert
     place_of_birth: 'טרנוב',
-    date_of_passing: '17.04.2008',
+    date_of_passing: '17.4.2009',
     place_of_passing: 'נתניה',
     cover_photo: 'https://s3.eu-central-1.amazonaws.com/tsvi.bio/img/cover.png',
     periods: [[
@@ -30,19 +30,11 @@
       },
       {name: 'נתניה',
        start_age: 32,
-       end_age: 94,
+       end_age: 95,
       }],[
       {name: 'השומר הצעיר',
        start_age: 14,
        end_age: 32,
-      },
-      {name: '\u2764 וולוק \u2764',
-       start_age: 32,
-       end_age: 90,
-      }],[
-      {name: '\u2764 אלו \u2764',
-       start_age: 22,
-       end_age: 30,
       },
       {name: 'לשכת העבודה',
        start_age: 40,
@@ -50,8 +42,16 @@
       },
       {name: 'גמלאות',
        start_age: 67,
-       end_age: 94,
-      }, ]
+       end_age: 95,
+      },],[
+      {name: '\u2764 אלו \u2764',
+       start_age: 22,
+       end_age: 30,
+      },{name: '\u2764 וולוק \u2764',
+       start_age: 32,
+       end_age: 90,
+      }
+       ]
     ]
   };
 
@@ -91,7 +91,7 @@ function getHeader() {
               y: stageRadius,
               stroke: 'blue',
               fontSize: fontSize,
-              fontFamily: 'Assitant',
+              fontFamily: 'Assistant',
               text: reverse(bio.last_name),
               data: getPath({ring: 1, startDeg: 10, endDeg: 180}),
            }),
@@ -100,7 +100,7 @@ function getHeader() {
               y: stageRadius,
               stroke: 'blue',
               fontSize: fontSize,
-              fontFamily: 'Assitant',
+              fontFamily: 'Assistant',
               text: reverse(bio.first_name),
               data: getPath({ring: 1, startDeg: 230, endDeg: 500})
            }),
@@ -164,10 +164,10 @@ function getPeriodArcs(period, ring) {
               y: stageRadius,
               stroke: 'green',
               fill: 'green',
-              fontSize: 32,
+              fontSize: 20,
               fontFamily: 'Assitant',
               text: reverse(period.name),
-              data: getPath({ring: ring-2.2, startDeg: startDeg+10, endDeg: endDeg+90}),
+              data: getPath({ring: ring, startDeg: startDeg, endDeg: endDeg}),
               direction: 'rtl'
            }))
 	else {
@@ -194,11 +194,11 @@ document.addEventListener("DOMContentLoaded", function() {
   var dates = document.getElementById('dates');
 
 	var dob = document.createElement('h1');
-	dob.innerHTML = '|' + bio.date_of_birth;
+	dob.innerHTML = '| ' + bio.date_of_birth;
 	dates.appendChild(dob);
 
 	var dop = document.createElement('h2');
-	dop.innerHTML = bio.date_of_passing;
+	dop.innerHTML = bio.date_of_passing + ' ';
 	dates.appendChild(dop);
 
   var stage = new Konva.Stage({
@@ -242,14 +242,6 @@ document.addEventListener("DOMContentLoaded", function() {
   for (i=0; i < shapes.length; i++) {
 			layer.add(shapes[i]);
   }
-	layer.add(
-					  new Konva.Line({
-							points: [920,720, 815, 750],
-							stroke: '#222',
-							strokeWidth: 4,
-							lineCap: 'round',
-							lineJoin: 'round'
-						}))
   fitStage2Container();
 
   window.layer = layer;
