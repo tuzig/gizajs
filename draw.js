@@ -247,15 +247,17 @@ TableLayer.prototype.getDates = function() {
     ];
 };
 
+var GalleryLayer = function(stage) {
+	this.stage = stage;
+  	this.layer = new Konva.Layer();
+	stage.add(this.layer);
+};
 
-function addImages(stage) {
+GalleryLayer.prototype.draw = function () {
     var ageRE = /^age_(\d+)/;
     var spriteFrames = window.sprites.frames;
 	var images = [];
 	var i;
-  	var layer = new Konva.Layer();
-
-	stage.add(layer);
 
     // sort the thumbs according to age
     spriteFrames.sort(function (a,b) {
@@ -271,6 +273,7 @@ function addImages(stage) {
 
     var spriteSheet = new Image(window.sprites.meta.width, window.sprites.meta.width);
 
+	var layer = this.layer;
     spriteSheet.onload = function () {
         var ringMin = 1,
             ringMax = 8,
@@ -338,6 +341,9 @@ document.addEventListener("DOMContentLoaded", function() {
   var tableLayer = new TableLayer(stage);
   tableLayer.draw();
 
+  var galleryLayer = new GalleryLayer(stage);
+  galleryLayer.draw();
+
   function fitStage2Container() {
 
     var scale = {x: container.offsetWidth / stageLen,
@@ -346,14 +352,12 @@ document.addEventListener("DOMContentLoaded", function() {
     stage.width(stageLen * scale.x);
     stage.height(stageLen * scale.y);
     tableLayer.layer.scale(scale);
+    galleryLayer.layer.scale(scale);
     stage.visible(true);
     stage.draw();
   }
   window.addEventListener('resize', fitStage2Container);
-
-
-
-  fitStage2Container();
-  addImages(stage)
+  // make it fit
+  fitStage2Container()
 
 });
