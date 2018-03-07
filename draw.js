@@ -75,17 +75,25 @@ function getPoint(age, ring) {
 
 function addImages() {
     var ageRE = /^age_(\d+)/;
-    var images = window.sprites.frames;
+    var spriteFrames = window.sprites.frames;
+	var images = [];
+	var i;
 
     // sort the thumbs according to age
-    images.sort(function (a,b) {
+    spriteFrames.sort(function (a,b) {
         var aAge = Number(a.filename.match(ageRE)[1]);
         var bAge = Number(b.filename.match(ageRE)[1]);
         return aAge-bAge;
-    })
+    });
 
-    var sprites = new Image(window.sprites.meta.width, window.sprites.meta.width);
-    sprites.onload = function () {
+	// create the array for PhotoSwipe
+	for(i=0; i < spriteFrames.length; i++) {
+		images.push(window.images[spriteFrames[i].filename])
+	}
+
+    var spriteSheet = new Image(window.sprites.meta.width, window.sprites.meta.width);
+
+    spriteSheet.onload = function () {
         var ringMin = 1,
             ringMax = 8,
             ring = ringMin,
@@ -94,28 +102,28 @@ function addImages() {
 			loc,
 			img;
 
-        for (i = 0; i < images.length; i++) {
-            age = Number(images[i].filename.match(ageRE)[1]);
+        for (i = 0; i < spriteFrames.length; i++) {
+            age = Number(spriteFrames[i].filename.match(ageRE)[1]);
             loc = getPoint(age, ring);
             img = new Konva.Image({
                 x: loc.x,
                 y: loc.y,
-                width: images[i].frame.w,
-                height: images[i].frame.h,
+                width: spriteFrames[i].frame.w,
+                height: spriteFrames[i].frame.h,
 				strokeWidth: 1,
 				stroke: '#222',
-                image: sprites
+                image: spriteSheet
             });
             img.crop({
-                    width: images[i].frame.w,
-                    height: images[i].frame.h,
-                    x: 0 - images[i].frame.x,
-                    y: 0 - images[i].frame.y
+                    width: spriteFrames[i].frame.w,
+                    height: spriteFrames[i].frame.h,
+                    x: 0 - spriteFrames[i].frame.x,
+                    y: 0 - spriteFrames[i].frame.y
 			});
 			img.i = i;
 			img.on('click', function() {
 				  gallery = new PhotoSwipe(document.getElementById('photos'),
-					  PhotoSwipeUI_Default, window.images, {index: this.i } );
+					  PhotoSwipeUI_Default, images, {index: this.i } );
 				  gallery.init();
 
 			})
@@ -126,7 +134,7 @@ function addImages() {
         }
 		layer.draw()
     }
-    sprites.src = window.sprites.meta.sprite_path;
+    spriteSheet.src = window.sprites.meta.sprite_path;
 }
 
 function getPath(config) {
