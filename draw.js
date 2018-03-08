@@ -317,7 +317,7 @@ GalleryLayer.prototype.draw = function () {
 			img.loc = loc;
 			img.on('mouseup touchend', function() {
 				  gallery = new PhotoSwipe(document.getElementById('photos'),
-					  PhotoSwipeUI_Default, images, {index: this.i } );
+					  PhotoSwipeUI_Default, psImages, {index: this.i } );
 				  gallery.init();
 
 			})
@@ -374,6 +374,7 @@ function drawChronus (){
 
   function fitStage2Container() {
 
+	console.log("sds");
     var scale = {x: window.innerWidth / stageLen,
 				 y: (window.innerHeight * 0.91) / stageLen};
 
@@ -381,14 +382,13 @@ function drawChronus (){
     stage.height(stageLen * scale.y);
     tableLayer.layer.scale(scale);
     galleryLayer.scale(scale);
+    galleryLayer.layer.draw();
     stage.visible(true);
     stage.draw();
   }
   window.addEventListener('resize', fitStage2Container);
+  document.body.onfullscreenchange = fitStage2Container;
   // make it fullscreen
-  requestFullScreen(document.body);
-  // make it fit
-  fitStage2Container()
 
 }
 
@@ -397,9 +397,10 @@ document.addEventListener("DOMContentLoaded", function() {
     var bichronus = document.getElementById('biochronus');
 
     bichronus.style.display = 'none';
+	drawChronus();
 	welcome.addEventListener("click", function () {
 			welcome.style.display = 'none';
 			bichronus.style.display = '';
-			drawChronus();
+		    requestFullScreen(document.body);
 	});
 });
