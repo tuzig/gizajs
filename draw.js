@@ -136,6 +136,7 @@ TableLayer.prototype.getPeriodArcs = function(period, ring) {
 	}
 	return [
           new Konva.Arc({
+            opacity: 0.5,
             angle: endDeg-startDeg,
             x: stageRadius,
             y: stageRadius,
