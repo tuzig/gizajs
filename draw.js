@@ -253,6 +253,17 @@ var GalleryLayer = function(stage) {
 	stage.add(this.layer);
 };
 
+GalleryLayer.prototype.scale = function (scale) {
+	var images = this.layer.getChildren();
+	var curPos;
+
+	console.log(scale.x);
+	for (var i=0; i < images.length; i++) {
+		images[i].x(images[i].loc.x*scale.x);
+		images[i].y(images[i].loc.y*scale.y);
+		// images[i].scaleX = scale.x;
+	}	
+};
 GalleryLayer.prototype.draw = function () {
     var ageRE = /^age_(\d+)/;
     var spriteFrames = window.sprites.frames;
@@ -302,6 +313,7 @@ GalleryLayer.prototype.draw = function () {
                     y: 0 - spriteFrames[i].frame.y
 			});
 			img.i = i;
+			img.loc = loc;
 			img.on('mouseup touchend', function() {
 				  gallery = new PhotoSwipe(document.getElementById('photos'),
 					  PhotoSwipeUI_Default, images, {index: this.i } );
@@ -366,7 +378,7 @@ function drawChronus (){
     stage.width(stageLen * scale.x);
     stage.height(stageLen * scale.y);
     tableLayer.layer.scale(scale);
-    galleryLayer.layer.scale(scale);
+    galleryLayer.scale(scale);
     stage.visible(true);
     stage.draw();
   }
