@@ -165,7 +165,7 @@ TableLayer.prototype.getDials = function() {
 	// returning 4 dials at 1/8. 3/8, 5/8 & 7/8. each dial is made from two 
 	// shapes - a line and a text.
     var fontSize = 30,
-        color = '#222';
+        color = '#ccc';
     var xs = [0.8, 0.8, -0.8, -0.8];
     var ys = [-0.8, 0.8, 0.8, -0.8];
     var ret =[], i, age, x, y;
@@ -179,7 +179,7 @@ TableLayer.prototype.getDials = function() {
 			// x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
 			x: stageRadius*(1+xs[i]*1.05),
 			y: stageRadius*(1+ys[i]*1.05),
-			stroke: color,
+			fill: color,
 			fontSize: fontSize,
 			fontFamily: 'Rubik',
 			align: 'center',
@@ -318,6 +318,20 @@ GalleryLayer.prototype.draw = function () {
     spriteSheet.src = window.sprites.meta.sprite_path;
 };
 
+function requestFullScreen(element) {
+    // Supports most browsers and their versions.
+    var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+
+    if (requestMethod) { // Native full screen.
+        requestMethod.call(element);
+    } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+        var wscript = new ActiveXObject("WScript.Shell");
+        if (wscript !== null) {
+            wscript.SendKeys("{F11}");
+        }
+    }
+}
+
 function drawChronus (){
   // draw the biochronus complete with dials and the gallery
     var container = document.getElementById('container');
@@ -358,6 +372,8 @@ function drawChronus (){
     stage.draw();
   }
   window.addEventListener('resize', fitStage2Container);
+  // make it fullscreen
+  requestFullScreen(document.body);
   // make it fit
   fitStage2Container()
 
