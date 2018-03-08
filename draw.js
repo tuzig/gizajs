@@ -380,14 +380,13 @@ function drawChronus (){
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    var enter = document.getElementById('enter');
     var welcome = document.getElementById('welcome');
     var bichronus = document.getElementById('biochronus');
 
     bichronus.style.display = 'none';
-    enter.addEventListener("click", function () {
-        welcome.style.display = 'none';
-        bichronus.style.display = '';
-        drawChronus();
-    });
+	welcome.addEventListener("click", function () {
+			welcome.style.display = 'none';
+			bichronus.style.display = '';
+			drawChronus();
+	});
 });
