@@ -136,13 +136,13 @@ TableLayer.prototype.getPeriodArcs = function(period, ring) {
 	}
 	return [
           new Konva.Arc({
-            opacity: 0.5,
+            opacity: 0.3,
             angle: endDeg-startDeg,
             x: stageRadius,
             y: stageRadius,
             outerRadius: (ring+1)*ringHeight,
             innerRadius: ring*ringHeight,
-            fill: '#999',
+            fill: '#fff',
             stroke: '#222',
             strokeWidth: 3,
             rotation: startDeg
@@ -186,8 +186,8 @@ TableLayer.prototype.getDials = function() {
 			text: age
        }),
        new Konva.Line({
-			points: [stageRadius*(1+xs[i]*0.95), stageRadius*(1+ys[i]*0.95),
-					 stageRadius*(1+xs[i]*0.2), stageRadius*(1+ys[i]*0.2)],
+			points: [stageRadius*(1+xs[i]*0.93), stageRadius*(1+ys[i]*0.93),
+					 stageRadius*(1+xs[i]*0.63), stageRadius*(1+ys[i]*0.63)],
 			dash: [5, 5],
 			stroke: color,
 			strokeWidth: 4,
@@ -211,7 +211,7 @@ TableLayer.prototype.getDates = function() {
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              fill: 'black',
+              fill: '#aaa',
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
@@ -221,7 +221,7 @@ TableLayer.prototype.getDates = function() {
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              fill: 'black',
+              fill: '#aaa',
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
