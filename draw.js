@@ -36,7 +36,7 @@ var bio = {
         start_age: 14,
         end_age: 32,
         },
-        {name: 'לשכת העבודה',
+        {name: 'שרות התעסוקה',
         start_age: 40,
         end_age: 67,
         },
@@ -141,7 +141,7 @@ TableLayer.prototype.getPeriodArcs = function(period, ring) {
             y: stageRadius,
             outerRadius: (ring+1)*ringHeight,
             innerRadius: ring*ringHeight,
-            fill: '#ccc',
+            fill: '#999',
             stroke: '#222',
             strokeWidth: 3,
             rotation: startDeg
@@ -149,8 +149,7 @@ TableLayer.prototype.getPeriodArcs = function(period, ring) {
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              stroke: 'green',
-              fill: 'green',
+              fill: '#222',
               fontSize: (period.name == 'יד מרדכי')?20:32,
               fontFamily: 'Assistant',
               text: text,
@@ -165,7 +164,7 @@ TableLayer.prototype.getDials = function() {
 	// returning 4 dials at 1/8. 3/8, 5/8 & 7/8. each dial is made from two 
 	// shapes - a line and a text.
     var fontSize = 30,
-        color = '#ccc';
+        color = '#aaa';
     var xs = [0.8, 0.8, -0.8, -0.8];
     var ys = [-0.8, 0.8, 0.8, -0.8];
     var ret =[], i, age, x, y;
@@ -362,7 +361,6 @@ function drawChronus (){
 
     var scale = {x: window.innerWidth / stageLen,
 				 y: (window.innerHeight * 0.91) / stageLen};
-    console.log(scale);
 
     stage.width(stageLen * scale.x);
     stage.height(stageLen * scale.y);
