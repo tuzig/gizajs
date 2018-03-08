@@ -16,24 +16,54 @@
       padding: 0;
       overflow: hidden;
       background-color: #F0F0F0;
-    }
-    #dates { height: 8vh; text-align: center; background-color: black;}
-    #dates h1 {
-      font-size: 6vh;
       font-family: Assistant;
+    }
+    #biocHeader { height: 8vh; text-align: center; background-color: black;}
+    #biocHeader h1 {
+      color: white;
+      line-height: 1em;
       padding: 1vh;
       margin: 0;
-      color: white;
-		  line-height: 1em;
     }
-    #dates h2 { text-align: right;}
+    h1 {
+      font-size: 6vh;
+    }
+    #welcome { 
+      width:80%;
+      padding:1em;
+      color: #222;
+      border-radius: 0.5em;
+      margin: 0 auto;
+    }
+    .twoCols section {
+      width: 50%;
+      float: right;
+      margin: 0;
+      padding: 0;
+    }
+    .centered { text-align: center}
   </style>
 </head>
 <body>
-    <div id="present">
-      <div id="dates">
-        <button id="fs-button" class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-        </div>
+    <!-- TODO: next div needs to be dynamiclly generated -->
+    <div id="welcome" class="twoCols" dir="rtl">
+		<section class="centered">
+            <h1>גיזה גולדפרב</h1>
+            <h1> לבית בראו</h1>
+            <h2>יד שבט התרעד - כג ניסן התשסט</h2>
+            <h2>17.4.2009 - 10.2.1914<h2>
+            <h2>&#10048;</h2>
+            <h2>תהי נשמתה צרורה</h2>
+            <h2> בצרור החיים</h2>
+            <h3><button id="enter">לזכרה</button></h3>
+		</section>
+		<section class="centered">
+            <img width="350" src="http://galeds.s3-website.eu-central-1.amazonaws.com/giza/age_4.png" alt="אילום סטודיו של גיזה בת הארבע עם בובה" />
+		</section>
+	</Step>
+    </div>
+    <div id="biochronus">
+      <div id="biocHeader"> </div>
   <div id="container"></div>
 <div id="photos" class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
 
@@ -66,7 +96,6 @@
 
                 <button class="pswp__button pswp__button--share" title="Share"></button>
 
-                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
 
                 <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
 

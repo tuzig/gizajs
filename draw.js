@@ -318,10 +318,10 @@ GalleryLayer.prototype.draw = function () {
     spriteSheet.src = window.sprites.meta.sprite_path;
 };
 
-document.addEventListener("DOMContentLoaded", function() {
-  // draw the biochronus
+function drawChronus (){
+  // draw the biochronus complete with dials and the gallery
     var container = document.getElementById('container');
-    var dates = document.getElementById('dates');
+    var header = document.getElementById('biocHeader');
     var ring,
       ringPeriods,
 	  layer,
@@ -329,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var dob = document.createElement('h1');
     dob.innerHTML = bio.first_name + ' ' + bio.last_name;
-    dates.appendChild(dob);
+    header.appendChild(dob);
 
     var stage = new Konva.Stage({
         container: 'container',
@@ -346,8 +346,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function fitStage2Container() {
 
-    var scale = {x: container.offsetWidth / stageLen,
+    var scale = {x: window.innerWidth / stageLen,
 				 y: (window.innerHeight * 0.91) / stageLen};
+    console.log(scale);
 
     stage.width(stageLen * scale.x);
     stage.height(stageLen * scale.y);
@@ -360,4 +361,17 @@ document.addEventListener("DOMContentLoaded", function() {
   // make it fit
   fitStage2Container()
 
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    var enter = document.getElementById('enter');
+    var welcome = document.getElementById('welcome');
+    var bichronus = document.getElementById('biochronus');
+
+    bichronus.style.display = 'none';
+    enter.addEventListener("click", function () {
+        welcome.style.display = 'none';
+        bichronus.style.display = '';
+        drawChronus();
+    });
 });
