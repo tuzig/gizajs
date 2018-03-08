@@ -302,7 +302,7 @@ GalleryLayer.prototype.draw = function () {
                     y: 0 - spriteFrames[i].frame.y
 			});
 			img.i = i;
-			img.on('click', function() {
+			img.on('mouseup touchend', function() {
 				  gallery = new PhotoSwipe(document.getElementById('photos'),
 					  PhotoSwipeUI_Default, images, {index: this.i } );
 				  gallery.init();
