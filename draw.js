@@ -1,5 +1,6 @@
 "use strict";
 
+var DIALS_COLOR = '#333'
 var stageLen = 1000,
     stageRadius = stageLen / 2,
     ringHeight = stageRadius / 12,
@@ -44,10 +45,10 @@ var bio = {
         start_age: 67,
         end_age: 95,
         },],[
-        {name: '\u2764 אלו \u2764',
+        {name: '\u2665 אלו \u2665',
         start_age: 22,
         end_age: 30,
-        },{name: '\u2764 וולוק \u2764',
+        },{name: '\u2665 וולוק \u2665',
         start_age: 32,
         end_age: 90,
         }
@@ -170,16 +171,16 @@ TableLayer.prototype.getDials = function() {
     var ys = [-0.8, 0.8, 0.8, -0.8];
     var ret =[], i, age, x, y;
     for (i=0; i < 4; i++) {
-		age = Math.round((i*2+1)*maxAge/8);
+		age = "בת\n"+Math.round((i*2+1)*maxAge/8);
 
-	if (i===0) age = "בת\n"+age;
+	//if (i===0) age = "בת\n"+age;
 
 	ret.push(
 		new Konva.Text({
 			// x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
 			x: stageRadius*(1+xs[i]*1.05),
 			y: stageRadius*(1+ys[i]*1.05),
-			fill: color,
+			fill: DIALS_COLOR,
 			fontSize: fontSize,
 			fontFamily: 'Rubik',
 			align: 'center',
@@ -189,7 +190,7 @@ TableLayer.prototype.getDials = function() {
 			points: [stageRadius*(1+xs[i]*0.93), stageRadius*(1+ys[i]*0.93),
 					 stageRadius*(1+xs[i]*0.63), stageRadius*(1+ys[i]*0.63)],
 			dash: [5, 5],
-			stroke: color,
+			stroke: DIALS_COLOR,
 			strokeWidth: 4,
 			lineCap: 'round',
 			lineJoin: 'round'
@@ -211,7 +212,7 @@ TableLayer.prototype.getDates = function() {
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              fill: '#aaa',
+              fill: DIALS_COLOR,
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
@@ -221,7 +222,7 @@ TableLayer.prototype.getDates = function() {
           new Konva.TextPath({
               x: stageRadius,
               y: stageRadius,
-              fill: '#aaa',
+              fill: DIALS_COLOR,
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
@@ -231,7 +232,7 @@ TableLayer.prototype.getDates = function() {
 		  new Konva.Line({
 				points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
 			    dash: [5, 5],
-				stroke: '#222',
+				stroke: DIALS_COLOR,
 				strokeWidth: 4,
 				lineCap: 'round',
 				lineJoin: 'round'
@@ -239,7 +240,7 @@ TableLayer.prototype.getDates = function() {
 		  new Konva.Line({
 				points: [minAgeDialStart.x, minAgeDialStart.y, minAgeDialEnd.x, minAgeDialEnd.y], 
 			    dash: [5, 5],
-				stroke: '#222',
+				stroke: DIALS_COLOR,
 				strokeWidth: 4,
 				lineCap: 'round',
 				lineJoin: 'round'
@@ -250,24 +251,23 @@ TableLayer.prototype.getDates = function() {
 var GalleryLayer = function(stage) {
 	this.stage = stage;
   	this.layer = new Konva.Layer();
+	this.images = [];
 	stage.add(this.layer);
 };
 
 GalleryLayer.prototype.scale = function (scale) {
-	var images = this.layer.getChildren();
 	var curPos;
 
-	console.log(scale.x);
-	for (var i=0; i < images.length; i++) {
-		images[i].x(images[i].loc.x*scale.x);
-		images[i].y(images[i].loc.y*scale.y);
-		// images[i].scaleX = scale.x;
+	for (var i=0; i < this.images.length; i++) {
+		this.images[i].x(this.images[i].loc.x*scale.x);
+		this.images[i].y(this.images[i].loc.y*scale.y);
 	}	
+	this.layer.draw();
 };
 GalleryLayer.prototype.draw = function () {
     var ageRE = /^age_(\d+)/;
     var spriteFrames = window.sprites.frames;
-	var images = [];
+	var psImages = [];
 	var i;
 
     // sort the thumbs according to age
@@ -279,12 +279,13 @@ GalleryLayer.prototype.draw = function () {
 
 	// create the array for PhotoSwipe
 	for(i=0; i < spriteFrames.length; i++) {
-		images.push(window.images[spriteFrames[i].filename])
+		psImages.push(window.images[spriteFrames[i].filename])
 	}
 
     var spriteSheet = new Image(window.sprites.meta.width, window.sprites.meta.width);
 
-	var layer = this.layer;
+	var layer = this.layer,
+		images = this.images;
     spriteSheet.onload = function () {
         var ringMin = 1,
             ringMax = 8,
@@ -320,6 +321,7 @@ GalleryLayer.prototype.draw = function () {
 				  gallery.init();
 
 			})
+			images.push(img);
 			layer.add(img);
             ring++;
             if (ring === ringMax)
