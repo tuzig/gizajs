@@ -374,7 +374,6 @@ function drawChronus (){
 
   function fitStage2Container() {
 
-	console.log("sds");
     var scale = {x: window.innerWidth / stageLen,
 				 y: (window.innerHeight * 0.91) / stageLen};
 
