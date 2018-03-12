@@ -8,53 +8,7 @@ var stageLen = 1000,
     maxAge = 95,
     years2deg = totalDeg / 95 * 0.98; // 95 is giza's age, should come from bio
 
-var bio = {
-    first_name: 'גיזה',
-    last_name: 'גולדפרב',
-    date_of_birth: '10.2.1914', // we will need to store iso here and convert
-    place_of_birth: 'טרנוב',
-    date_of_passing: '17.4.2009',
-    place_of_passing: 'נתניה',
-    cover_photo: 'https://s3.eu-central-1.amazonaws.com/tsvi.bio/img/cover.png',
-    periods: [[
-        {name: 'טרנוב פולין',
-        start_age: 0,
-        end_age: 22,
-        },
-        {name: 'נתניה',
-        start_age: 22,
-        end_age: 29,
-        },
-        {name: 'יד מרדכי',
-        start_age: 29,
-        end_age: 32,
-        },
-        {name: 'נתניה',
-        start_age: 32,
-        end_age: 95,
-        }],[
-        {name: 'השומר הצעיר',
-        start_age: 14,
-        end_age: 32,
-        },
-        {name: 'שרות התעסוקה',
-        start_age: 40,
-        end_age: 67,
-        },
-        {name: 'גמלאות',
-        start_age: 67,
-        end_age: 95,
-        },],[
-        {name: '\u2665 אלו \u2665',
-        start_age: 22,
-        end_age: 30,
-        },{name: '\u2665 וולוק \u2665',
-        start_age: 32,
-        end_age: 90,
-        }
-       ]
-    ]
-  };
+var bio;
 // START
 var gallery;
 
