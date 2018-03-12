@@ -30,11 +30,12 @@
   padding: 0;
   margin: 0;
   float: right;
-  opacity: 0.75;
+  /* opacity: 0.75; */
   -webkit-transition: opacity 0.2s;
-          transition: opacity 0.2s;
+  transition: opacity 0.2s;
   -webkit-box-shadow: none;
-          box-shadow: none; }
+  box-shadow: none;
+  }
   .pswp__button:focus, .pswp__button:hover {
     opacity: 1; }
   .pswp__button:active {
@@ -51,10 +52,9 @@
 .pswp__button,
 .pswp__button--arrow--left:before,
 .pswp__button--arrow--right:before {
-  background: url(default-skin.png) 0 0 no-repeat;
+  background: url(default-skin.svg) 0 0 no-repeat;
   background-size: 264px 88px;
-  width: 44px;
-  height: 44px; }
+  }
 
 @media (-webkit-min-device-pixel-ratio: 1.1), (-webkit-min-device-pixel-ratio: 1.09375), (min-resolution: 105dpi), (min-resolution: 1.1dppx) {
   /* Serve SVG sprite if browser supports SVG and resolution is more than 105dpi */
@@ -73,7 +73,8 @@
   background-position: -44px -44px; }
 
 .pswp__button--fs {
-  display: none; }
+  /* display: none; */
+  }
 
 .pswp--supports-fs .pswp__button--fs {
   display: block; }
@@ -82,8 +83,9 @@
   background-position: -44px 0; }
 
 .pswp__button--zoom {
-  display: none;
-  background-position: -88px 0; }
+  /* display: none; */
+  background-position: -88px 0;
+  }
 
 .pswp--zoom-allowed .pswp__button--zoom {
   display: block; }
