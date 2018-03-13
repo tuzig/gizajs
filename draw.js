@@ -352,12 +352,14 @@ function drawChronus (){
 
 document.addEventListener("DOMContentLoaded", function() {
     var welcome = document.getElementById('welcome');
+    var footer = document.querySelector('footer');
     var bichronus = document.getElementById('biochronus');
 
     bichronus.style.display = 'none';
 	drawChronus();
 	welcome.addEventListener("click", function () {
 			welcome.style.display = 'none';
+			footer.style.display = 'none';
 			bichronus.style.display = '';
 		    requestFullScreen(document.body);
 	});
