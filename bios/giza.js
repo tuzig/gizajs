@@ -6,7 +6,7 @@ var bio = {
     date_of_passing: '17.4.2009',
     place_of_passing: 'נתניה',
     cover_photo: 'https://s3.eu-central-1.amazonaws.com/tsvi.bio/img/cover.png',
-    periods: [[
+    spans: [[
         {name: 'טרנוב פולין',
         start_age: 0,
         end_age: 22,
@@ -22,7 +22,7 @@ var bio = {
         {name: 'נתניה',
         start_age: 32,
         end_age: 95,
-        }],[
+		}],[   // end of first ring
         {name: 'השומר הצעיר',
         start_age: 14,
         end_age: 32,
@@ -34,7 +34,7 @@ var bio = {
         {name: 'גמלאות',
         start_age: 67,
         end_age: 95,
-        },],[
+        },],[// end of second ring
         {name: '\u2665 אלו \u2665',
         start_age: 22,
         end_age: 30,

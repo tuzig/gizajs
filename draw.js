@@ -1,3 +1,6 @@
+/*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
+/*global
+ Konva */
 "use strict";
 
 var DIALS_COLOR = '#333'
@@ -29,7 +32,7 @@ function getPoint(age, ring) {
 }
 
 /*
- * Our bottom layer - the table layer, complete with dials, periods and names
+ * Our bottom layer - the table layer, complete with dials, spans and names
  */
 var TableLayer = function(stage) {
 	this.stage = stage;
@@ -38,14 +41,16 @@ var TableLayer = function(stage) {
 };
 
 TableLayer.prototype.draw = function() {
-	var i, ring, ringPeriods;
+	var i, ring, ringSpans;
 	// start with the dates and the dials
 	var shapes = this.getDates().concat(this.getDials());
 	//
-	for (ring=0; ring < bio.periods.length; ring++) {
-		ringPeriods = bio.periods[ring];
-		for (i=0; i < ringPeriods.length; i++) {
-		  shapes = shapes.concat(this.getPeriodArcs(ringPeriods[i], 11-ring));
+	for (var ring=0; ring < bio.spans.length; ring++) {
+		var ringSpans = bio.spans[ring];
+		for (i=0; i < ringSpans.length; i++) {
+		  var span = ringSpans[i];
+		  var spanShapes = this.getSpanShapes(span, 11-ring);
+		  shapes = shapes.concat(spanShapes);
 		}
 	}
 
@@ -76,18 +81,18 @@ TableLayer.prototype.getPath = function(config) {
   return ret;
 };
 
-TableLayer.prototype.getPeriodArcs = function(period, ring) {
-    var span = period.end_age-period.start_age,
-            endDeg = period.end_age*years2deg-90,
-      startDeg = period.start_age*years2deg-90;
+TableLayer.prototype.getSpanShapes = function(span, ring) {
+    var ageSpan = span.end_age-span.start_age,
+            endDeg = span.end_age*years2deg-90,
+      startDeg = span.start_age*years2deg-90;
     var text, i;
 
  
-  // a period arc is made of an arc the size of the period and the name
-  // of the period written inside
+  // a span arc is made of an arc the size of the span and the name
+  // of the span written inside
 	text = '';
-	for (i=0; i < span; i=i+18) {
-		text += reverse(period.name) + '                             ';
+	for (i=0; i < ageSpan; i=i+18) {
+		text += reverse(span.name) + '                             ';
 	}
 	return [
           new Konva.Arc({
@@ -106,7 +111,7 @@ TableLayer.prototype.getPeriodArcs = function(period, ring) {
               x: stageRadius,
               y: stageRadius,
               fill: '#222',
-              fontSize: (period.name == 'יד מרדכי')?20:32,
+              fontSize: (span.name == 'יד מרדכי')?20:32,
               fontFamily: 'Assistant',
               text: text,
 			  data: this.getPath(
