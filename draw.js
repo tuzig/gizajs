@@ -7,9 +7,9 @@ var DIALS_COLOR = '#333'
 var stageLen = 1000,
     stageRadius = stageLen / 2,
     ringHeight = stageRadius / 12,
-    totalDeg = 360,
+    totalDeg = 350,
     maxAge = 95,
-    years2deg = totalDeg / 95 * 0.98; // 95 is giza's age, should come from bio
+    years2deg = totalDeg / 95; // 95 is giza's age, should come from bio
 
 var bio;
 // START
