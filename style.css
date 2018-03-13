@@ -21,22 +21,31 @@ body {
     position: absolute; 
     top: 0 ;
     left: 0; }
-h1 {
+#biocHeader h1 {
   font-size: 6vh;
   line-height: 1em;
 }
 #welcome { 
-  width:80%;
+  max-width:1000px;
   padding:1em;
   color: #222;
   border-radius: 0.5em;
   margin: 0 auto;
+}
+#welcome h1 {
+  font-size: 2.8em;
 }
 .twoCols section {
   width: 50%;
   float: right;
   margin: 0;
   padding: 0;
+}
+@media all and (max-width : 768px) {
+  .twoCols section {
+    width: 95%;
+
+  }
 }
 .centered { text-align: center}
 #biochronus {
