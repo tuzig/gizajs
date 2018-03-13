@@ -308,16 +308,15 @@ function requestFullScreen(element) {
 function drawChronus (){
   // draw the biochronus complete with dials and the gallery
     var container = document.getElementById('container');
-    var h1 = document.querySelector('#biocHeader h1');
-    var button = document.querySelector('#biocHeader button');
+    var header = document.getElementById('biocHeader');
     var ring,
       ringPeriods,
 	  layer,
       i;
 
-    h1.innerHTML = bio.first_name + ' ' + bio.last_name;
-    h1.style.display = '';
-    button.style.display = 'block';
+    var dob = document.createElement('h1');
+    dob.innerHTML = bio.first_name + ' ' + bio.last_name;
+    header.appendChild(dob);
 
     var stage = new Konva.Stage({
         container: 'container',
