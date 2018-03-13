@@ -34,6 +34,11 @@ body {
 #welcome h1 {
   font-size: 2.8em;
 }
+.enter {
+  height: 3em;
+  font-size: 1.2em;
+
+}
 footer {
   border-top: 2px solid #222;
   margin: 2em auto;
