@@ -1,17 +1,14 @@
-# BioChronus
+# giza.js
 
-Licensed under GPLv2, a bit of javascript code to display a life's story.
-Using [Konva.js](https://github.com/konvajs/konva), a thin HTML5 canvas to
-display life's spans, photos thumbnails and images - using 
-[PhotoSwipe](https://github.com/dimsemenov/PhotoSwipe).
+    In memory of Giza Goldfarb, @daonb's grandmother may her sole rest in peace
 
-Other than that it's all plain javascript, without even jQuery to help.
-If you're not sure how to do things in plain js, please use
-(plainjs)[https://plainjs.com/] for samples and instruction.
+This is a shot at displaying a life's story in a circle on an HTML5 canvas 
+using [Konva.js](https://github.com/konvajs/konva) and
+[PhotoSwipe](https://github.com/dimsemenov/PhotoSwipe) to display the photos.
 
 ## creating your own BioChronus
 
-The biochronus gets his data from a single json file. This file contains the
+The biochronus gets his data from a single js file. This file contains the
 personal data, life's spans and the images. You're invited to fork the project
 and start working on your own local file which will be automaticlly loaded
 and override grandma giza bio. 
