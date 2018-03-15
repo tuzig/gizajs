@@ -1,5 +1,6 @@
 #!/bin/sh
 cd $1
+cp ../sample_bio.json bio.json
 if [ ! -d thumbs ]
 then
     mkdir thumbs
