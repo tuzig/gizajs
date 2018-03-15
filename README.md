@@ -28,21 +28,23 @@ invited to fork this project and make a Bio-Choruns for your hero.
 It's still pretty rough - you have to be able to
 edit json files and publish directories to cloud storage.
 
-### Collection the images
+### Collecting the images
 
 After electing the first person you want to perpetuate you need to research 
 his life sory and get his images in digital format. Collect them under 
-`bios/local`. cd there and run `./build.sh local`
-images, use the file manager to view the files and rename them to 
-`age_<age>_<serial>`. Once that done, open a shell:
+`bios/local`. Use the file manager to view the files and rename them to 
+`age_<age>_<serial>` (F2 rules). Once you've dates all the images you want
+to upload open a shell at the project root and run:
+```bash
+    $ cd bios
+    $ ./build.sh local
+```
 
-
-The find command finds all the properly named files and create thumbnails for
-them. The glue commands creates a `sprites` dir complete with a sprites image
-and a json:
+The scripts create 4 new files: a bios sample, and images dictionary,
+a thumbs sprite and thumbs json.
 
 ```
-<content_dir>
+bios/local
 |  age_<k>_<n>.jpg
 |  bio.json
 |  images.json
@@ -53,7 +55,7 @@ and a json:
 ### Adding the text
 
 In the above dir you got a `bio.json` file. This is a sample that the build
-script left for you to use as a base. Edit it and key in the personal details
+script copied in for you to use as a base. Edit it and key in the personal details
 and the life spans of your hero.
 
 ## Contribuiting
