@@ -10,7 +10,14 @@ the number of libs to the bare minimum. Currently we're down to two great
 turtles: [Konva.js](https://github.com/konvajs/konva) for the canvas and
 [PhotoSwipe](https://github.com/dimsemenov/PhotoSwipe) to display the images.
 
-## Installing Dependencies
+## Creating your Bio-Chronus
+
+If you have a family member, a friend or a hero you want to perpetuate you are
+invited to fork this project and make a Bio-Choruns for your hero.
+It's still pretty rough - you have to be able to
+edit json files and publish directories to cloud storage.
+
+### Installing Dependencies
 
 We need just a little bit of off-line scripting and we use python for it.
 Like all sane humans, we are using [pipenv](https://docs.pipenv.org/)
@@ -21,12 +28,6 @@ If things break on you (and most chances they will) please **Don't Panic**
 and open an issue.  Please detail what you tried to do what you expected 
 and what you got instead making it easy to recreate the problem.
 
-## Creating your Bio-Chronus
-
-If you have a family member, a friend or a hero you want to perpetuate you are
-invited to fork this project and make a Bio-Choruns for your hero.
-It's still pretty rough - you have to be able to
-edit json files and publish directories to cloud storage.
 
 ### Collecting the images
 
@@ -35,21 +36,30 @@ his life sory and get his images in digital format. Collect them under
 `bios/local`. Use the file manager to view the files and rename them to 
 `age_<age>_<serial>` (F2 rules). Once you've dates all the images you want
 to upload open a shell at the project root and run:
+
 ```bash
-    $ cd bios
-    $ ./build.sh local
+$ cd bios
+$ ./build.sh local <public url of the images folder>
+		age_14.jpg added to sprite
+		age_2.jpg added to sprite
+		age_41.jpg added to sprite
+Processing 'thumbs':
+Format 'json' for sprite 'thumbs' needs rebuild...
+Format 'img' for sprite 'thumbs' needs rebuild...
 ```
 
-The scripts create 4 new files: a bios sample, and images dictionary,
+The script creates 4 new files: a bios sample, and images dictionary,
 a thumbs sprite and thumbs json.
 
 ```
 bios/local
-|  age_<k>_<n>.jpg
-|  bio.json
-|  images.json
 |  thumbs.png
 |  thumbs.json
+|  images.json
+|  bio.json
+|  age_41.jpg
+|  age_14.jpg
+|  age_2.jpg
 ```
 
 ### Adding the text
@@ -57,6 +67,12 @@ bios/local
 In the above dir you got a `bio.json` file. This is a sample that the build
 script copied in for you to use as a base. Edit it and key in the personal details
 and the life spans of your hero.
+
+## Runing it locally
+
+To run it locally you need a simple http server, like 
+`python3 -m http.server`. Once the server is running, point your browser 
+at http://localhost:8000 and start playing with gizajs.
 
 ## Contribuiting
 

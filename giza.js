@@ -11,7 +11,7 @@ var stageLen = 1000,
     maxAge = 95,
     years2deg = totalDeg / 95; // 95 is giza's age, should come from bio
 
-var bio;
+var bio = {};
 // START
 var gallery;
 
@@ -30,7 +30,39 @@ function getPoint(age, ring) {
         y: stageRadius+Math.round(Math.sin(rad)*ringHeight*ring)
     };
 }
-
+// from https://plainjs.com/javascript/ajax/send-ajax-get-and-post-requests-47/
+function getAjax(url, callback) {
+	    var xhr = new XMLHttpRequest();
+	    xhr.addEventListener("load", function() {
+			var json;
+	        if (this.readyState > 3 && this.status === 200) {
+				try {
+					json = JSON.parse(this.responseText);
+				} catch(e) {
+					console.log('getAjax('+url+') got error: '+e);
+					callback(e);
+					return;
+				}
+				callback(json);
+				return;
+			}
+			callback(json);
+		});
+	    // xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	    xhr.open('GET', url);
+	    xhr.send();
+	    return xhr;
+}
+// from https://stackoverflow.com/a/901144
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
 /*
  * Our bottom layer - the table layer, complete with dials, spans and names
  */
@@ -45,8 +77,8 @@ TableLayer.prototype.draw = function() {
 	// start with the dates and the dials
 	var shapes = this.getDates().concat(this.getDials());
 	//
-	for (var ring=0; ring < bio.spans.length; ring++) {
-		var ringSpans = bio.spans[ring];
+	for (var ring=0; ring < bio.meta.spans.length; ring++) {
+		var ringSpans = bio.meta.spans[ring];
 		for (i=0; i < ringSpans.length; i++) {
 		  var span = ringSpans[i];
 		  var spanShapes = this.getSpanShapes(span, 11-ring);
@@ -175,7 +207,7 @@ TableLayer.prototype.getDates = function() {
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
-              text: bio.date_of_birth,
+              text: bio.meta.date_of_birth,
               data: this.getPath({ring: 9.2, startDeg: -98, endDeg: 180}),
            }),
           new Konva.TextPath({
@@ -185,7 +217,7 @@ TableLayer.prototype.getDates = function() {
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
-              text: bio.date_of_passing,
+              text: bio.meta.date_of_passing,
               data: this.getPath({ring: 8.2, startDeg: maxAge*years2deg-99.5, endDeg: 350})
            }),
 		  new Konva.Line({
@@ -225,7 +257,7 @@ GalleryLayer.prototype.scale = function (scale) {
 };
 GalleryLayer.prototype.draw = function () {
     var ageRE = /^age_(\d+)/;
-    var spriteFrames = window.sprites.frames;
+    var spriteFrames = bio.thumbs.frames;
 	var psImages = [];
 	var i;
 
@@ -238,10 +270,10 @@ GalleryLayer.prototype.draw = function () {
 
 	// create the array for PhotoSwipe
 	for(i=0; i < spriteFrames.length; i++) {
-		psImages.push(window.images[spriteFrames[i].filename])
+		psImages.push(bio.images[spriteFrames[i].filename])
 	}
 
-    var spriteSheet = new Image(window.sprites.meta.width, window.sprites.meta.width);
+    var spriteSheet = new Image(bio.thumbs.meta.width, bio.thumbs.meta.width);
 
 	var layer = this.layer,
 		images = this.images;
@@ -288,7 +320,7 @@ GalleryLayer.prototype.draw = function () {
         }
 		layer.draw()
     }
-    spriteSheet.src = window.sprites.meta.sprite_path;
+    spriteSheet.src = bio.url+bio.thumbs.meta.sprite_path;
 };
 
 function requestFullScreen(element) {
@@ -305,7 +337,7 @@ function requestFullScreen(element) {
     }
 }
 
-function drawChronus (){
+function drawChronus () {
   // draw the biochronus complete with dials and the gallery
     var container = document.getElementById('container');
     var header = document.getElementById('biocHeader');
@@ -314,8 +346,11 @@ function drawChronus (){
 	  layer,
       i;
 
+    // draw it only when all the data was downloaded
+    if (!(window.bio.meta && window.bio.images && window.bio.thumbs)) return;
+
     var dob = document.createElement('h1');
-    dob.innerHTML = bio.first_name + ' ' + bio.last_name;
+    dob.innerHTML = bio.meta.first_name + ' ' + window.bio.meta.last_name;
     header.appendChild(dob);
 
     var stage = new Konva.Stage({
@@ -350,13 +385,28 @@ function drawChronus (){
 
 }
 
+	
+
 document.addEventListener("DOMContentLoaded", function() {
     var welcome = document.getElementById('welcome');
     var footer = document.querySelector('footer');
     var bichronus = document.getElementById('biochronus');
+    bio.url = getParameterByName('u') || '/bios/local/';
 
     bichronus.style.display = 'none';
-	drawChronus();
+
+    getAjax(bio.url + '/bio.json', function (data) {
+        window.bio.meta = data;
+        drawChronus();
+    });
+    getAjax(bio.url + '/images.json', function (data) {
+        window.bio.images = data;
+        drawChronus();
+    });
+    getAjax(bio.url + '/thumbs.json', function (data) {
+        window.bio.thumbs = data;
+        drawChronus();
+    });
 	welcome.addEventListener("click", function () {
 			welcome.style.display = 'none';
 			footer.style.display = 'none';
