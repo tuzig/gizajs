@@ -1,6 +1,9 @@
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
  Konva */
+/*
+ * giza.js - perpetuating lives since 2018
+ */
 "use strict";
 
 var DIALS_COLOR = '#333'
@@ -30,9 +33,42 @@ function getPoint(age, ring) {
         y: stageRadius+Math.round(Math.sin(rad)*ringHeight*ring)
     };
 }
-
+// from https://plainjs.com/javascript/ajax/send-ajax-get-and-post-requests-47/
+function getAjax(url, callback) {
+	    var xhr = new XMLHttpRequest();
+	    xhr.addEventListener("load", function() {
+			var json;
+	        if (this.readyState > 3 && this.status === 200) {
+				try {
+					json = JSON.parse(this.responseText);
+				} catch(e) {
+					console.log('getAjax('+url+') got error: '+e);
+					callback(e);
+					return;
+				}
+				callback(json);
+				return;
+			}
+			callback(json);
+		});
+	    // xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	    xhr.open('GET', url);
+	    xhr.send();
+	    return xhr;
+}
+// from https://stackoverflow.com/a/901144
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
 /*
- * Our bottom layer - the table layer, complete with dials, spans and names
+ * Our bottom layer - the table layer, complete with dials, and arcs
+ * TODO: add buttons
  */
 var TableLayer = function(stage) {
 	this.stage = stage;
@@ -354,9 +390,22 @@ document.addEventListener("DOMContentLoaded", function() {
     var welcome = document.getElementById('welcome');
     var footer = document.querySelector('footer');
     var bichronus = document.getElementById('biochronus');
+    bio.url = getParameterByName('u') || '/bios/local/';
 
     bichronus.style.display = 'none';
-	drawChronus();
+
+    getAjax(bio.url + 'bio.json', function (data) {
+        window.bio.meta = data;
+        drawChronus();
+    });
+    getAjax(bio.url + 'images.json', function (data) {
+        window.bio.images = data;
+        drawChronus();
+    });
+    getAjax(bio.url + 'thumbs.json', function (data) {
+        window.bio.thumbs = data;
+        drawChronus();
+    });
 	welcome.addEventListener("click", function () {
 			welcome.style.display = 'none';
 			footer.style.display = 'none';
