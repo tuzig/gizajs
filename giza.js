@@ -394,7 +394,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var welcome = document.getElementById('welcome');
     var footer = document.querySelector('footer');
     var bichronus = document.getElementById('biochronus');
-    bio.url = getParameterByName('u') || '/bios/local/';
+    bio.url = getParameterByName('u') || 'bios/local/';
 
     bichronus.style.display = 'none';
 
