@@ -41,8 +41,8 @@ Once all the images you want have valid names, open a shell at the project
 root and run:
 
 ```bash
+$ pushd bios
 $ pipenv shell
-$ cd bios
 $ ./build.sh local <public url of the images folder>
 		age_14.jpg added to sprite
 		age_2.jpg added to sprite
@@ -50,20 +50,20 @@ $ ./build.sh local <public url of the images folder>
 Processing 'thumbs':
 Format 'json' for sprite 'thumbs' needs rebuild...
 Format 'img' for sprite 'thumbs' needs rebuild...
+$ popd
 ```
 
 The script creates 4 new files: a bios sample, and images dictionary,
 a thumbs sprite and thumbs json.
 
 ```
-bios/local
-|  thumbs.png
-|  thumbs.json
-|  images.json
-|  bio.json
-|  age_41.jpg
-|  age_14.jpg
-|  age_2.jpg
+$ cd bios/local
+$ ls -rt
+...
+bio.json
+images.json
+thumbs.png
+thumbs.json
 ```
 
 ### Adding the text
@@ -74,9 +74,9 @@ and the life spans of your hero.
 
 ## Runing it locally
 
-To run it locally you need a simple http server, like 
+To run it locally you need the simplest http server, like 
 `python3 -m http.server`. Once the server is running, point your browser 
-at http://localhost:8000 and start playing with gizajs.
+at http://localhost:8000 and start playing with your giza.
 
 ## Contribuiting
 
