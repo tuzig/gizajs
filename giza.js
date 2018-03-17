@@ -1,6 +1,9 @@
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
  Konva */
+/*
+ * gizajs - perpetue a life by making a it's biochronus
+ */
 "use strict";
 
 var DIALS_COLOR = '#333'
@@ -395,15 +398,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
     bichronus.style.display = 'none';
 
-    getAjax(bio.url + '/bio.json', function (data) {
+    getAjax(bio.url + 'bio.json', function (data) {
         window.bio.meta = data;
         drawChronus();
     });
-    getAjax(bio.url + '/images.json', function (data) {
+    getAjax(bio.url + 'images.json', function (data) {
         window.bio.images = data;
         drawChronus();
     });
-    getAjax(bio.url + '/thumbs.json', function (data) {
+    getAjax(bio.url + 'thumbs.json', function (data) {
         window.bio.thumbs = data;
         drawChronus();
     });
