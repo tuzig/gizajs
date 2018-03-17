@@ -1,2 +1,4 @@
 *.swp
 bios/local
+photoswipe.js
+konva.js
