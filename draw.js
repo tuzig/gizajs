@@ -14,7 +14,7 @@ var stageLen = 1000,
     maxAge = 95,
     years2deg = totalDeg / 95; // 95 is giza's age, should come from bio
 
-var bio;
+var bio = {};
 // START
 var gallery;
 
@@ -81,8 +81,8 @@ TableLayer.prototype.draw = function() {
 	// start with the dates and the dials
 	var shapes = this.getDates().concat(this.getDials());
 	//
-	for (var ring=0; ring < bio.spans.length; ring++) {
-		var ringSpans = bio.spans[ring];
+	for (var ring=0; ring < bio.meta.spans.length; ring++) {
+		var ringSpans = bio.meta.spans[ring];
 		for (i=0; i < ringSpans.length; i++) {
 		  var span = ringSpans[i];
 		  var spanShapes = this.getSpanShapes(span, 11-ring);
@@ -348,9 +348,13 @@ function drawChronus (){
     var ring,
       ringPeriods,
 	  layer,
+	  dob,
       i;
 
-    var dob = document.createElement('h1');
+	if (!(bio.meta && bio.images && bio.thumbs))
+		return
+
+    dob = document.createElement('h1');
     dob.innerHTML = bio.first_name + ' ' + bio.last_name;
     header.appendChild(dob);
 
