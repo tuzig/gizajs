@@ -261,7 +261,7 @@ GalleryLayer.prototype.scale = function (scale) {
 };
 GalleryLayer.prototype.draw = function () {
     var ageRE = /^age_(\d+)/;
-    var spriteFrames = window.sprites.frames;
+    var spriteFrames = bio.thumbs.frames;
 	var psImages = [];
 	var i;
 
@@ -274,10 +274,10 @@ GalleryLayer.prototype.draw = function () {
 
 	// create the array for PhotoSwipe
 	for(i=0; i < spriteFrames.length; i++) {
-		psImages.push(window.images[spriteFrames[i].filename])
+		psImages.push(bio.images[spriteFrames[i].filename])
 	}
 
-    var spriteSheet = new Image(window.sprites.meta.width, window.sprites.meta.width);
+    var spriteSheet = new Image(bio.thumbs.meta.width, bio.thumbs.meta.width);
 
 	var layer = this.layer,
 		images = this.images;
@@ -324,7 +324,7 @@ GalleryLayer.prototype.draw = function () {
         }
 		layer.draw()
     }
-    spriteSheet.src = window.sprites.meta.sprite_path;
+    spriteSheet.src = bio.url+bio.thumbs.meta.sprite_path;
 };
 
 function requestFullScreen(element) {
@@ -341,7 +341,7 @@ function requestFullScreen(element) {
     }
 }
 
-function drawChronus (){
+function drawChronus () {
   // draw the biochronus complete with dials and the gallery
     var container = document.getElementById('container');
     var header = document.getElementById('biocHeader');
@@ -351,8 +351,9 @@ function drawChronus (){
 	  dob,
       i;
 
-	if (!(bio.meta && bio.images && bio.thumbs))
-		return
+    // draw it only when all the data was downloaded
+	if (!(window.bio.meta && window.bio.images && window.bio.thumbs))
+		return;
 
     dob = document.createElement('h1');
     dob.innerHTML = bio.meta.first_name + ' ' + bio.meta.last_name;
