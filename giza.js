@@ -355,7 +355,7 @@ function drawChronus (){
 		return
 
     dob = document.createElement('h1');
-    dob.innerHTML = bio.first_name + ' ' + bio.last_name;
+    dob.innerHTML = bio.meta.first_name + ' ' + bio.meta.last_name;
     header.appendChild(dob);
 
     var stage = new Konva.Stage({
