@@ -71,8 +71,11 @@ function getParameterByName(name, url) {
  * TODO: add buttons
  */
 var TableLayer = function(stage) {
-	this.stage = stage;
+	this.stage = this.stage;
   	this.layer = new Konva.Layer();
+	this.arcsGroup = new Konva.Group();
+	this.textsGroup = new Konva.Group();
+	this.layer.add(this.arcsGroup, this.textsGroup);
 	stage.add(this.layer);
 };
 
@@ -85,21 +88,33 @@ TableLayer.prototype.draw = function() {
 		var ringSpans = bio.meta.spans[ring];
 		for (i=0; i < ringSpans.length; i++) {
 		  var span = ringSpans[i];
-		  var spanShapes = this.getSpanShapes(span, 11-ring);
-		  shapes = shapes.concat(spanShapes);
+		  this.addSpanShapes(span, 11-ring);
 		}
-	}
-
-	for (i=0; i < shapes.length; i++) {
-			this.layer.add(shapes[i]);
 	}
 
 	this.layer.draw();
 };
 
+TableLayer.prototype.scale = function (scale) {
+	var curPos;
+	var textPaths = this.textsGroup.getChildren();
+
+	this.arcsGroup.scale(scale)
+	// fix the texts
+	for (var i=0; i < textPaths.length; i++ ) {
+		var text = textPaths[i];
+		text.setAttrs({
+			x: this.layer.width()/2,
+			y: this.layer.height()/2,
+			data: this.getPath(text.pathConfig)
+		})
+
+	}
+};
 TableLayer.prototype.getPath = function(config) {
   // config is expected to have ring, startDeg & endDeg
   var myRingWidth = (config.ring+0.5) * ringHeight;
+  var scale = this.arcsGroup.scale();
 
   var deg, rad, x, y;
 
@@ -109,18 +124,19 @@ TableLayer.prototype.getPath = function(config) {
 
     
     rad = toRad(deg);
-    x = Math.round(Math.cos(rad)*myRingWidth);
-    y = Math.round(Math.sin(rad)*myRingWidth);
+    x = Math.round(Math.cos(rad)*myRingWidth)*scale.x;
+    y = Math.round(Math.sin(rad)*myRingWidth)*scale.y;
     ret += x+" "+y+" L ";
   }
   ret = ret.slice(0,-3);
   return ret;
 };
 
-TableLayer.prototype.getSpanShapes = function(span, ring) {
+TableLayer.prototype.addSpanShapes = function(span, ring) {
     var ageSpan = span.end_age-span.start_age,
-            endDeg = span.end_age*years2deg-90,
-      startDeg = span.start_age*years2deg-90;
+        endDeg = span.end_age*years2deg-90,
+		startDeg = span.start_age*years2deg-90,
+		pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg};
     var text, i;
 
  
@@ -130,8 +146,8 @@ TableLayer.prototype.getSpanShapes = function(span, ring) {
 	for (i=0; i < ageSpan; i=i+18) {
 		text += reverse(span.name) + '                             ';
 	}
-	return [
-          new Konva.Arc({
+	this.arcsGroup.add(
+		 new Konva.Arc({
             opacity: 0.3,
             angle: endDeg-startDeg,
             x: stageRadius,
@@ -142,19 +158,17 @@ TableLayer.prototype.getSpanShapes = function(span, ring) {
             stroke: '#222',
             strokeWidth: 3,
             rotation: startDeg
-          }),
-          new Konva.TextPath({
-              x: stageRadius,
-              y: stageRadius,
-              fill: '#222',
-              fontSize: (span.name == 'יד מרדכי')?20:32,
-              fontFamily: 'Assistant',
-              text: text,
-			  data: this.getPath(
-			  	{ring: ring, startDeg: startDeg, endDeg: endDeg}),
-              direction: 'rtl'
-		   })
-	];
+          }))
+	var text = new Konva.TextPath({
+			fill: '#222',
+			// fontSize: (span.name == 'יד מרדכי')?20:32,
+			fontSize: (span.name == 'יד מרדכי')?20:32,
+			fontFamily: 'Assistant',
+			text: text,
+			direction: 'rtl'
+		});
+	 text.pathConfig = pathConfig;
+	 this.textsGroup.add(text);
 };
 
 TableLayer.prototype.getDials = function() {
@@ -379,9 +393,8 @@ function drawChronus () {
 
     stage.width(stageLen * scale.x);
     stage.height(stageLen * scale.y);
-    tableLayer.layer.scale(scale);
+    tableLayer.scale(scale);
     galleryLayer.scale(scale);
-    galleryLayer.layer.draw();
     stage.visible(true);
     stage.draw();
   }
