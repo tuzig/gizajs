@@ -73,17 +73,23 @@ function getParameterByName(name, url) {
 var TableLayer = function(stage) {
 	this.stage = this.stage;
   	this.layer = new Konva.Layer();
+
 	this.arcsGroup = new Konva.Group();
 	this.textsGroup = new Konva.Group();
-	this.layer.add(this.arcsGroup, this.textsGroup);
+	this.dialsGroup = new Konva.Group();
+	this.datesGroup = new Konva.Group();
+    this.groups = [this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup];
+
+	this.layer.add(this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup); // this.groups);
 	stage.add(this.layer);
 };
 
 TableLayer.prototype.draw = function() {
 	var i, ring, ringSpans;
 	// start with the dates and the dials
-	var shapes = this.getDates().concat(this.getDials());
-	//
+	this.addDatesShapes();
+    this.addDialsShapes();
+	// draw the life spans
 	for (var ring=0; ring < bio.meta.spans.length; ring++) {
 		var ringSpans = bio.meta.spans[ring];
 		for (i=0; i < ringSpans.length; i++) {
@@ -97,20 +103,26 @@ TableLayer.prototype.draw = function() {
 
 TableLayer.prototype.scale = function (scale) {
 	var curPos;
-	var textPaths = this.textsGroup.getChildren();
+    var textPaths=this.textsGroup.getChildren()
+	// BUG: next line shoulw be uncommented 
+    // var textPaths=this.textsGroup.getChildren().concat(this.datesGroup.getChildren())
+
 
 	this.arcsGroup.scale(scale)
-	// fix the texts
+	this.dialsGroup.scale(scale)
+	// scaling the texts
 	for (var i=0; i < textPaths.length; i++ ) {
 		var text = textPaths[i];
-		text.setAttrs({
+        var attrs = {
 			x: this.layer.width()/2,
-			y: this.layer.height()/2,
-			data: this.getPath(text.pathConfig)
-		})
-
-	}
+			y: this.layer.height()/2
+        };
+        if (text.pathConfig)
+			attrs.data = this.getPath(text.pathConfig)
+		text.setAttrs(attrs)
+    }
 };
+
 TableLayer.prototype.getPath = function(config) {
   // config is expected to have ring, startDeg & endDeg
   var myRingWidth = (config.ring+0.5) * ringHeight;
@@ -171,7 +183,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 	 this.textsGroup.add(text);
 };
 
-TableLayer.prototype.getDials = function() {
+TableLayer.prototype.addDialsShapes = function() {
 	// returning 4 dials at 1/8. 3/8, 5/8 & 7/8. each dial is made from two 
 	// shapes - a line and a text.
     var fontSize = 30,
@@ -179,83 +191,78 @@ TableLayer.prototype.getDials = function() {
     var xs = [0.8, 0.8, -0.8, -0.8];
     var ys = [-0.8, 0.8, 0.8, -0.8];
     var ret =[], i, age, x, y;
+    // where's are the min-max dials?
+	var maxAgeDialStart = getPoint(maxAge, 11);
+	var maxAgeDialEnd = getPoint(maxAge, 9.5);
+	var minAgeDialStart = getPoint(0, 11);
+	var minAgeDialEnd = getPoint(0, 10.5);
     for (i=0; i < 4; i++) {
 		age = "בת\n"+Math.round((i*2+1)*maxAge/8);
 
 	//if (i===0) age = "בת\n"+age;
 
-	ret.push(
-		new Konva.Text({
-			// x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
-			x: stageRadius*(1+xs[i]*1.05),
-			y: stageRadius*(1+ys[i]*1.05),
-			fill: DIALS_COLOR,
-			fontSize: fontSize,
-			fontFamily: 'Rubik',
-			align: 'center',
-			text: age
-       }),
-       new Konva.Line({
-			points: [stageRadius*(1+xs[i]*0.93), stageRadius*(1+ys[i]*0.93),
-					 stageRadius*(1+xs[i]*0.63), stageRadius*(1+ys[i]*0.63)],
-			dash: [5, 5],
-			stroke: DIALS_COLOR,
-			strokeWidth: 4,
-			lineCap: 'round',
-			lineJoin: 'round'
+	this.dialsGroup.add(
+        new Konva.Text({
+            // x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
+            x: stageRadius*(1+xs[i]*1.05),
+            y: stageRadius*(1+ys[i]*1.05),
+            fill: DIALS_COLOR,
+            fontSize: fontSize,
+            fontFamily: 'Rubik',
+            align: 'center',
+            text: age
+        }),
+        new Konva.Line({
+            points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
+            dash: [5, 5],
+            stroke: DIALS_COLOR,
+            strokeWidth: 4,
+            lineCap: 'round',
+            lineJoin: 'round'
+        }),
+        new Konva.Line({
+            points: [minAgeDialStart.x, minAgeDialStart.y, minAgeDialEnd.x, minAgeDialEnd.y], 
+            dash: [5, 5],
+            stroke: DIALS_COLOR,
+            strokeWidth: 4,
+            lineCap: 'round',
+            lineJoin: 'round'
+        }),
+        new Konva.Line({
+            points: [stageRadius*(1+xs[i]*0.93), stageRadius*(1+ys[i]*0.93),
+                     stageRadius*(1+xs[i]*0.63), stageRadius*(1+ys[i]*0.63)],
+            dash: [5, 5],
+            stroke: DIALS_COLOR,
+            strokeWidth: 4,
+            lineCap: 'round',
+            lineJoin: 'round'
 		})
 	);
   }
   return ret;
 };
 
-TableLayer.prototype.getDates = function() {
+TableLayer.prototype.addDatesShapes = function() {
     var fontSize = 30;
-	var maxAgeDialStart = getPoint(maxAge, 11);
-	var maxAgeDialEnd = getPoint(maxAge, 9.5);
 
-	var minAgeDialStart = getPoint(0, 11);
-	var minAgeDialEnd = getPoint(0, 10.5);
-
-    return [
+    this.datesGroup.add(
           new Konva.TextPath({
-              x: stageRadius,
-              y: stageRadius,
               fill: DIALS_COLOR,
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
               text: bio.date_of_birth,
-              data: this.getPath({ring: 9.2, startDeg: -98, endDeg: 180}),
            }),
           new Konva.TextPath({
-              x: stageRadius,
-              y: stageRadius,
               fill: DIALS_COLOR,
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
               text: bio.date_of_passing,
-              data: this.getPath({ring: 8.2, startDeg: maxAge*years2deg-99.5, endDeg: 350})
-           }),
-		  new Konva.Line({
-				points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
-			    dash: [5, 5],
-				stroke: DIALS_COLOR,
-				strokeWidth: 4,
-				lineCap: 'round',
-				lineJoin: 'round'
-			}),
-		  new Konva.Line({
-				points: [minAgeDialStart.x, minAgeDialStart.y, minAgeDialEnd.x, minAgeDialEnd.y], 
-			    dash: [5, 5],
-				stroke: DIALS_COLOR,
-				strokeWidth: 4,
-				lineCap: 'round',
-				lineJoin: 'round'
-			})
-    ];
+           })
+    )
 };
+/* End of TableLayer */
 
 var GalleryLayer = function(stage) {
 	this.stage = stage;
