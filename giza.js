@@ -104,7 +104,8 @@ TableLayer.prototype.draw = function() {
 TableLayer.prototype.scale = function (scale) {
 	var curPos;
     var textPaths=this.textsGroup.getChildren()
-	// BUG: next line shoulw be uncommented 
+	// BUG: birth and passing dates are not showing
+    //      uncommenting the next line should fix it, but it fails miserably 
     // var textPaths=this.textsGroup.getChildren().concat(this.datesGroup.getChildren())
 
 
