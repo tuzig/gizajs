@@ -1,6 +1,9 @@
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
  Konva */
+/*
+ * giza.js - perpetuating lives since 2018
+ */
 "use strict";
 
 var DIALS_COLOR = '#333'
@@ -64,38 +67,66 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 /*
- * Our bottom layer - the table layer, complete with dials, spans and names
+ * Our bottom layer - the table layer, complete with dials, and arcs
+ * TODO: add buttons
  */
 var TableLayer = function(stage) {
-	this.stage = stage;
+	this.stage = this.stage;
   	this.layer = new Konva.Layer();
+
+	this.arcsGroup = new Konva.Group();
+	this.textsGroup = new Konva.Group();
+	this.dialsGroup = new Konva.Group();
+	this.datesGroup = new Konva.Group();
+    this.groups = [this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup];
+
+	this.layer.add(this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup); // this.groups);
 	stage.add(this.layer);
 };
 
 TableLayer.prototype.draw = function() {
 	var i, ring, ringSpans;
 	// start with the dates and the dials
-	var shapes = this.getDates().concat(this.getDials());
-	//
+	this.addDatesShapes();
+    this.addDialsShapes();
+	// draw the life spans
 	for (var ring=0; ring < bio.meta.spans.length; ring++) {
 		var ringSpans = bio.meta.spans[ring];
 		for (i=0; i < ringSpans.length; i++) {
 		  var span = ringSpans[i];
-		  var spanShapes = this.getSpanShapes(span, 11-ring);
-		  shapes = shapes.concat(spanShapes);
+		  this.addSpanShapes(span, 11-ring);
 		}
-	}
-
-	for (i=0; i < shapes.length; i++) {
-			this.layer.add(shapes[i]);
 	}
 
 	this.layer.draw();
 };
 
+TableLayer.prototype.scale = function (scale) {
+	var curPos;
+    var textPaths=this.textsGroup.getChildren()
+	// BUG: next line shoulw be uncommented 
+    // var textPaths=this.textsGroup.getChildren().concat(this.datesGroup.getChildren())
+
+
+	this.arcsGroup.scale(scale)
+	this.dialsGroup.scale(scale)
+	// scaling the texts
+	for (var i=0; i < textPaths.length; i++ ) {
+		var text = textPaths[i];
+        var attrs = {
+			x: this.layer.width()/2,
+			y: this.layer.height()/2
+        };
+        if (text.pathConfig)
+			attrs.data = this.getPath(text.pathConfig)
+		text.setAttrs(attrs)
+    }
+};
+
 TableLayer.prototype.getPath = function(config) {
   // config is expected to have ring, startDeg & endDeg
   var myRingWidth = (config.ring+0.5) * ringHeight;
+  var scale = this.arcsGroup.scale();
 
   var deg, rad, x, y;
 
@@ -105,18 +136,19 @@ TableLayer.prototype.getPath = function(config) {
 
     
     rad = toRad(deg);
-    x = Math.round(Math.cos(rad)*myRingWidth);
-    y = Math.round(Math.sin(rad)*myRingWidth);
+    x = Math.round(Math.cos(rad)*myRingWidth)*scale.x;
+    y = Math.round(Math.sin(rad)*myRingWidth)*scale.y;
     ret += x+" "+y+" L ";
   }
   ret = ret.slice(0,-3);
   return ret;
 };
 
-TableLayer.prototype.getSpanShapes = function(span, ring) {
+TableLayer.prototype.addSpanShapes = function(span, ring) {
     var ageSpan = span.end_age-span.start_age,
-            endDeg = span.end_age*years2deg-90,
-      startDeg = span.start_age*years2deg-90;
+        endDeg = span.end_age*years2deg-90,
+		startDeg = span.start_age*years2deg-90,
+		pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg};
     var text, i;
 
  
@@ -126,8 +158,8 @@ TableLayer.prototype.getSpanShapes = function(span, ring) {
 	for (i=0; i < ageSpan; i=i+18) {
 		text += reverse(span.name) + '                             ';
 	}
-	return [
-          new Konva.Arc({
+	this.arcsGroup.add(
+		 new Konva.Arc({
             opacity: 0.3,
             angle: endDeg-startDeg,
             x: stageRadius,
@@ -138,22 +170,20 @@ TableLayer.prototype.getSpanShapes = function(span, ring) {
             stroke: '#222',
             strokeWidth: 3,
             rotation: startDeg
-          }),
-          new Konva.TextPath({
-              x: stageRadius,
-              y: stageRadius,
-              fill: '#222',
-              fontSize: (span.name == 'יד מרדכי')?20:32,
-              fontFamily: 'Assistant',
-              text: text,
-			  data: this.getPath(
-			  	{ring: ring, startDeg: startDeg, endDeg: endDeg}),
-              direction: 'rtl'
-		   })
-	];
+          }))
+	var text = new Konva.TextPath({
+			fill: '#222',
+			// fontSize: (span.name == 'יד מרדכי')?20:32,
+			fontSize: (span.name == 'יד מרדכי')?20:32,
+			fontFamily: 'Assistant',
+			text: text,
+			direction: 'rtl'
+		});
+	 text.pathConfig = pathConfig;
+	 this.textsGroup.add(text);
 };
 
-TableLayer.prototype.getDials = function() {
+TableLayer.prototype.addDialsShapes = function() {
 	// returning 4 dials at 1/8. 3/8, 5/8 & 7/8. each dial is made from two 
 	// shapes - a line and a text.
     var fontSize = 30,
@@ -161,83 +191,78 @@ TableLayer.prototype.getDials = function() {
     var xs = [0.8, 0.8, -0.8, -0.8];
     var ys = [-0.8, 0.8, 0.8, -0.8];
     var ret =[], i, age, x, y;
+    // where's are the min-max dials?
+	var maxAgeDialStart = getPoint(maxAge, 11);
+	var maxAgeDialEnd = getPoint(maxAge, 9.5);
+	var minAgeDialStart = getPoint(0, 11);
+	var minAgeDialEnd = getPoint(0, 10.5);
     for (i=0; i < 4; i++) {
 		age = "בת\n"+Math.round((i*2+1)*maxAge/8);
 
 	//if (i===0) age = "בת\n"+age;
 
-	ret.push(
-		new Konva.Text({
-			// x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
-			x: stageRadius*(1+xs[i]*1.05),
-			y: stageRadius*(1+ys[i]*1.05),
-			fill: DIALS_COLOR,
-			fontSize: fontSize,
-			fontFamily: 'Rubik',
-			align: 'center',
-			text: age
-       }),
-       new Konva.Line({
-			points: [stageRadius*(1+xs[i]*0.93), stageRadius*(1+ys[i]*0.93),
-					 stageRadius*(1+xs[i]*0.63), stageRadius*(1+ys[i]*0.63)],
-			dash: [5, 5],
-			stroke: DIALS_COLOR,
-			strokeWidth: 4,
-			lineCap: 'round',
-			lineJoin: 'round'
+	this.dialsGroup.add(
+        new Konva.Text({
+            // x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
+            x: stageRadius*(1+xs[i]*1.05),
+            y: stageRadius*(1+ys[i]*1.05),
+            fill: DIALS_COLOR,
+            fontSize: fontSize,
+            fontFamily: 'Rubik',
+            align: 'center',
+            text: age
+        }),
+        new Konva.Line({
+            points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
+            dash: [5, 5],
+            stroke: DIALS_COLOR,
+            strokeWidth: 4,
+            lineCap: 'round',
+            lineJoin: 'round'
+        }),
+        new Konva.Line({
+            points: [minAgeDialStart.x, minAgeDialStart.y, minAgeDialEnd.x, minAgeDialEnd.y], 
+            dash: [5, 5],
+            stroke: DIALS_COLOR,
+            strokeWidth: 4,
+            lineCap: 'round',
+            lineJoin: 'round'
+        }),
+        new Konva.Line({
+            points: [stageRadius*(1+xs[i]*0.93), stageRadius*(1+ys[i]*0.93),
+                     stageRadius*(1+xs[i]*0.63), stageRadius*(1+ys[i]*0.63)],
+            dash: [5, 5],
+            stroke: DIALS_COLOR,
+            strokeWidth: 4,
+            lineCap: 'round',
+            lineJoin: 'round'
 		})
 	);
   }
   return ret;
 };
 
-TableLayer.prototype.getDates = function() {
+TableLayer.prototype.addDatesShapes = function() {
     var fontSize = 30;
-	var maxAgeDialStart = getPoint(maxAge, 11);
-	var maxAgeDialEnd = getPoint(maxAge, 9.5);
 
-	var minAgeDialStart = getPoint(0, 11);
-	var minAgeDialEnd = getPoint(0, 10.5);
-
-    return [
+    this.datesGroup.add(
           new Konva.TextPath({
-              x: stageRadius,
-              y: stageRadius,
               fill: DIALS_COLOR,
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
-              text: bio.meta.date_of_birth,
-              data: this.getPath({ring: 9.2, startDeg: -98, endDeg: 180}),
+              text: bio.date_of_birth,
            }),
           new Konva.TextPath({
-              x: stageRadius,
-              y: stageRadius,
               fill: DIALS_COLOR,
               fontSize: fontSize,
               fontFamily: 'Assistant',
 			  fontStyle: 'bold',
-              text: bio.meta.date_of_passing,
-              data: this.getPath({ring: 8.2, startDeg: maxAge*years2deg-99.5, endDeg: 350})
-           }),
-		  new Konva.Line({
-				points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
-			    dash: [5, 5],
-				stroke: DIALS_COLOR,
-				strokeWidth: 4,
-				lineCap: 'round',
-				lineJoin: 'round'
-			}),
-		  new Konva.Line({
-				points: [minAgeDialStart.x, minAgeDialStart.y, minAgeDialEnd.x, minAgeDialEnd.y], 
-			    dash: [5, 5],
-				stroke: DIALS_COLOR,
-				strokeWidth: 4,
-				lineCap: 'round',
-				lineJoin: 'round'
-			})
-    ];
+              text: bio.date_of_passing,
+           })
+    )
 };
+/* End of TableLayer */
 
 var GalleryLayer = function(stage) {
 	this.stage = stage;
@@ -344,13 +369,15 @@ function drawChronus () {
     var ring,
       ringPeriods,
 	  layer,
+	  dob,
       i;
 
     // draw it only when all the data was downloaded
-    if (!(window.bio.meta && window.bio.images && window.bio.thumbs)) return;
+	if (!(window.bio.meta && window.bio.images && window.bio.thumbs))
+		return;
 
-    var dob = document.createElement('h1');
-    dob.innerHTML = bio.meta.first_name + ' ' + window.bio.meta.last_name;
+    dob = document.createElement('h1');
+    dob.innerHTML = bio.meta.first_name + ' ' + bio.meta.last_name;
     header.appendChild(dob);
 
     var stage = new Konva.Stage({
@@ -373,9 +400,8 @@ function drawChronus () {
 
     stage.width(stageLen * scale.x);
     stage.height(stageLen * scale.y);
-    tableLayer.layer.scale(scale);
+    tableLayer.scale(scale);
     galleryLayer.scale(scale);
-    galleryLayer.layer.draw();
     stage.visible(true);
     stage.draw();
   }
@@ -385,25 +411,23 @@ function drawChronus () {
 
 }
 
-	
-
 document.addEventListener("DOMContentLoaded", function() {
     var welcome = document.getElementById('welcome');
     var footer = document.querySelector('footer');
     var bichronus = document.getElementById('biochronus');
-    bio.url = getParameterByName('u') || '/bios/local/';
+    bio.url = getParameterByName('u') || 'bios/local/';
 
     bichronus.style.display = 'none';
 
-    getAjax(bio.url + '/bio.json', function (data) {
+    getAjax(bio.url + 'bio.json', function (data) {
         window.bio.meta = data;
         drawChronus();
     });
-    getAjax(bio.url + '/images.json', function (data) {
+    getAjax(bio.url + 'images.json', function (data) {
         window.bio.images = data;
         drawChronus();
     });
-    getAjax(bio.url + '/thumbs.json', function (data) {
+    getAjax(bio.url + 'thumbs.json', function (data) {
         window.bio.thumbs = data;
         drawChronus();
     });
