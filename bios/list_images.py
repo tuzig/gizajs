@@ -22,7 +22,7 @@ for filename in os.listdir(args.dir):
         continue
     im = Image.open(os.path.join(args.dir, filename))
     o[filename] = {
-        "src": args.url + filename,
+        "src": '/'.join((args.url, filename)),
         "w": im.size[0],
         "h": im.size[1],
     }
