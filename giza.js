@@ -71,6 +71,7 @@ function getParameterByName(name, url) {
  * TODO: add buttons
  */
 var TableLayer = function(stage) {
+	this.currentScale = {x:1,y:1}
 	this.stage = this.stage;
   	this.layer = new Konva.Layer();
 
@@ -102,26 +103,26 @@ TableLayer.prototype.draw = function() {
 };
 
 TableLayer.prototype.scale = function (scale) {
-	var curPos;
-    var textPaths=this.textsGroup.getChildren()
-	// BUG: birth and passing dates are not showing
-    //      uncommenting the next line should fix it, but it fails miserably 
-    // var textPaths=this.textsGroup.getChildren().concat(this.datesGroup.getChildren())
+	this.arcsGroup.scale(scale);
+	this.dialsGroup.scale(scale);
 
-
-	this.arcsGroup.scale(scale)
-	this.dialsGroup.scale(scale)
-	// scaling the texts
-	for (var i=0; i < textPaths.length; i++ ) {
-		var text = textPaths[i];
+	// scaling the movingShapes
+	var movingShapes = new Array;
+	movingShapes = this.textsGroup.getChildren().slice();
+	movingShapes.push(this.dob);
+	movingShapes.push(this.dop);
+	for (var i=0; i < movingShapes.length; i++ ) {
+		var path = movingShapes[i];
         var attrs = {
 			x: this.layer.width()/2,
 			y: this.layer.height()/2
         };
-        if (text.pathConfig)
-			attrs.data = this.getPath(text.pathConfig)
-		text.setAttrs(attrs)
+        if (path.pathConfig)
+			attrs.data = this.getPath(path.pathConfig)
+		path.setAttrs(attrs)
     }
+	this.currentScale = scale;
+	this.layer.draw();
 };
 
 TableLayer.prototype.getPath = function(config) {
@@ -149,8 +150,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
     var ageSpan = span.end_age-span.start_age,
         endDeg = span.end_age*years2deg-90,
 		startDeg = span.start_age*years2deg-90,
-		pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg};
-    var text, i;
+        text, i;
 
  
   // a span arc is made of an arc the size of the span and the name
@@ -159,6 +159,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 	for (i=0; i < ageSpan; i=i+18) {
 		text += reverse(span.name) + '                             ';
 	}
+	// add the arc 
 	this.arcsGroup.add(
 		 new Konva.Arc({
             opacity: 0.3,
@@ -172,6 +173,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
             strokeWidth: 3,
             rotation: startDeg
           }))
+	// add the arc's text
 	var text = new Konva.TextPath({
 			fill: '#222',
 			// fontSize: (span.name == 'יד מרדכי')?20:32,
@@ -180,7 +182,8 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 			text: text,
 			direction: 'rtl'
 		});
-	 text.pathConfig = pathConfig;
+	 text.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
+	 				    group:this.textsGroup};
 	 this.textsGroup.add(text);
 };
 
@@ -246,22 +249,26 @@ TableLayer.prototype.addDialsShapes = function() {
 TableLayer.prototype.addDatesShapes = function() {
     var fontSize = 30;
 
-    this.datesGroup.add(
-          new Konva.TextPath({
-              fill: DIALS_COLOR,
-              fontSize: fontSize,
-              fontFamily: 'Assistant',
-			  fontStyle: 'bold',
-              text: bio.date_of_birth,
-           }),
-          new Konva.TextPath({
-              fill: DIALS_COLOR,
-              fontSize: fontSize,
-              fontFamily: 'Assistant',
-			  fontStyle: 'bold',
-              text: bio.date_of_passing,
-           })
-    )
+    this.dob = new Konva.TextPath({
+								  fill: DIALS_COLOR,
+								  fontSize: fontSize,
+								  fontFamily: 'Assistant',
+								  fontStyle: 'bold',
+								  text: bio.meta.date_of_birth,
+								  }),
+    this.dop = new Konva.TextPath({
+								  fill: DIALS_COLOR,
+								  fontSize: fontSize,
+								  fontFamily: 'Assistant',
+								  fontStyle: 'bold',
+								  text: bio.meta.date_of_passing
+								 });
+	this.dob.pathConfig = {ring: 9.5, startDeg: -96, endDeg: 100.4,
+						   group: this.datesGroup};
+	this.dop.pathConfig = {ring: 8.5, startDeg: -106, endDeg: 0.4,
+						   group: this.datesGroup};
+
+    this.datesGroup.add(this.dob, this.dop);
 };
 /* End of TableLayer */
 
@@ -273,8 +280,6 @@ var GalleryLayer = function(stage) {
 };
 
 GalleryLayer.prototype.scale = function (scale) {
-	var curPos;
-
 	for (var i=0; i < this.images.length; i++) {
 		this.images[i].x(this.images[i].loc.x*scale.x);
 		this.images[i].y(this.images[i].loc.y*scale.y);
@@ -370,16 +375,16 @@ function drawChronus () {
     var ring,
       ringPeriods,
 	  layer,
-	  dob,
+	  name,
       i;
 
     // draw it only when all the data was downloaded
 	if (!(window.bio.meta && window.bio.images && window.bio.thumbs))
 		return;
 
-    dob = document.createElement('h1');
-    dob.innerHTML = bio.meta.first_name + ' ' + bio.meta.last_name;
-    header.appendChild(dob);
+    name = document.createElement('h1');
+    name.innerHTML = bio.meta.first_name + ' ' + bio.meta.last_name;
+    header.appendChild(name);
 
     var stage = new Konva.Stage({
         container: 'container',
@@ -408,7 +413,6 @@ function drawChronus () {
   }
   window.addEventListener('resize', fitStage2Container);
   document.body.onfullscreenchange = fitStage2Container;
-  // make it fullscreen
 
 }
 
@@ -436,6 +440,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			welcome.style.display = 'none';
 			footer.style.display = 'none';
 			bichronus.style.display = '';
+			// make it fullscreen
 		    requestFullScreen(document.body);
 	});
 });
