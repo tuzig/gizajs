@@ -1,4 +1,4 @@
 *.swp
-bios/local
+bios/local/
 photoswipe.js
 konva.js

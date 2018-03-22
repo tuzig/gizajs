@@ -1,6 +1,6 @@
 # giza.js
 
-    In memory of Giza Goldfarb, @daonb's grandmother may her sole rest in peace
+    In memory of Giza Goldfarb, @daonb's grandmother may her soul rest in peace
 
 This is a shot at displaying a *Bio Chronus* - a life's chronology in
 single screen.
