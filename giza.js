@@ -1,12 +1,12 @@
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
- Konva */
+ Konva, PhotoSwipe, PhotoSwipeUI_Default*/
 /*
  * giza.js - perpetuating lives since 2018
  */
 "use strict";
 
-var DIALS_COLOR = '#333'
+var DIALS_COLOR = '#333';
 var stageLen = 1000,
     stageRadius = stageLen / 2,
     ringHeight = stageRadius / 12,
@@ -71,7 +71,7 @@ function getParameterByName(name, url) {
  * TODO: add buttons
  */
 var TableLayer = function(stage) {
-	this.currentScale = {x:1,y:1}
+	this.currentScale = {x:1,y:1};
 	this.stage = this.stage;
   	this.layer = new Konva.Layer();
 
@@ -91,8 +91,8 @@ TableLayer.prototype.draw = function() {
 	this.addDatesShapes();
     this.addDialsShapes();
 	// draw the life spans
-	for (var ring=0; ring < bio.meta.spans.length; ring++) {
-		var ringSpans = bio.meta.spans[ring];
+	for (ring=0; ring < bio.meta.spans.length; ring++) {
+		ringSpans = bio.meta.spans[ring];
 		for (i=0; i < ringSpans.length; i++) {
 		  var span = ringSpans[i];
 		  this.addSpanShapes(span, 11-ring);
@@ -107,7 +107,7 @@ TableLayer.prototype.scale = function (scale) {
 	this.dialsGroup.scale(scale);
 
 	// scaling the movingShapes
-	var movingShapes = new Array;
+	var movingShapes;
 	movingShapes = this.textsGroup.getChildren().slice();
 	movingShapes.push(this.dob);
 	movingShapes.push(this.dop);
@@ -118,8 +118,8 @@ TableLayer.prototype.scale = function (scale) {
 			y: this.layer.height()/2
         };
         if (path.pathConfig)
-			attrs.data = this.getPath(path.pathConfig)
-		path.setAttrs(attrs)
+			attrs.data = this.getPath(path.pathConfig);
+		path.setAttrs(attrs);
     }
 	this.currentScale = scale;
 	this.layer.draw();
@@ -172,9 +172,9 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
             stroke: '#222',
             strokeWidth: 3,
             rotation: startDeg
-          }))
+          }));
 	// add the arc's text
-	var text = new Konva.TextPath({
+	text = new Konva.TextPath({
 			fill: '#222',
 			// fontSize: (span.name == 'יד מרדכי')?20:32,
 			fontSize: (span.name == 'יד מרדכי')?20:32,
@@ -255,7 +255,7 @@ TableLayer.prototype.addDatesShapes = function() {
 								  fontFamily: 'Assistant',
 								  fontStyle: 'bold',
 								  text: bio.meta.date_of_birth,
-								  }),
+								  });
     this.dop = new Konva.TextPath({
 								  fill: DIALS_COLOR,
 								  fontSize: fontSize,
@@ -300,9 +300,8 @@ GalleryLayer.prototype.draw = function () {
     });
 
 	// create the array for PhotoSwipe
-	for(i=0; i < spriteFrames.length; i++) {
-		psImages.push(bio.images[spriteFrames[i].filename])
-	}
+	for(i=0; i < spriteFrames.length; i++)
+		psImages.push(bio.images[spriteFrames[i].filename]);
 
     var spriteSheet = new Image(bio.thumbs.meta.width, bio.thumbs.meta.width);
 
@@ -342,15 +341,15 @@ GalleryLayer.prototype.draw = function () {
 					  PhotoSwipeUI_Default, psImages, {index: this.i } );
 				  gallery.init();
 
-			})
+			});
 			images.push(img);
 			layer.add(img);
             ring++;
             if (ring === ringMax)
                 ring = ringMin;
         }
-		layer.draw()
-    }
+		layer.draw();
+    };
     spriteSheet.src = bio.url+bio.thumbs.meta.sprite_path;
 };
 
@@ -360,11 +359,6 @@ function requestFullScreen(element) {
 
     if (requestMethod) { // Native full screen.
         requestMethod.call(element);
-    } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-        var wscript = new ActiveXObject("WScript.Shell");
-        if (wscript !== null) {
-            wscript.SendKeys("{F11}");
-        }
     }
 }
 
