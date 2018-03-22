@@ -410,6 +410,51 @@ function drawChronus () {
 
 }
 
+function drawWelcome(welcome) {
+	var section, elm;
+
+	section = document.createElement('section');
+	section.className = 'centered';
+	welcome.appendChild(section);
+	elm = document.createElement('h1');
+	elm.innerHTML = bio.meta.first_name + ' ' + bio.meta.last_name;
+	section.appendChild(elm);
+	if (bio.meta.more_name) {
+		elm = document.createElement('h1');
+		elm.innerHTML = bio.meta.more_name;
+		section.appendChild(elm);
+	}
+	if (bio.meta.date_of_birth_he) {
+		elm = document.createElement('h2');
+		elm.innerHTML = bio.meta.date_of_birth_he + ' - ' + bio.meta.date_of_passing_he;
+		section.appendChild(elm);
+	}
+	elm = document.createElement('h2');
+	elm.style.direction = 'ltr';
+	elm.innerHTML = bio.meta.date_of_birth + ' - ' + bio.meta.date_of_passing;
+	section.appendChild(elm);
+	elm = document.createElement('h2');
+	elm.innerHTML = '&#10048;';
+	section.appendChild(elm);
+	elm = document.createElement('h2');
+	elm.innerHTML = (bio.meta.sex=='F')?'תהי נשמתה צרורה':'תהי נשמתו צרורה';
+	section.appendChild(elm);
+	elm = document.createElement('h2');
+	elm.innerHTML = 'בצרור החיים';
+	section.appendChild(elm);
+	elm = document.createElement('button');
+	elm.className = 'enter';
+	elm.innerHTML = (bio.meta.sex=='F')?'לזכרה':'לזכרו';
+	section.appendChild(elm);
+	section = document.createElement('section');
+	section.className = 'centered';
+	welcome.appendChild(section);
+	elm = document.createElement('img');
+	elm.width = 350;
+	elm.src = bio.meta.cover_photo;
+	elm.alt = 'cover photo for '+bio.meta.first_name;
+	section.appendChild(elm);
+}
 document.addEventListener("DOMContentLoaded", function() {
     var welcome = document.getElementById('welcome');
     var footer = document.querySelector('footer');
@@ -420,6 +465,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     getAjax(bio.url + 'bio.json', function (data) {
         window.bio.meta = data;
+		// create the welcome screen
+		drawWelcome(welcome);
+
+
         drawChronus();
     });
     getAjax(bio.url + 'images.json', function (data) {
@@ -430,6 +479,7 @@ document.addEventListener("DOMContentLoaded", function() {
         window.bio.thumbs = data;
         drawChronus();
     });
+
 	welcome.addEventListener("click", function () {
 			welcome.style.display = 'none';
 			footer.style.display = 'none';
