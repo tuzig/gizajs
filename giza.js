@@ -103,6 +103,7 @@ TableLayer.prototype.draw = function() {
 };
 
 TableLayer.prototype.scale = function (scale) {
+	var fontScale = Math.min(scale.x, scale.y);
 	this.arcsGroup.scale(scale);
 	this.dialsGroup.scale(scale);
 
@@ -115,11 +116,13 @@ TableLayer.prototype.scale = function (scale) {
 		var path = movingShapes[i];
         var attrs = {
 			x: this.layer.width()/2,
-			y: this.layer.height()/2
+			y: this.layer.height()/2,
+			fontSize: 40*fontScale
         };
         if (path.pathConfig)
 			attrs.data = this.getPath(path.pathConfig);
 		path.setAttrs(attrs);
+		console.log(path.getClientRect())
     }
 	this.currentScale = scale;
 	this.layer.draw();
@@ -159,6 +162,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 	for (i=0; i < ageSpan; i=i+18) {
 		text += reverse(span.name) + '                             ';
 	}
+	text = reverse(span.name)
 	// add the arc 
 	this.arcsGroup.add(
 		 new Konva.Arc({
