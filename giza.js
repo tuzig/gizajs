@@ -116,13 +116,13 @@ TableLayer.prototype.scale = function (scale) {
 		var path = movingShapes[i];
         var attrs = {
 			x: this.layer.width()/2,
-			y: this.layer.height()/2,
-			fontSize: 40*fontScale
+			y: this.layer.height()/2
         };
         if (path.pathConfig)
 			attrs.data = this.getPath(path.pathConfig);
+		if (path.initialFontSize)
+			attrs.fontSize = path.initialFontSize*fontScale;
 		path.setAttrs(attrs);
-		console.log(path.getClientRect())
     }
 	this.currentScale = scale;
 	this.layer.draw();
@@ -153,6 +153,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
     var ageSpan = span.end_age-span.start_age,
         endDeg = span.end_age*years2deg-90,
 		startDeg = span.start_age*years2deg-90,
+		fontSize,
         text, i;
 
  
@@ -162,7 +163,6 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 	for (i=0; i < ageSpan; i=i+18) {
 		text += reverse(span.name) + '                             ';
 	}
-	text = reverse(span.name)
 	// add the arc 
 	this.arcsGroup.add(
 		 new Konva.Arc({
@@ -178,14 +178,16 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
             rotation: startDeg
           }));
 	// add the arc's text
+	fontSize = (span.name == 'יד מרדכי')?24:40;
 	text = new Konva.TextPath({
 			fill: '#222',
 			// fontSize: (span.name == 'יד מרדכי')?20:32,
-			fontSize: (span.name == 'יד מרדכי')?20:32,
 			fontFamily: 'Assistant',
 			text: text,
+			fontSize: fontSize,
 			direction: 'rtl'
 		});
+	 text.initialFontSize = fontSize;
 	 text.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
 	 				    group:this.textsGroup};
 	 this.textsGroup.add(text);
