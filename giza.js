@@ -14,6 +14,12 @@ var stageLen = 1000,
     maxAge = 95,
     years2deg = totalDeg / 95; // 95 is giza's age, should come from bio
 
+var chronusStage = new Konva.Stage({
+										container: 'container',
+										width: container.offsetWidth,
+										height: window.innerHeight,
+										visible: true 
+								  });
 var bio = {};
 // START
 var gallery;
@@ -153,15 +159,26 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
     var ageSpan = span.end_age-span.start_age,
         endDeg = span.end_age*years2deg-90,
 		startDeg = span.start_age*years2deg-90,
+		name,
 		fontSize,
-        text, i;
+		glyphRotation,
+		text,
+		textShape,
+		i;
 
  
-  // a span arc is made of an arc the size of the span and the name
-  // of the span written inside
+	if (startDeg > 0 && startDeg < 180) {
+		glyphRotation = 180;
+		name = span.name;
+		// TODO: remove the next line when TextPath supports glyphRotation
+		name = reverse(span.name);
+	} else {
+		glyphRotation = 0;
+		name = reverse(span.name);
+	}
 	text = '';
 	for (i=0; i < ageSpan; i=i+18) {
-		text += reverse(span.name) + '                             ';
+		text += name + '                             ';
 	}
 	// add the arc 
 	this.arcsGroup.add(
@@ -179,18 +196,18 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
           }));
 	// add the arc's text
 	fontSize = (span.name == 'יד מרדכי')?24:40;
-	text = new Konva.TextPath({
+	textShape = new Konva.TextPath({
 			fill: '#222',
 			// fontSize: (span.name == 'יד מרדכי')?20:32,
 			fontFamily: 'Assistant',
 			text: text,
 			fontSize: fontSize,
-			direction: 'rtl'
+			glyphRotation: glyphRotation
 		});
-	 text.initialFontSize = fontSize;
-	 text.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
+	 textShape.initialFontSize = fontSize;
+	 textShape.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
 	 				    group:this.textsGroup};
-	 this.textsGroup.add(text);
+	 this.textsGroup.add(textShape);
 };
 
 TableLayer.prototype.addDialsShapes = function() {
@@ -293,9 +310,10 @@ GalleryLayer.prototype.scale = function (scale) {
 	this.layer.draw();
 };
 GalleryLayer.prototype.draw = function () {
+	var that = this;
     var ageRE = /^age_(\d+)/;
     var spriteFrames = bio.thumbs.frames;
-	var psImages = [];
+	this.psImages = [];
 	var i;
 
     // sort the thumbs according to age
@@ -307,7 +325,7 @@ GalleryLayer.prototype.draw = function () {
 
 	// create the array for PhotoSwipe
 	for(i=0; i < spriteFrames.length; i++)
-		psImages.push(bio.images[spriteFrames[i].filename]);
+		this.psImages.push(bio.images[spriteFrames[i].filename]);
 
     var spriteSheet = new Image(bio.thumbs.meta.width, bio.thumbs.meta.width);
 
@@ -344,8 +362,10 @@ GalleryLayer.prototype.draw = function () {
 			img.loc = loc;
 			img.on('mouseup touchend', function() {
 				  gallery = new PhotoSwipe(document.getElementById('photos'),
-					  PhotoSwipeUI_Default, psImages, {index: this.i } );
+					  PhotoSwipeUI_Default, that.psImages, {index: this.i } );
+				  //TODO: capture the on exit and carry on with the drawing
 				  gallery.init();
+
 
 			});
 			images.push(img);
@@ -368,9 +388,8 @@ function requestFullScreen(element) {
     }
 }
 
-function drawChronus () {
+function drawChronus (stage) {
   // draw the biochronus complete with dials and the gallery
-    var container = document.getElementById('container');
     var header = document.getElementById('biocHeader');
     var ring,
       ringPeriods,
@@ -378,20 +397,10 @@ function drawChronus () {
 	  name,
       i;
 
-    // draw it only when all the data was downloaded
-	if (!(window.bio.meta && window.bio.images && window.bio.thumbs))
-		return;
-
+	//TODO: make the name konva based
     name = document.createElement('h1');
     name.innerHTML = bio.meta.first_name + ' ' + bio.meta.last_name;
     header.appendChild(name);
-
-    var stage = new Konva.Stage({
-        container: 'container',
-        width: container.offsetWidth,
-        height: window.innerHeight,
-        visible: false // we'll show it when we fit it into the page
-    });
 
   var tableLayer = new TableLayer(stage);
   tableLayer.draw();
@@ -399,7 +408,7 @@ function drawChronus () {
   var galleryLayer = new GalleryLayer(stage);
   galleryLayer.draw();
 
-  function fitStage2Container() {
+function fitStage2Container() {
 
     var scale = {x: window.innerWidth / stageLen,
 				 y: (window.innerHeight * 0.91) / stageLen};
@@ -408,11 +417,12 @@ function drawChronus () {
     stage.height(stageLen * scale.y);
     tableLayer.scale(scale);
     galleryLayer.scale(scale);
-    stage.visible(true);
     stage.draw();
   }
   window.addEventListener('resize', fitStage2Container);
   document.body.onfullscreenchange = fitStage2Container;
+  return {table: tableLayer,
+  		  gallery: galleryLayer	};
 
 }
 
@@ -461,36 +471,73 @@ function drawWelcome(welcome) {
 	elm.alt = 'cover photo for '+bio.meta.first_name;
 	section.appendChild(elm);
 }
+
+function gotoState(state, msg) {
+    // draw it only when all the data was downloaded
+    var welcome = document.getElementById('welcome');
+	var footer = document.querySelector('footer');
+	var biochronus = document.getElementById('biochronus');
+	var container = document.getElementById('container');
+
+	if (!(window.bio.meta && window.bio.images && window.bio.thumbs))
+		return;
+
+	console.log('going to change state to ' + state);
+	// all the data is here draw the chronus
+	if (state == 'initial') {
+		biochronus.style.display = 'none';
+		var chronus = drawChronus(chronusStage);
+		// the url can be of a photo id'd at the hash
+		if (window.location.hash) {
+			state = 'photo';
+			gallery = new PhotoSwipe(document.getElementById('photos'),
+									 PhotoSwipeUI_Default,
+									 chronus.gallery.psImages);
+			gallery.init();
+			gallery.listen('close', function () {
+				gotoState('visible');
+			});
+		}
+		else
+			gotoState('welcome');
+	}
+	else if (state == 'welcome') {
+		biochronus.style.display = 'none';
+		welcome.style.display = '';
+		footer.style.display = '';
+		welcome.addEventListener("click", function () {
+				gotoState('visible');
+		});
+	}
+	else if (state == 'visible') {
+		welcome.style.display = 'none';
+		footer.style.display = 'none';
+		biochronus.style.display = '';
+		container.style.display = '';
+		// make it fullscreen
+		requestFullScreen(document.body);
+	}
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     var welcome = document.getElementById('welcome');
-    var footer = document.querySelector('footer');
-    var bichronus = document.getElementById('biochronus');
+
     bio.url = getParameterByName('u') || 'bios/local/';
 
-    bichronus.style.display = 'none';
 
+	//TODO: merge these three
     getAjax(bio.url + 'bio.json', function (data) {
         window.bio.meta = data;
-		// create the welcome screen
 		drawWelcome(welcome);
-
-
-        drawChronus();
+        gotoState('initial');
     });
     getAjax(bio.url + 'images.json', function (data) {
         window.bio.images = data;
-        drawChronus();
+        gotoState('initial');
     });
     getAjax(bio.url + 'thumbs.json', function (data) {
         window.bio.thumbs = data;
-        drawChronus();
+        gotoState('initial');
     });
 
-	welcome.addEventListener("click", function () {
-			welcome.style.display = 'none';
-			footer.style.display = 'none';
-			bichronus.style.display = '';
-			// make it fullscreen
-		    requestFullScreen(document.body);
-	});
 });
