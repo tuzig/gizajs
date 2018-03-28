@@ -14,6 +14,12 @@ var stageLen = 1000,
     maxAge = 95,
     years2deg = totalDeg / 95; // 95 is giza's age, should come from bio
 
+var chronusStage = new Konva.Stage({
+										container: 'container',
+										width: container.offsetWidth,
+										height: window.innerHeight,
+										visible: true 
+								  });
 var bio = {};
 // START
 var gallery;
@@ -402,7 +408,7 @@ function drawChronus (stage) {
   var galleryLayer = new GalleryLayer(stage);
   galleryLayer.draw();
 
-  function fitStage2Container() {
+function fitStage2Container() {
 
     var scale = {x: window.innerWidth / stageLen,
 				 y: (window.innerHeight * 0.91) / stageLen};
@@ -466,21 +472,20 @@ function drawWelcome(welcome) {
 	section.appendChild(elm);
 }
 
-function gotoState(state) {
+function gotoState(state, msg) {
     // draw it only when all the data was downloaded
     var welcome = document.getElementById('welcome');
-	var container = document.getElementById('container'),
-        chronusStage = new Konva.Stage({
-									container: 'container',
-									width: container.offsetWidth,
-									height: window.innerHeight,
-									visible: false 
-								});
+	var footer = document.querySelector('footer');
+	var biochronus = document.getElementById('biochronus');
+	var container = document.getElementById('container');
 
 	if (!(window.bio.meta && window.bio.images && window.bio.thumbs))
 		return;
+
+	console.log('going to change state to ' + state);
 	// all the data is here draw the chronus
 	if (state == 'initial') {
+		biochronus.style.display = 'none';
 		var chronus = drawChronus(chronusStage);
 		// the url can be of a photo id'd at the hash
 		if (window.location.hash) {
@@ -491,47 +496,48 @@ function gotoState(state) {
 			gallery.init();
 			gallery.listen('close', function () {
 				gotoState('visible');
-				return;
 			});
 		}
 		else
-			state = 'welcome';
+			gotoState('welcome');
 	}
-
-
-	if (state == 'welcome') {
-		drawWelcome(welcome);
+	else if (state == 'welcome') {
+		biochronus.style.display = 'none';
+		welcome.style.display = '';
+		footer.style.display = '';
+		welcome.addEventListener("click", function () {
+				gotoState('visible');
+		});
 	}
-	else if (state == 'visible')
-		chronusStage.visible(true);
+	else if (state == 'visible') {
+		welcome.style.display = 'none';
+		footer.style.display = 'none';
+		biochronus.style.display = '';
+		container.style.display = '';
+		// make it fullscreen
+		requestFullScreen(document.body);
+	}
 }
 
 document.addEventListener("DOMContentLoaded", function() {
     var welcome = document.getElementById('welcome');
-    var footer = document.querySelector('footer');
-    var bichronus = document.getElementById('biochronus');
+
     bio.url = getParameterByName('u') || 'bios/local/';
 
-    bichronus.style.display = 'none';
 
+	//TODO: merge these three
     getAjax(bio.url + 'bio.json', function (data) {
         window.bio.meta = data;
+		drawWelcome(welcome);
         gotoState('initial');
     });
     getAjax(bio.url + 'images.json', function (data) {
         window.bio.images = data;
-        start();
+        gotoState('initial');
     });
     getAjax(bio.url + 'thumbs.json', function (data) {
         window.bio.thumbs = data;
-        start();
+        gotoState('initial');
     });
 
-	welcome.addEventListener("click", function () {
-			welcome.style.display = 'none';
-			footer.style.display = 'none';
-			bichronus.style.display = '';
-			// make it fullscreen
-		    requestFullScreen(document.body);
-	});
 });
