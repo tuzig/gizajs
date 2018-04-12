@@ -466,6 +466,10 @@ function gotoState(state, msg) {
     var welcome = document.getElementById('welcome');
 	var footer = document.querySelector('footer');
 
+	// only work when all data is here should add a timeout to retry
+    if (!(window.bio.meta && window.bio.images && window.bio.thumbs)) 
+        return;
+
     if (window.location.hash) {
         state = 'photo';
         gallery = new PhotoSwipe(document.getElementById('photos'),
@@ -476,9 +480,6 @@ function gotoState(state, msg) {
             gotoState('visible');
         });
     }
-    if (!(window.bio.meta && window.bio.images && window.bio.thumbs)) 
-        return;
-	// all the data is here draw the chronus
 	if (state == 'welcome') {
 		drawWelcome(welcome);
 		biochronus.style.display = 'none';
@@ -501,23 +502,25 @@ function gotoState(state, msg) {
 }
 
 fscreen.addEventListener('fullscreenchange', function() {
-	if (fscreen.fullscreenEnabled) {
+	if (!tableLayer) {
 		biochronus.style.display = 'none';
 		drawChronus(chronusStage);
         chronusStage.draw();
 		biochronus.style.display = '';
-}});
+    }
+});
 
 window.addEventListener('resize', function () {
 
     var scale = {x: window.innerWidth / stageLen,
 				 y: (window.innerHeight * 0.91) / stageLen};
 
-    console.log('resize!!!');
-    chronusStage.width(stageLen * scale.x);
-    chronusStage.height(stageLen * scale.y);
-    tableLayer.scale(scale);
-    galleryLayer.scale(scale);
+    if (biochronus.style.display == '') {
+        chronusStage.width(stageLen * scale.x);
+        chronusStage.height(stageLen * scale.y);
+        tableLayer.scale(scale);
+        galleryLayer.scale(scale);
+    }
 });
 
 document.addEventListener("DOMContentLoaded", function() {
