@@ -1,6 +1,7 @@
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
- Konva, PhotoSwipe, PhotoSwipeUI_Default*/
+ Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen
+*/
 /*
  * giza.js - perpetuating lives since 2018
  */
@@ -14,15 +15,17 @@ var stageLen = 1000,
     maxAge = 95,
     years2deg = totalDeg / 95; // 95 is giza's age, should come from bio
 
-var chronusStage = new Konva.Stage({
-										container: 'container',
-										width: container.offsetWidth,
-										height: window.innerHeight,
-										visible: true 
-								  });
+// the data
 var bio = {};
-// START
+// display elements
 var gallery;
+var biochronus;
+var container;
+var welcome;
+var chronusStage;
+// layers
+var tableLayer;
+var galleryLayer;
 
 function reverse(s){
         return s.split("").reverse().join("");
@@ -313,8 +316,11 @@ GalleryLayer.prototype.draw = function () {
 	var that = this;
     var ageRE = /^age_(\d+)/;
     var spriteFrames = bio.thumbs.frames;
-	this.psImages = [];
 	var i;
+    var scale = {x: window.innerWidth / stageLen,
+				 y: (window.innerHeight * 0.91) / stageLen};
+
+	this.psImages = [];
 
     // sort the thumbs according to age
     spriteFrames.sort(function (a,b) {
@@ -344,8 +350,8 @@ GalleryLayer.prototype.draw = function () {
             age = Number(spriteFrames[i].filename.match(ageRE)[1]);
             loc = getPoint(age, ring);
             img = new Konva.Image({
-                x: loc.x,
-                y: loc.y,
+                x: loc.x*scale.x,
+                y: loc.y*scale.y,
                 width: spriteFrames[i].frame.w,
                 height: spriteFrames[i].frame.h,
 				strokeWidth: 1,
@@ -402,28 +408,11 @@ function drawChronus (stage) {
     name.innerHTML = bio.meta.first_name + ' ' + bio.meta.last_name;
     header.appendChild(name);
 
-  var tableLayer = new TableLayer(stage);
+  tableLayer = new TableLayer(stage);
+  galleryLayer = new GalleryLayer(stage);
+
   tableLayer.draw();
-
-  var galleryLayer = new GalleryLayer(stage);
   galleryLayer.draw();
-
-function fitStage2Container() {
-
-    var scale = {x: window.innerWidth / stageLen,
-				 y: (window.innerHeight * 0.91) / stageLen};
-
-    stage.width(stageLen * scale.x);
-    stage.height(stageLen * scale.y);
-    tableLayer.scale(scale);
-    galleryLayer.scale(scale);
-    stage.draw();
-  }
-  window.addEventListener('resize', fitStage2Container);
-  document.body.onfullscreenchange = fitStage2Container;
-  return {table: tableLayer,
-  		  gallery: galleryLayer	};
-
 }
 
 function drawWelcome(welcome) {
@@ -476,32 +465,23 @@ function gotoState(state, msg) {
     // draw it only when all the data was downloaded
     var welcome = document.getElementById('welcome');
 	var footer = document.querySelector('footer');
-	var biochronus = document.getElementById('biochronus');
-	var container = document.getElementById('container');
 
-	if (!(window.bio.meta && window.bio.images && window.bio.thumbs))
-		return;
-
+    if (window.location.hash) {
+        state = 'photo';
+        gallery = new PhotoSwipe(document.getElementById('photos'),
+                                 PhotoSwipeUI_Default,
+                                 galleryLayer.psImages);
+        gallery.init();
+        gallery.listen('close', function () {
+            gotoState('visible');
+        });
+    }
+    if (!(window.bio.meta && window.bio.images && window.bio.thumbs)) 
+        return;
 	console.log('going to change state to ' + state);
 	// all the data is here draw the chronus
-	if (state == 'initial') {
-		biochronus.style.display = 'none';
-		var chronus = drawChronus(chronusStage);
-		// the url can be of a photo id'd at the hash
-		if (window.location.hash) {
-			state = 'photo';
-			gallery = new PhotoSwipe(document.getElementById('photos'),
-									 PhotoSwipeUI_Default,
-									 chronus.gallery.psImages);
-			gallery.init();
-			gallery.listen('close', function () {
-				gotoState('visible');
-			});
-		}
-		else
-			gotoState('welcome');
-	}
-	else if (state == 'welcome') {
+	if (state == 'welcome') {
+		drawWelcome(welcome);
 		biochronus.style.display = 'none';
 		welcome.style.display = '';
 		footer.style.display = '';
@@ -512,32 +492,60 @@ function gotoState(state, msg) {
 	else if (state == 'visible') {
 		welcome.style.display = 'none';
 		footer.style.display = 'none';
-		biochronus.style.display = '';
-		container.style.display = '';
+		// biochronus.style.display = 'none';
+		// container.style.display = 'none';
 		// make it fullscreen
-		requestFullScreen(document.body);
+		fscreen.requestFullscreen(document.body);
+		// container.style.display = '';
+
 	}
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    var welcome = document.getElementById('welcome');
+fscreen.addEventListener('fullscreenchange', function() {
+	if (fscreen.fullscreenEnabled) {
+		biochronus.style.display = 'none';
+		drawChronus(chronusStage);
+		biochronus.style.display = '';
+}});
 
+window.addEventListener('resize', function () {
+
+    var scale = {x: window.innerWidth / stageLen,
+				 y: (window.innerHeight * 0.91) / stageLen};
+
+    chronusStage.width(stageLen * scale.x);
+    chronusStage.height(stageLen * scale.y);
+    tableLayer.scale(scale);
+    galleryLayer.scale(scale);
+    chronusStage.draw();
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    welcome = document.getElementById('welcome');
+	biochronus = document.getElementById('biochronus');
+	container = document.getElementById('container');
+
+    chronusStage = new Konva.Stage({container: 'container',
+										width: container.offsetWidth,
+										height: window.innerHeight,
+										visible: true 
+								  });
     bio.url = getParameterByName('u') || 'bios/local/';
 
+    biochronus.style.display = 'none';
 
 	//TODO: merge these three
     getAjax(bio.url + 'bio.json', function (data) {
         window.bio.meta = data;
-		drawWelcome(welcome);
-        gotoState('initial');
+        gotoState('welcome');
     });
     getAjax(bio.url + 'images.json', function (data) {
         window.bio.images = data;
-        gotoState('initial');
+        gotoState('welcome');
     });
     getAjax(bio.url + 'thumbs.json', function (data) {
         window.bio.thumbs = data;
-        gotoState('initial');
+        gotoState('welcome');
     });
 
 });
