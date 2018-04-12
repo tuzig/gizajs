@@ -478,7 +478,6 @@ function gotoState(state, msg) {
     }
     if (!(window.bio.meta && window.bio.images && window.bio.thumbs)) 
         return;
-	console.log('going to change state to ' + state);
 	// all the data is here draw the chronus
 	if (state == 'welcome') {
 		drawWelcome(welcome);
@@ -505,6 +504,7 @@ fscreen.addEventListener('fullscreenchange', function() {
 	if (fscreen.fullscreenEnabled) {
 		biochronus.style.display = 'none';
 		drawChronus(chronusStage);
+        chronusStage.draw();
 		biochronus.style.display = '';
 }});
 
@@ -513,11 +513,11 @@ window.addEventListener('resize', function () {
     var scale = {x: window.innerWidth / stageLen,
 				 y: (window.innerHeight * 0.91) / stageLen};
 
+    console.log('resize!!!');
     chronusStage.width(stageLen * scale.x);
     chronusStage.height(stageLen * scale.y);
     tableLayer.scale(scale);
     galleryLayer.scale(scale);
-    chronusStage.draw();
 });
 
 document.addEventListener("DOMContentLoaded", function() {
