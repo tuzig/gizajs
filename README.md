@@ -8,7 +8,7 @@ single screen.
 The code draws arcs, labels and images on an HTML5 canvas, making it simple and
 fast to scale and transition. We are following the KISS methodology keeping 
 the number of libs to the bare minimum. Currently we're down to two 
-[Konva.js](https://github.com/konvajs/konva) for the canvas and
+[Konva.js](https://github.com/daonb/konva) for the canvas and
 [PhotoSwipe](https://github.com/dimsemenov/PhotoSwipe) to display the images.
 
 ## Creating your Bio-Chronus

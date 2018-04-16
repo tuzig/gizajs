@@ -173,8 +173,6 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 	if (startDeg > 0 && startDeg < 180) {
 		glyphRotation = 180;
 		name = span.name;
-		// TODO: remove the next line when TextPath supports glyphRotation
-		name = reverse(span.name);
 	} else {
 		glyphRotation = 0;
 		name = reverse(span.name);
@@ -205,6 +203,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 			fontFamily: 'Assistant',
 			text: text,
 			fontSize: fontSize,
+            direction: "rtl",
 			glyphRotation: glyphRotation
 		});
 	 textShape.initialFontSize = fontSize;
