@@ -1,6 +1,6 @@
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
- Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen
+ Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen, Hammer, TouchEmulator
 */
 /*
  * giza.js - perpetuating lives since 2018
@@ -523,15 +523,35 @@ window.addEventListener('resize', function () {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
+
     welcome = document.getElementById('welcome');
 	biochronus = document.getElementById('biochronus');
 	container = document.getElementById('container');
-
+    // the stage where it's all drawn
     chronusStage = new Konva.Stage({container: 'container',
 										width: container.offsetWidth,
 										height: window.innerHeight,
 										visible: true 
 								  });
+    // for dev:
+    TouchEmulator();
+
+    // for gestures we use hammerjs
+    var hammertime = new Hammer(biochronus);
+    hammertime.get('pinch').set({ enable: true });
+    hammertime.on('pinch', function (ev) {
+        console.log(ev);
+    });
+
+
+function log(ev) {
+ console.log(ev);
+}
+
+// document.body.addEventListener('touchstart', log, false);
+document.body.addEventListener('pinch', log, false);
+// document.body.addEventListener('touchend', log, false);
+
     bio.url = getParameterByName('u') || 'bios/local/';
 
     biochronus.style.display = 'none';
