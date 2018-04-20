@@ -7,11 +7,12 @@ body {
 #biocHeader {
   height: 8vh;
   text-align: center;
-  background-color: #222;
-  opacity: 0.7;
+  background-color: #81aa8d;
+  opacity: 0.8;
+  margin-bottom: 4px;
 }
 #biocHeader h1 {
-  color: #fff;
+  color: #fffadf;
   padding: 1vh;
   margin: 0;
   opacity: 1;

@@ -198,7 +198,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 	// add the arc's text
 	fontSize = (span.name == 'יד מרדכי')?24:40;
 	textShape = new Konva.TextPath({
-			fill: '#222',
+			fill: '#81aa8d',
 			// fontSize: (span.name == 'יד מרדכי')?20:32,
 			fontFamily: 'Assistant',
 			text: text,
@@ -225,6 +225,24 @@ TableLayer.prototype.addDialsShapes = function() {
 	var maxAgeDialEnd = getPoint(maxAge, 9.5);
 	var minAgeDialStart = getPoint(0, 11);
 	var minAgeDialEnd = getPoint(0, 10.5);
+	this.dialsGroup.add(
+        new Konva.Line({
+            points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
+            dash: [5, 5],
+            stroke: DIALS_COLOR,
+            strokeWidth: 2,
+            lineCap: 'round',
+            lineJoin: 'round'
+        }),
+        new Konva.Line({
+            points: [minAgeDialStart.x, minAgeDialStart.y, minAgeDialEnd.x, minAgeDialEnd.y], 
+            dash: [5, 5],
+            stroke: DIALS_COLOR,
+            strokeWidth: 2,
+            lineCap: 'round',
+            lineJoin: 'round'
+        })
+    );
     for (i=0; i < 4; i++) {
 		age = "בת\n"+Math.round((i*2+1)*maxAge/8);
 
@@ -237,32 +255,16 @@ TableLayer.prototype.addDialsShapes = function() {
             y: stageRadius*(1+ys[i]*1.05),
             fill: DIALS_COLOR,
             fontSize: fontSize,
-            fontFamily: 'Rubik',
+            fontFamily: 'Assistant',
             align: 'center',
             text: age
-        }),
-        new Konva.Line({
-            points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
-            dash: [5, 5],
-            stroke: DIALS_COLOR,
-            strokeWidth: 4,
-            lineCap: 'round',
-            lineJoin: 'round'
-        }),
-        new Konva.Line({
-            points: [minAgeDialStart.x, minAgeDialStart.y, minAgeDialEnd.x, minAgeDialEnd.y], 
-            dash: [5, 5],
-            stroke: DIALS_COLOR,
-            strokeWidth: 4,
-            lineCap: 'round',
-            lineJoin: 'round'
         }),
         new Konva.Line({
             points: [stageRadius*(1+xs[i]*0.93), stageRadius*(1+ys[i]*0.93),
                      stageRadius*(1+xs[i]*0.63), stageRadius*(1+ys[i]*0.63)],
             dash: [5, 5],
             stroke: DIALS_COLOR,
-            strokeWidth: 4,
+            strokeWidth: 2,
             lineCap: 'round',
             lineJoin: 'round'
 		})
