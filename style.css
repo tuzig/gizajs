@@ -42,6 +42,7 @@ body {
   line-height: 0;
 }
 footer {
+  clear: both;
   border-top: 2px solid #222;
   margin: 2em auto;
   padding-top: 1em;

@@ -7,7 +7,7 @@
  */
 "use strict";
 
-var DIALS_COLOR = '#333';
+var DIALS_COLOR = '#81aa8d';
 var stageLen = 1000,
     stageRadius = stageLen / 2,
     ringHeight = stageRadius / 12,
@@ -177,10 +177,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 		glyphRotation = 0;
 		name = reverse(span.name);
 	}
-	text = '';
-	for (i=0; i < ageSpan; i=i+18) {
-		text += name + '                             ';
-	}
+	text = name ;
 	// add the arc 
 	this.arcsGroup.add(
 		 new Konva.Arc({
@@ -195,6 +192,20 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
             strokeWidth: 3,
             rotation: startDeg
           }));
+    // make the outer ring a border
+    if (ring == 11)
+        this.arcsGroup.add(
+             new Konva.Arc({
+                opacity: 1,
+                angle: maxAge*years2deg,
+                x: stageRadius,
+                y: stageRadius,
+                outerRadius: (ring+1)*ringHeight+2,
+                innerRadius: (ring+1)*ringHeight,
+                fill: '#81aa8d',
+                strokeWidth: 2,
+                rotation: -90
+              }));
 	// add the arc's text
 	fontSize = (span.name == 'יד מרדכי')?24:40;
 	textShape = new Konva.TextPath({
@@ -225,6 +236,7 @@ TableLayer.prototype.addDialsShapes = function() {
 	var maxAgeDialEnd = getPoint(maxAge, 9.5);
 	var minAgeDialStart = getPoint(0, 11);
 	var minAgeDialEnd = getPoint(0, 10.5);
+    /*
 	this.dialsGroup.add(
         new Konva.Line({
             points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
@@ -243,32 +255,24 @@ TableLayer.prototype.addDialsShapes = function() {
             lineJoin: 'round'
         })
     );
-    for (i=0; i < 4; i++) {
+    */
+    for (i=0; i <= maxAge; i++) {
 		age = "בת\n"+Math.round((i*2+1)*maxAge/8);
 
 	//if (i===0) age = "בת\n"+age;
 
-	this.dialsGroup.add(
-        new Konva.Text({
-            // x: stageRadius*(1+xs[i]*(xs[i]<0)?1.1:1),
-            x: stageRadius*(1+xs[i]*1.05),
-            y: stageRadius*(1+ys[i]*1.05),
-            fill: DIALS_COLOR,
-            fontSize: fontSize,
-            fontFamily: 'Assistant',
-            align: 'center',
-            text: age
-        }),
-        new Konva.Line({
-            points: [stageRadius*(1+xs[i]*0.93), stageRadius*(1+ys[i]*0.93),
-                     stageRadius*(1+xs[i]*0.63), stageRadius*(1+ys[i]*0.63)],
-            dash: [5, 5],
-            stroke: DIALS_COLOR,
-            strokeWidth: 2,
-            lineCap: 'round',
-            lineJoin: 'round'
-		})
-	);
+        // var from = getPoint(i, (i==0)?9.5:8.8);
+        var from = getPoint(i, 12);
+        var to = getPoint(i, 11.9);
+        this.dialsGroup.add(
+            new Konva.Line({
+                points: [from.x, from.y, to.x,to.y],
+                stroke: DIALS_COLOR,
+                strokeWidth: 3,
+                lineCap: 'round',
+                lineJoin: 'round'
+            })
+        );
   }
   return ret;
 };
@@ -290,9 +294,9 @@ TableLayer.prototype.addDatesShapes = function() {
 								  fontStyle: 'bold',
 								  text: bio.meta.date_of_passing
 								 });
-	this.dob.pathConfig = {ring: 9.5, startDeg: -96, endDeg: 100.4,
+	this.dob.pathConfig = {ring: 9.8, startDeg: -96, endDeg: 100.4,
 						   group: this.datesGroup};
-	this.dop.pathConfig = {ring: 8.5, startDeg: -106, endDeg: 0.4,
+	this.dop.pathConfig = {ring: 8.8, startDeg: -106, endDeg: 0.4,
 						   group: this.datesGroup};
 
     this.datesGroup.add(this.dob, this.dop);
@@ -339,9 +343,10 @@ GalleryLayer.prototype.draw = function () {
 	var layer = this.layer,
 		images = this.images;
     spriteSheet.onload = function () {
-        var ringMin = 1,
+        var ringMin = 5,
             ringMax = 8,
             ring = ringMin,
+            center_age = 0,
             i,
             age,
 			loc,
@@ -349,14 +354,20 @@ GalleryLayer.prototype.draw = function () {
 
         for (i = 0; i < spriteFrames.length; i++) {
             age = Number(spriteFrames[i].filename.match(ageRE)[1]);
-            loc = getPoint(age, ring);
+            if (age == 0) {
+                loc = getPoint(center_age, 1);
+                center_age += 25;
+            }
+            else {
+                loc = getPoint(age, ring);
+            }
             img = new Konva.Image({
                 x: loc.x*scale.x,
                 y: loc.y*scale.y,
                 width: spriteFrames[i].frame.w,
                 height: spriteFrames[i].frame.h,
-				strokeWidth: 1,
-				stroke: '#222',
+                strokeWidth: 1,
+                stroke: '#222',
                 image: spriteSheet
             });
             img.crop({
@@ -364,19 +375,19 @@ GalleryLayer.prototype.draw = function () {
                     height: spriteFrames[i].frame.h,
                     x: 0 - spriteFrames[i].frame.x,
                     y: 0 - spriteFrames[i].frame.y
-			});
-			img.i = i;
-			img.loc = loc;
-			img.on('mouseup touchend', function() {
-				  gallery = new PhotoSwipe(document.getElementById('photos'),
-					  PhotoSwipeUI_Default, that.psImages, {index: this.i } );
-				  //TODO: capture the on exit and carry on with the drawing
-				  gallery.init();
+            });
+            img.i = i;
+            img.loc = loc;
+            img.on('mouseup touchend', function() {
+                  gallery = new PhotoSwipe(document.getElementById('photos'),
+                      PhotoSwipeUI_Default, that.psImages, {index: this.i } );
+                  //TODO: capture the on exit and carry on with the drawing
+                  gallery.init();
 
 
-			});
-			images.push(img);
-			layer.add(img);
+            });
+            images.push(img);
+            layer.add(img);
             ring++;
             if (ring === ringMax)
                 ring = ringMin;
@@ -506,6 +517,7 @@ fscreen.addEventListener('fullscreenchange', function() {
 	if (!tableLayer) {
 		biochronus.style.display = 'none';
 		drawChronus(chronusStage);
+        console.log('drawing');
         chronusStage.draw();
 		biochronus.style.display = '';
     }
@@ -513,12 +525,13 @@ fscreen.addEventListener('fullscreenchange', function() {
 
 window.addEventListener('resize', function () {
 
-    var scale = {x: window.innerWidth / stageLen,
-				 y: (window.innerHeight * 0.91) / stageLen};
+    var scale = {x: (window.innerWidth - 20) / stageLen,
+				 y: (window.innerHeight * 0.91 - 20) / stageLen};
 
     if (biochronus.style.display == '') {
-        chronusStage.width(stageLen * scale.x);
-        chronusStage.height(stageLen * scale.y);
+        console.log('resizing');
+        chronusStage.width(stageLen * scale.x );
+        chronusStage.height(stageLen * scale.y );
         tableLayer.scale(scale);
         galleryLayer.scale(scale);
     }
