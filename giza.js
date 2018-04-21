@@ -236,39 +236,15 @@ TableLayer.prototype.addDialsShapes = function() {
 	var maxAgeDialEnd = getPoint(maxAge, 9.5);
 	var minAgeDialStart = getPoint(0, 11);
 	var minAgeDialEnd = getPoint(0, 10.5);
-    /*
-	this.dialsGroup.add(
-        new Konva.Line({
-            points: [maxAgeDialStart.x, maxAgeDialStart.y, maxAgeDialEnd.x, maxAgeDialEnd.y], 
-            dash: [5, 5],
-            stroke: DIALS_COLOR,
-            strokeWidth: 2,
-            lineCap: 'round',
-            lineJoin: 'round'
-        }),
-        new Konva.Line({
-            points: [minAgeDialStart.x, minAgeDialStart.y, minAgeDialEnd.x, minAgeDialEnd.y], 
-            dash: [5, 5],
-            stroke: DIALS_COLOR,
-            strokeWidth: 2,
-            lineCap: 'round',
-            lineJoin: 'round'
-        })
-    );
-    */
+
     for (i=0; i <= maxAge; i++) {
-		age = "בת\n"+Math.round((i*2+1)*maxAge/8);
-
-	//if (i===0) age = "בת\n"+age;
-
-        // var from = getPoint(i, (i==0)?9.5:8.8);
         var from = getPoint(i, 12);
         var to = getPoint(i, 11.9);
         this.dialsGroup.add(
             new Konva.Line({
                 points: [from.x, from.y, to.x,to.y],
                 stroke: DIALS_COLOR,
-                strokeWidth: 3,
+                strokeWidth: (i % 10 == 0)?6:3,
                 lineCap: 'round',
                 lineJoin: 'round'
             })
