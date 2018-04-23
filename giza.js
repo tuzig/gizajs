@@ -1,6 +1,6 @@
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
- Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen
+ Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen, AngleFace
 */
 /*
  * giza.js - perpetuating lives since 2018
@@ -8,11 +8,13 @@
 "use strict";
 
 var DIALS_COLOR = '#81aa8d';
-var stageLen = 1000,
+var // refactore stageLen to ...
+    stageLen = 1000,
     stageRadius = stageLen / 2,
     ringHeight = stageRadius / 12,
     totalDeg = 350,
-    maxAge = 95,
+    // refactor to this.scale and remove maxAge
+    maxAge = 95, 
     years2deg = totalDeg / 95; // 95 is giza's age, should come from bio
 
 // the data
@@ -226,18 +228,8 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 TableLayer.prototype.addDialsShapes = function() {
 	// returning 4 dials at 1/8. 3/8, 5/8 & 7/8. each dial is made from two 
 	// shapes - a line and a text.
-    var fontSize = 30,
-        color = '#aaa';
-    var xs = [0.8, 0.8, -0.8, -0.8];
-    var ys = [-0.8, 0.8, 0.8, -0.8];
-    var ret =[], i, age, x, y;
-    // where's are the min-max dials?
-	var maxAgeDialStart = getPoint(maxAge, 11);
-	var maxAgeDialEnd = getPoint(maxAge, 9.5);
-	var minAgeDialStart = getPoint(0, 11);
-	var minAgeDialEnd = getPoint(0, 10.5);
 
-    for (i=0; i <= maxAge; i++) {
+    for (var i=0; i <= maxAge; i++) {
         var from = getPoint(i, 12);
         var to = getPoint(i, 11.9);
         this.dialsGroup.add(
@@ -249,8 +241,7 @@ TableLayer.prototype.addDialsShapes = function() {
                 lineJoin: 'round'
             })
         );
-  }
-  return ret;
+   }
 };
 
 TableLayer.prototype.addDatesShapes = function() {
@@ -449,8 +440,46 @@ function drawWelcome(welcome) {
 	section.appendChild(elm);
 }
 
-function gotoState(state, msg) {
-    // draw it only when all the data was downloaded
+function drawMyFamily() {
+    var family = [['נויה דאון'],
+                  ['ליבי דאון לבית בלודז',
+                   'בני דאון'],
+                  ['בלה בלודז לבית מאיינץ',
+                   'דניאל בלודז',
+                   'רחל דאון לבית רייכר',
+                   'יצחק דאון לבית דואני']
+                 ];
+    var face = new AngleFace({container: 'myFamily',
+                              scale: 8,
+                              startAngle: 0,
+                              rings: 8,
+                              endAngle: 360,
+                              fullScreen: true,
+                              visible: true });
+
+    face.addBorder();
+    for (var r=0; r < family.length; r++) {
+        var arcLength = 360 / Math.pow(2, r);
+        for (var i=0; i < family[r].length; i++) {
+            var name = family[r][i];
+            console.log(name, i*arcLength);
+            face.addArc({text: name,
+                          ring: (r==0)?0.5:r*2,
+                          start: i*arcLength,
+                          len: arcLength,
+                          onClick: function (ev) {
+                              // ev.dial is very usefull
+                              gotoState('visible', {r: r, i: i});
+                          },
+                       });
+        }
+    }
+    face.draw();
+}
+function gotoState(state, args) {
+    // Main state machine, where routing takes place.
+    // currently supported states are:  welcome, visible, photo & myFamily
+    //
     var welcome = document.getElementById('welcome');
 	var footer = document.querySelector('footer');
 
@@ -469,6 +498,7 @@ function gotoState(state, msg) {
         });
     }
 	if (state == 'welcome') {
+
 		drawWelcome(welcome);
 		biochronus.style.display = 'none';
 		welcome.style.display = '';
@@ -476,10 +506,18 @@ function gotoState(state, msg) {
 		welcome.addEventListener("click", function () {
 				gotoState('visible');
 		});
-	}
+    }
+    else if (state == 'myFamily') {
+		welcome.style.display = 'none';
+		footer.style.display = 'none';
+		biochronus.style.display = 'none';
+		myFamily.style.display = '';
+        drawMyFamily();
+    }
 	else if (state == 'visible') {
 		welcome.style.display = 'none';
 		footer.style.display = 'none';
+		myFamily.style.display = 'none';
 		// biochronus.style.display = 'none';
 		// container.style.display = 'none';
 		// make it fullscreen
@@ -514,6 +552,7 @@ window.addEventListener('resize', function () {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
+    var initialState = "myFamily";
     welcome = document.getElementById('welcome');
 	biochronus = document.getElementById('biochronus');
 	container = document.getElementById('container');
@@ -521,8 +560,7 @@ document.addEventListener("DOMContentLoaded", function() {
     chronusStage = new Konva.Stage({container: 'container',
 										width: container.offsetWidth,
 										height: window.innerHeight,
-										visible: true 
-								  });
+										visible: true });
     bio.url = getParameterByName('u') || 'bios/local/';
 
     biochronus.style.display = 'none';
@@ -530,15 +568,15 @@ document.addEventListener("DOMContentLoaded", function() {
 	//TODO: merge these three
     getAjax(bio.url + 'bio.json', function (data) {
         window.bio.meta = data;
-        gotoState('welcome');
+        gotoState(initialState);
     });
     getAjax(bio.url + 'images.json', function (data) {
         window.bio.images = data;
-        gotoState('welcome');
+        gotoState(initialState);
     });
     getAjax(bio.url + 'thumbs.json', function (data) {
         window.bio.thumbs = data;
-        gotoState('welcome');
+        gotoState(initialState);
     });
 
 });
