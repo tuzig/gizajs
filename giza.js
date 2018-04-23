@@ -552,20 +552,21 @@ window.addEventListener('resize', function () {
     }
 });
 
-function readBio(snapshot) {
+function readBios(snapshot) {
     var data = snapshot.val();
-    var giza = data["גיזה גולדפארב לבית בראו"];
+    // var giza = data["גיזה גולדפארב לבית בראו"];
+    var bio = data["איזבלה בלודז לבית גינסבורג"];
     var spans = [];
-    for (var i = 0; i < giza.spans.length; i++) {
-        var span = giza.spans[i];
+    for (var i = 0; i < bio.spans.length; i++) {
+        var span = bio.spans[i];
         var ring = span.ring - 1;
         if (ring >= spans.length)
             spans.push([span]);
         else
             spans[ring].push(span);
-    }
-    giza.spans = spans;
-    return giza;
+    };
+    bio.spans = spans;
+    return bio;
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -585,7 +586,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	//TODO: merge these three data sources
     var ref = firebase.database().ref('noya');
     ref.on('value', function (snapshot) {
-        window.bio.meta = readBio(snapshot);
+        window.bio.meta = readBios(snapshot);
         gotoState(initialState);
     });
     getAjax(bio.url + 'images.json', function (data) {
