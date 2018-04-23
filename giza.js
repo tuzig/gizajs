@@ -1,6 +1,7 @@
+
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
- Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen, AngleFace
+ Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen, AngleFace, firebase
 */
 /*
  * giza.js - perpetuating lives since 2018
@@ -551,6 +552,22 @@ window.addEventListener('resize', function () {
     }
 });
 
+function readBio(snapshot) {
+    var data = snapshot.val();
+    var giza = data["גיזה גולדפארב לבית בראו"];
+    var spans = [];
+    for (var i = 0; i < giza.spans.length; i++) {
+        var span = giza.spans[i];
+        var ring = span.ring - 1;
+        if (ring >= spans.length)
+            spans.push([span]);
+        else
+            spans[ring].push(span);
+    }
+    giza.spans = spans;
+    return giza;
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     var initialState = "myFamily";
     welcome = document.getElementById('welcome');
@@ -565,9 +582,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     biochronus.style.display = 'none';
 
-	//TODO: merge these three
-    getAjax(bio.url + 'bio.json', function (data) {
-        window.bio.meta = data;
+	//TODO: merge these three data sources
+    var ref = firebase.database().ref('noya');
+    ref.on('value', function (snapshot) {
+        window.bio.meta = readBio(snapshot);
         gotoState(initialState);
     });
     getAjax(bio.url + 'images.json', function (data) {
