@@ -1,7 +1,7 @@
 
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
- Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen, AngleFace, firebase
+ Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen, AngleFace, firebase, route
 */
 /*
  * giza.js - perpetuating lives since 2018
@@ -31,10 +31,7 @@ var tableLayer;
 var galleryLayer;
 
 function reverse(s){
-    var ret = "";
-    for (var i = s.length-1; i >= 0; i--)
-        ret += s[i];
-    return ret;
+        return s.split("").reverse().join("");
 }
 
 function toRad (angle) {
@@ -388,8 +385,8 @@ function drawChronus (stage) {
       i;
 
 	//TODO: make the name konva based
-    name = document.createElement('h1');
-    header.appendChild(name);
+    name = header.firstChild;
+    header.innerHTML = '<h1>' + bio.meta.first_name + ' ' + bio.meta.last_name + '</h1>';
 
   tableLayer = new TableLayer(stage);
   galleryLayer = new GalleryLayer(stage);
@@ -437,6 +434,7 @@ function drawWelcome(welcome) {
 	section = document.createElement('section');
 	section.className = 'centered';
 	welcome.appendChild(section);
+	elm = document.createElement('img');
 	elm.width = 350;
 	elm.src = bio.meta.cover_photo;
 	elm.alt = 'cover photo for '+bio.meta.first_name;
@@ -452,6 +450,7 @@ function drawMyFamily() {
                    'רחל דאון לבית רייכר',
                    'יצחק דאון לבית דואני']
                  ];
+	var myFamily = document.getElementById('myFamily');
     var face = new AngleFace({container: 'myFamily',
                               scale: 8,
                               startAngle: 0,
@@ -472,12 +471,13 @@ function drawMyFamily() {
                    len: arcLength,
                    onClick: function (ev) {
                       // ev.dial is very usefull
-                       gotoState('biochronus', ev.target.text);
+                       route('/'+encodeURIComponent(ev.target.text));
                    }};
             face.addArc(arc);
         }
     }
     face.draw();
+    myFamily.style.display = '';
 }
 function gotoState(state, message) {
     // Main state machine, where routing takes place.
@@ -490,16 +490,6 @@ function gotoState(state, message) {
     // if (!(window.bio.meta && window.bio.images && window.bio.thumbs)) 
     //  return;
 
-    if (window.location.hash) {
-        state = 'photo';
-        gallery = new PhotoSwipe(document.getElementById('photos'),
-                                 PhotoSwipeUI_Default,
-                                 galleryLayer.psImages);
-        gallery.init();
-        gallery.listen('close', function () {
-            gotoState('biochronus');
-        });
-    }
 	if (state == 'welcome') {
 
 		drawWelcome(welcome);
@@ -532,6 +522,55 @@ function gotoState(state, message) {
 	}
 }
 
+route('/', function() {
+    route('/noya/family');
+});
+
+route('/noya/family', function() {
+    var welcome = document.getElementById('welcome');
+    var myFamily = document.getElementById('myFamily');
+
+    welcome.style.display = 'none';
+    biochronus.style.display = 'none';
+    myFamily.style.display = '';
+});
+
+route('/*/photo/*', function(name, photoId) {
+    state = 'photo';
+    gallery = new PhotoSwipe(document.getElementById('photos'),
+                             PhotoSwipeUI_Default,
+                             galleryLayer.psImages);
+    gallery.init();
+    gallery.listen('close', function () {
+        gotoState('biochronus');
+    });
+});
+
+route('/*', function(encodedName) {
+    var welcome = document.getElementById('welcome');
+    var myFamily = document.getElementById('myFamily');
+	var footer = document.querySelector('footer');
+    var name = decodeURIComponent(encodedName);
+    var cid = 'stage-'+encodedName;
+    var containers = biochronus.querySelectorAll('.stage');
+
+    welcome.style.display = 'none';
+    footer.style.display = 'none';
+    myFamily.style.display = 'none';
+    window.bio.meta = window.bios[name];
+    console.log(window.bio.meta);
+    
+    chronusStage.destroyChildren();
+    chronusStage.clear();
+
+    drawChronus(chronusStage);
+    chronusStage.draw();
+    // fscreen.requestFullscreen(document.body);
+    biochronus.style.display = '';
+    resizeBioChronus();
+});
+
+
 fscreen.addEventListener('fullscreenchange', function() {
 	if (!tableLayer) {
 		biochronus.style.display = 'none';
@@ -542,19 +581,17 @@ fscreen.addEventListener('fullscreenchange', function() {
     }
 });
 
-window.addEventListener('resize', function () {
-
+window.addEventListener('resize', resizeBioChronus);
+function resizeBioChronus() {
     var scale = {x: (window.innerWidth - 20) / stageLen,
 				 y: (window.innerHeight * 0.91 - 20) / stageLen};
 
-    if (biochronus.style.display == '') {
         console.log('resizing');
         chronusStage.width(stageLen * scale.x );
         chronusStage.height(stageLen * scale.y );
         tableLayer.scale(scale);
         galleryLayer.scale(scale);
-    }
-});
+};
 
 function readBios(snapshot) {
     var data = snapshot.val();
@@ -575,14 +612,14 @@ function readBios(snapshot) {
         }
     }
     window.bios = data;
-    return bio;
+    route.start(true);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    var initialState = "myFamily";
     welcome = document.getElementById('welcome');
 	biochronus = document.getElementById('biochronus');
 	container = document.getElementById('container');
+	var myFamily = document.getElementById('myFamily');
 
     chronusStage = new Konva.Stage({container: 'container',
 										width: container.offsetWidth,
@@ -590,7 +627,8 @@ document.addEventListener("DOMContentLoaded", function() {
 										visible: true });
     bio.url = getParameterByName('u') || 'bios/local/';
 
-    biochronus.style.display = 'none';
+    myFamily.style.display = '';
+    biochronus.style.display = '';
     drawMyFamily();
 
 	//TODO: merge these three data sources
@@ -602,6 +640,5 @@ document.addEventListener("DOMContentLoaded", function() {
     getAjax(bio.url + 'thumbs.json', function (data) {
         window.bio.thumbs = data;
     });
-    gotoState(initialState);
 
 });
