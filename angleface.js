@@ -69,16 +69,16 @@ AngleFace.prototype = {
             startDeg = params.start,
             fontSize = 40,
             glyphRotation,
-            text,
+            displayText,
             textShape, arcShape,
             i;
 
         if (startDeg >= 0 && startDeg < 180) {
             glyphRotation = 180;
-            text = params.text;
+            displayText = params.text;
         } else {
             glyphRotation = 0;
-            text = reverse(params.text);
+            displayText = reverse(params.text);
         }
         // add the arc 
         arcShape = new Konva.Arc({
@@ -93,12 +93,13 @@ AngleFace.prototype = {
                 strokeWidth: 3,
                 rotation: startDeg
               });
+        arcShape.text = params.text;
         this.arcsGroup.add(arcShape);
         // add the arc's text
         textShape = new Konva.TextPath({
                 fill: '#81aa8d',
                 fontFamily: 'Assistant',
-                text: text,
+                text: displayText,
                 fontSize: fontSize,
                 direction: "rtl",
                 x: this.stageR,
@@ -110,6 +111,7 @@ AngleFace.prototype = {
                             group:this.textsGroup})
             });
         textShape.initialFontSize = fontSize;
+        textShape.text = params.text;
         this.textsGroup.add(textShape);
         if (params.onClick != undefined) {
             textShape.on('click', params.onClick);
