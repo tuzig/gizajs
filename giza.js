@@ -91,9 +91,10 @@ var TableLayer = function(stage) {
 	this.textsGroup = new Konva.Group();
 	this.dialsGroup = new Konva.Group();
 	this.datesGroup = new Konva.Group();
-    this.groups = [this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup];
+	this.descriptionGroup = new Konva.Group();
+    this.groups = [this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup, this.descriptionGroup];
 
-	this.layer.add(this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup); // this.groups);
+	this.layer.add(this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup, this.descriptionGroup); // this.groups);
 	stage.add(this.layer);
 };
 
@@ -162,6 +163,58 @@ TableLayer.prototype.getPath = function(config) {
   return ret;
 };
 
+function showDescription (ev) {
+    var span = ev.target.span;
+    var layer = new Konva.Layer();
+    var canvas = layer.getCanvas()._canvas;
+
+    canvas.setAttribute('dir', 'rtl');
+    var complexText = new Konva.Text({
+      x: 300,
+      y: 180,
+      text: span.description,
+      fontSize: 18,
+      fontFamily: 'Assistant',
+      fill: '#555',
+      width: 600,
+      padding: 20,
+      align: 'center'
+    });
+
+    var rect = new Konva.Rect({
+      x: 300,
+      y: 160,
+      stroke: '#555',
+      strokeWidth: 5,
+      fill: '#ddd',
+      width: 600,
+      height: complexText.getHeight()+10,
+      shadowColor: 'black',
+      shadowBlur: 10,
+      shadowOffset: [10, 10],
+      shadowOpacity: 0.2,
+      cornerRadius: 10
+    });
+    var closeButton = new Konva.Path({
+      x: 870,
+      y: 170,
+      data: 'M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z',
+      fill: 'black',
+      scale: {
+        x: 1,
+        y: 1
+      }
+    });
+    closeButton.on('click tap', function () {
+        layer.destroyChildren();
+        layer.draw();
+    });
+    
+    layer.add(rect, complexText, closeButton);
+    chronusStage.add(layer);
+    layer.draw();
+}
+
 TableLayer.prototype.addSpanShapes = function(span, ring) {
     var ageSpan = span.end_age-span.start_age,
         endDeg = span.end_age*years2deg-90,
@@ -170,6 +223,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 		fontSize,
 		glyphRotation,
 		text,
+        arcShape,
 		textShape,
 		i;
 
@@ -183,8 +237,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 	}
 	text = name ;
 	// add the arc 
-	this.arcsGroup.add(
-		 new Konva.Arc({
+    arcShape = new Konva.Arc({
             opacity: 0.3,
             angle: endDeg-startDeg,
             x: stageRadius,
@@ -195,8 +248,10 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
             stroke: '#222',
             strokeWidth: 3,
             rotation: startDeg
-          }));
+          });
+	this.arcsGroup.add(arcShape);
     // make the outer ring a border
+    /*
     if (ring == 11)
         this.arcsGroup.add(
              new Konva.Arc({
@@ -210,6 +265,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
                 strokeWidth: 2,
                 rotation: -90
               }));
+      */
 	// add the arc's text
 	fontSize = (span.name == 'יד מרדכי')?24:40;
 	textShape = new Konva.TextPath({
@@ -218,13 +274,19 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 			fontFamily: 'Assistant',
 			text: text,
 			fontSize: fontSize,
-            direction: "rtl",
 			glyphRotation: glyphRotation
 		});
 	 textShape.initialFontSize = fontSize;
 	 textShape.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
 	 				    group:this.textsGroup};
 	 this.textsGroup.add(textShape);
+    if (span.description) {
+        console.log('got description');
+        arcShape.span = span;
+        textShape.span = span;
+        arcShape.on('click tap', showDescription);
+        textShape.on('click tap', showDescription);
+    }
 };
 
 TableLayer.prototype.addDialsShapes = function() {
