@@ -554,9 +554,11 @@ route('/*', function(encodedName) {
     var cid = 'stage-'+encodedName;
     var containers = biochronus.querySelectorAll('.stage');
 
+    /*
     welcome.style.display = 'none';
     footer.style.display = 'none';
     myFamily.style.display = 'none';
+    */
     window.bio.meta = window.bios[name];
     console.log(window.bio.meta);
     
