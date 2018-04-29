@@ -245,7 +245,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
             outerRadius: (ring+1)*ringHeight,
             innerRadius: ring*ringHeight,
             fill: '#fff',
-            stroke: '#222',
+            stroke: '#81aa8d',
             strokeWidth: 3,
             rotation: startDeg
           });
@@ -293,6 +293,19 @@ TableLayer.prototype.addDialsShapes = function() {
 	// returning 4 dials at 1/8. 3/8, 5/8 & 7/8. each dial is made from two 
 	// shapes - a line and a text.
 
+    // add a border for the whole thing
+    this.dialsGroup.add(
+        new Konva.Arc({
+            opacity: 0.3,
+            angle: totalDeg,
+            x: stageRadius,
+            y: stageRadius,
+            outerRadius: 12*ringHeight+4,
+            innerRadius: 12*ringHeight,
+            fill: '#81aa8d',
+            rotation: -90
+        })
+    );
     for (var i=0; i <= maxAge; i++) {
         var from = getPoint(i, 12);
         var to = getPoint(i, 11.9);
@@ -394,11 +407,11 @@ GalleryLayer.prototype.draw = function () {
             }
             img = new Konva.Image({
                 x: loc.x*scale.x,
-                y: loc.y*scale.y,
+                y: loc.y*scale.y-50,
                 width: spriteFrames[i].frame.w,
                 height: spriteFrames[i].frame.h,
-                strokeWidth: 1,
-                stroke: '#222',
+                strokeWidth: 6,
+                stroke: '#81aa8d',
                 image: spriteSheet
             });
             img.crop({
@@ -585,7 +598,7 @@ function gotoState(state, message) {
 }
 
 route('/', function() {
-    route('/noya/family');
+    route('/%D7%92%D7%99%D7%96%D7%94%20%D7%92%D7%95%D7%9C%D7%93%D7%A4%D7%90%D7%A8%D7%91%20%D7%9C%D7%91%D7%99%D7%AA%20%D7%91%D7%A8%D7%90%D7%95');
 });
 
 route('/noya/family', function() {

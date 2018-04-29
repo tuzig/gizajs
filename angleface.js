@@ -89,7 +89,7 @@ AngleFace.prototype = {
                 outerRadius: (ring+1)*this.ringHeight,
                 innerRadius: ring*this.ringHeight,
                 fill: '#fff',
-                stroke: '#222',
+                stroke: '#81aa8d',
                 strokeWidth: 3,
                 rotation: startDeg
               });
