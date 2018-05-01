@@ -338,24 +338,28 @@ var GalleryLayer = function(stage) {
 
 GalleryLayer.prototype.scale = function (scale) {
     var imageScale = Math.min(scale.x, scale.y);
+    console.log('imageScale', imageScale);
 	for (var i=0; i < this.images.length; i++) {
 		this.images[i].x(this.images[i].loc.x*scale.x);
-		this.images[i].y((this.images[i].loc.y-50)*scale.y);
+		this.images[i].y(this.images[i].loc.y*scale.y);
         this.images[i].width(this.images[i].spriteFrame.frame.w*imageScale);
         this.images[i].height(this.images[i].spriteFrame.frame.h*imageScale);
 	}	
 	this.layer.draw();
 };
+
 GalleryLayer.prototype.draw = function () {
 	var that = this;
     var ageRE = /^age_(\d+)/;
     var spriteFrames = bio.thumbs.frames;
 	var i;
     var scale = {x: window.innerWidth / stageLen,
-				 y: (window.innerHeight * 0.91) / stageLen};
+				 y: window.innerHeight / stageLen},
+	    imageScale = Math.min(scale.x, scale.y);
 
 	this.psImages = [];
 
+    console.log(imageScale);
     // sort the thumbs according to age
     spriteFrames.sort(function (a,b) {
         var aAge = Number(a.filename.match(ageRE)[1]);
@@ -392,9 +396,9 @@ GalleryLayer.prototype.draw = function () {
             }
             img = new Konva.Image({
                 x: loc.x*scale.x,
-                y: (loc.y-50)*scale.y,
-                width: spriteFrames[i].frame.w,
-                height: spriteFrames[i].frame.h,
+                y: (loc.y-100)*scale.y,
+                width: spriteFrames[i].frame.w*imageScale,
+                height: spriteFrames[i].frame.h*imageScale,
                 strokeWidth: 5,
                 stroke: '#5B946B',
                 image: spriteSheet,
