@@ -1,4 +1,3 @@
-
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
  Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen, AngleFace, firebase, route
@@ -407,12 +406,16 @@ GalleryLayer.prototype.draw = function () {
             }
             img = new Konva.Image({
                 x: loc.x*scale.x,
-                y: loc.y*scale.y-50,
+                y: (loc.y-50)*scale.y,
                 width: spriteFrames[i].frame.w,
                 height: spriteFrames[i].frame.h,
-                strokeWidth: 6,
-                stroke: '#81aa8d',
-                image: spriteSheet
+                strokeWidth: 5,
+                stroke: '#5B946B',
+                image: spriteSheet,
+                shadowColor: 'black',
+                shadowBlur: 10,
+                shadowOffset: {x : 10, y : 10},
+                shadowOpacity: 0.3
             });
             img.crop({
                     width: spriteFrames[i].frame.w,
