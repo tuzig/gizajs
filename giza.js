@@ -634,6 +634,9 @@ route('/*', function(encodedName) {
     footer.style.display = 'none';
     myFamily.style.display = 'none';
     */
+    myFamily.style.display = 'none';
+    footer.style.display = 'none';
+    welcome.style.display = 'none';
     window.bio.meta = window.bios[name];
     console.log(window.bio.meta);
     
