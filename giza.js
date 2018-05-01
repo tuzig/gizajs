@@ -12,7 +12,7 @@ var DIALS_COLOR = '#81aa8d';
 var // refactore stageLen to ...
     stageLen = 1000,
     stageRadius = stageLen / 2,
-    ringHeight = stageRadius / 12,
+    ringHeight = stageRadius / 12.5,
     totalDeg = 350,
     // refactor to this.scale and remove maxAge
     maxAge = 95, 
