@@ -354,9 +354,12 @@ var GalleryLayer = function(stage) {
 };
 
 GalleryLayer.prototype.scale = function (scale) {
+    var imageScale = Math.max(scale.x, scale.y);
 	for (var i=0; i < this.images.length; i++) {
 		this.images[i].x(this.images[i].loc.x*scale.x);
 		this.images[i].y((this.images[i].loc.y-50)*scale.y);
+        this.images[i].width(this.images[i].spriteFrame.frame.w*imageScale);
+        this.images[i].height(this.images[i].spriteFrame.frame.h*imageScale);
 	}	
 	this.layer.draw();
 };
@@ -424,6 +427,7 @@ GalleryLayer.prototype.draw = function () {
                     y: 0 - spriteFrames[i].frame.y
             });
             img.i = i;
+            img.spriteFrame = spriteFrames[i];
             img.loc = loc;
             img.on('mouseup touchend', function() {
                   gallery = new PhotoSwipe(document.getElementById('photos'),
