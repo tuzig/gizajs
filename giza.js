@@ -17,6 +17,8 @@ var // refactore stageLen to ...
     maxAge = 95, 
     years2deg = totalDeg / 95; // 95 is giza's age, should come from bio
 
+// three sizes: 0, 1 & 2 for small, medium, large
+
 // the data
 var bio = {};
 // display elements
@@ -89,18 +91,17 @@ var TableLayer = function(stage) {
 	this.arcsGroup = new Konva.Group();
 	this.textsGroup = new Konva.Group();
 	this.dialsGroup = new Konva.Group();
-	this.datesGroup = new Konva.Group();
 	this.descriptionGroup = new Konva.Group();
-    this.groups = [this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup, this.descriptionGroup];
+    this.groups = [this.arcsGroup, this.textsGroup, this.dialsGroup, this.descriptionGroup];
 
-	this.layer.add(this.arcsGroup, this.textsGroup, this.dialsGroup, this.datesGroup, this.descriptionGroup); // this.groups);
+	this.layer.add(this.arcsGroup, this.textsGroup, this.dialsGroup, this.descriptionGroup); // this.groups);
 	stage.add(this.layer);
 };
 
 TableLayer.prototype.draw = function() {
 	var i, ring, ringSpans;
 	// start with the dates and the dials
-	this.addDatesShapes();
+	this.addDates();
     this.addDialsShapes();
 	// draw the life spans
     if (bio.meta.spans !== undefined) 
@@ -121,10 +122,7 @@ TableLayer.prototype.scale = function (scale) {
 	this.dialsGroup.scale(scale);
 
 	// scaling the movingShapes
-	var movingShapes;
-	movingShapes = this.textsGroup.getChildren().slice();
-	movingShapes.push(this.dob);
-	movingShapes.push(this.dop);
+	var movingShapes = this.textsGroup.getChildren().slice();
 	for (var i=0; i < movingShapes.length; i++ ) {
 		var path = movingShapes[i];
         var attrs = {
@@ -249,22 +247,6 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
             rotation: startDeg
           });
 	this.arcsGroup.add(arcShape);
-    // make the outer ring a border
-    /*
-    if (ring == 11)
-        this.arcsGroup.add(
-             new Konva.Arc({
-                opacity: 1,
-                angle: maxAge*years2deg,
-                x: stageRadius,
-                y: stageRadius,
-                outerRadius: (ring+1)*ringHeight+2,
-                innerRadius: (ring+1)*ringHeight,
-                fill: '#81aa8d',
-                strokeWidth: 2,
-                rotation: -90
-              }));
-      */
 	// add the arc's text
 	fontSize = (span.name == 'יד מרדכי')?24:40;
 	textShape = new Konva.TextPath({
@@ -320,29 +302,30 @@ TableLayer.prototype.addDialsShapes = function() {
    }
 };
 
-TableLayer.prototype.addDatesShapes = function() {
-    var fontSize = 30;
+TableLayer.prototype.addDates = function() {
+    var fontSize = 30; 
 
-    this.dob = new Konva.TextPath({
+    var dob = new Konva.TextPath({
 								  fill: DIALS_COLOR,
 								  fontSize: fontSize,
 								  fontFamily: 'Assistant',
 								  fontStyle: 'bold',
 								  text: bio.meta.date_of_birth,
-								  });
-    this.dop = new Konva.TextPath({
+								  }),
+        dop = new Konva.TextPath({
 								  fill: DIALS_COLOR,
 								  fontSize: fontSize,
 								  fontFamily: 'Assistant',
 								  fontStyle: 'bold',
 								  text: bio.meta.date_of_passing
 								 });
-	this.dob.pathConfig = {ring: 9.8, startDeg: -96, endDeg: 100.4,
-						   group: this.datesGroup};
-	this.dop.pathConfig = {ring: 8.8, startDeg: -106, endDeg: 0.4,
-						   group: this.datesGroup};
-
-    this.datesGroup.add(this.dob, this.dop);
+    dob.initialFontSize = fontSize;
+    dop.initialFontSize = fontSize;
+	dob.pathConfig = {ring: 9.8, startDeg: -96, endDeg: 100.4,
+						   group: this.textsGroup};
+	dop.pathConfig = {ring: 8.8, startDeg: -106, endDeg: 0.4,
+						   group: this.textsGroup};
+    this.textsGroup.add(dob, dop);
 };
 /* End of TableLayer */
 
@@ -354,7 +337,7 @@ var GalleryLayer = function(stage) {
 };
 
 GalleryLayer.prototype.scale = function (scale) {
-    var imageScale = Math.max(scale.x, scale.y);
+    var imageScale = Math.min(scale.x, scale.y);
 	for (var i=0; i < this.images.length; i++) {
 		this.images[i].x(this.images[i].loc.x*scale.x);
 		this.images[i].y((this.images[i].loc.y-50)*scale.y);
