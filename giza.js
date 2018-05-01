@@ -357,7 +357,7 @@ var GalleryLayer = function(stage) {
 GalleryLayer.prototype.scale = function (scale) {
 	for (var i=0; i < this.images.length; i++) {
 		this.images[i].x(this.images[i].loc.x*scale.x);
-		this.images[i].y(this.images[i].loc.y*scale.y);
+		this.images[i].y((this.images[i].loc.y-50)*scale.y);
 	}	
 	this.layer.draw();
 };
