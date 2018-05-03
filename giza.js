@@ -122,7 +122,7 @@ TableLayer.prototype.scale = function (scale) {
 	this.dialsGroup.scale(scale);
 
 	// scaling the movingShapes
-	var movingShapes = this.textsGroup.getChildren().slice();
+	var movingShapes = this.textsGroup.getChildren();
 	for (var i=0; i < movingShapes.length; i++ ) {
 		var path = movingShapes[i];
         var attrs = {
@@ -217,7 +217,7 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
         endDeg = span.end_age*years2deg-90,
 		startDeg = span.start_age*years2deg-90,
 		name,
-		fontSize,
+		fontSize, fontStyle,
 		glyphRotation,
 		text,
         arcShape,
@@ -248,12 +248,18 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
           });
 	this.arcsGroup.add(arcShape);
 	// add the arc's text
-	fontSize = (span.name == 'יד מרדכי')?24:40;
+    if (span.name == 'יד מרדכי') {
+        fontSize = 14;
+        fontStyle='normal';
+    } else {
+        fontSize = 40;
+        fontStyle='bold';
+    }
 	textShape = new Konva.TextPath({
-			fill: '#81aa8d',
-			// fontSize: (span.name == 'יד מרדכי')?20:32,
-			fontFamily: 'Assistant',
 			text: text,
+			fill: '#81aa8d',
+			fontFamily: 'Assistant',
+            fontStyle: fontStyle,
 			fontSize: fontSize,
 			glyphRotation: glyphRotation
 		});
@@ -303,7 +309,7 @@ TableLayer.prototype.addDialsShapes = function() {
 };
 
 TableLayer.prototype.addDates = function() {
-    var fontSize = 30; 
+    var fontSize = 40; 
 
     var dob = new Konva.TextPath({
 								  fill: DIALS_COLOR,
@@ -315,6 +321,7 @@ TableLayer.prototype.addDates = function() {
         dop = new Konva.TextPath({
 								  fill: DIALS_COLOR,
 								  fontSize: fontSize,
+                                  fontStyle: 'bold',
 								  fontFamily: 'Assistant',
 								  fontStyle: 'bold',
 								  text: bio.meta.date_of_passing
@@ -353,8 +360,7 @@ GalleryLayer.prototype.draw = function () {
     var ageRE = /^age_(\d+)/;
     var spriteFrames = bio.thumbs.frames;
 	var i;
-    var scale = {x: window.innerWidth / stageLen,
-				 y: window.innerHeight / stageLen},
+    var scale = calcScale(),
 	    imageScale = Math.min(scale.x, scale.y);
 
 	this.psImages = [];
@@ -396,7 +402,7 @@ GalleryLayer.prototype.draw = function () {
             }
             img = new Konva.Image({
                 x: loc.x*scale.x,
-                y: (loc.y-100)*scale.y,
+                y: (loc.y-0)*scale.y,
                 width: spriteFrames[i].frame.w*imageScale,
                 height: spriteFrames[i].frame.h*imageScale,
                 strokeWidth: 5,
@@ -535,7 +541,7 @@ function drawMyFamily() {
         for (var i=0; i < family[r].length; i++) {
             var name = family[r][i];
             arc = {text: name,
-                   ring: (r==0)?0.5:r*2,
+                   ring: (r==0)?0.5:r*3,
                    start: i*arcLength,
                    len: arcLength,
                    onClick: function (ev) {
@@ -655,16 +661,18 @@ fscreen.addEventListener('fullscreenchange', function() {
     }
 });
 
+function calcScale() {
+    return {x: (window.innerWidth - 20) / stageLen,
+		    y: (window.innerHeight * 0.91 - 20) / stageLen};
+}
+
 window.addEventListener('resize', resizeBioChronus);
 function resizeBioChronus() {
-    var scale = {x: (window.innerWidth - 20) / stageLen,
-				 y: (window.innerHeight * 0.91 - 20) / stageLen};
-
-        console.log('resizing');
-        chronusStage.width(stageLen * scale.x );
-        chronusStage.height(stageLen * scale.y );
-        tableLayer.scale(scale);
-        galleryLayer.scale(scale);
+    var scale = calcScale();
+    chronusStage.width(stageLen * scale.x );
+    chronusStage.height(stageLen * scale.y );
+    tableLayer.scale(scale);
+    galleryLayer.scale(scale);
 };
 
 function readBios(snapshot) {
