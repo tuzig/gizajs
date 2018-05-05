@@ -8,9 +8,15 @@
 "use strict";
 
 var DIALS_COLOR = '#81aa8d';
-var // refactore stageLen to ...
-    stageLen = 1000,
+var theme = {
+    stroke_color: '#81aa8d',
+    descripton_color: '#8f8',
+    fill_color: '#5B946B'
+};
+var stageLen = 1000,
     stageRadius = stageLen / 2,
+    stageCenter = {x: stageLen / 2,
+                   y: stageLen / 2},
     ringHeight = stageRadius / 12.5,
     totalDeg = 350,
     // refactor to this.scale and remove maxAge
@@ -91,10 +97,9 @@ var TableLayer = function(stage) {
 	this.arcsGroup = new Konva.Group();
 	this.textsGroup = new Konva.Group();
 	this.dialsGroup = new Konva.Group();
-	this.descriptionGroup = new Konva.Group();
-    this.groups = [this.arcsGroup, this.textsGroup, this.dialsGroup, this.descriptionGroup];
+    this.groups = [this.arcsGroup, this.textsGroup, this.dialsGroup];
 
-	this.layer.add(this.arcsGroup, this.textsGroup, this.dialsGroup, this.descriptionGroup); // this.groups);
+	this.layer.add(this.arcsGroup, this.textsGroup, this.dialsGroup); // this.groups);
 	stage.add(this.layer);
 };
 
@@ -166,48 +171,40 @@ function showDescription (ev) {
     var canvas = layer.getCanvas()._canvas;
 
     canvas.setAttribute('dir', 'rtl');
-    var complexText = new Konva.Text({
-      x: 300,
-      y: 180,
+    var text = new Konva.Text({
+      x: 0,
+      y: 0,
       text: span.description,
-      fontSize: 18,
+      fontSize: 22,
       fontFamily: 'Assistant',
-      fill: '#555',
+      fill: theme.descripton_color,
       width: 600,
       padding: 20,
-      align: 'center'
+      align: 'right'
     });
-
     var rect = new Konva.Rect({
-      x: 300,
-      y: 160,
-      stroke: '#555',
+      stroke: theme.stroke_color,
       strokeWidth: 5,
-      fill: '#ddd',
+      fill: theme.fill_color,
       width: 600,
-      height: complexText.getHeight()+10,
+      height: text.getHeight()+10,
       shadowColor: 'black',
-      shadowBlur: 10,
-      shadowOffset: [10, 10],
-      shadowOpacity: 0.2,
+      shadowBlur: 20,
+      shadowOffset: {x : 10, y : 10},
+      shadowOpacity: 0.3,
       cornerRadius: 10
     });
-    var closeButton = new Konva.Path({
-      x: 870,
-      y: 170,
-      data: 'M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z',
-      fill: 'black',
-      scale: {
-        x: 1,
-        y: 1
-      }
-    });
-    closeButton.on('click tap', function () {
-        layer.destroyChildren();
-        layer.draw();
-    });
-    
-    layer.add(rect, complexText, closeButton);
+    // fix the position based on size so it'll be centerd
+    var h = text.getHeight(),
+        w = text.getWidth(),
+        text_pos = {x: stageCenter.x + w / 2 -50,
+                    y: stageCenter.y - h / 2};
+
+
+    text.position(text_pos);
+    rect.position(text_pos);
+
+    layer.add(rect, text);
     chronusStage.add(layer);
     layer.draw();
 }
