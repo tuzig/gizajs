@@ -10,8 +10,16 @@
 var DIALS_COLOR = '#81aa8d';
 var theme = {
     stroke_color: '#81aa8d',
-    descripton_color: '#8f8',
+    descripton_color: '#fffadf',
     fill_color: '#5B946B'
+};
+var fb_config = {
+    apiKey: "AIzaSyD0d0qCzvALRaBWdVdgAgrLucodjgWNu0Y",
+    authDomain: "bios-tuzig.firebaseapp.com",
+    databaseURL: "https://bios-tuzig.firebaseio.com",
+    projectId: "bios-tuzig",
+    storageBucket: "bios-tuzig.appspot.com",
+    messagingSenderId: "710538398471"
 };
 var stageLen = 1000,
     stageRadius = stageLen / 2,
@@ -109,9 +117,9 @@ TableLayer.prototype.draw = function() {
 	this.addDates();
     this.addDialsShapes();
 	// draw the life spans
-    if (bio.meta.spans !== undefined) 
-        for (ring=0; ring < bio.meta.spans.length; ring++) {
-            ringSpans = bio.meta.spans[ring];
+    if (bio.spans !== undefined) 
+        for (ring=0; ring < bio.spans.length; ring++) {
+            ringSpans = bio.spans[ring];
             for (i=0; i < ringSpans.length; i++) {
               var span = ringSpans[i];
               this.addSpanShapes(span, 11-ring);
@@ -313,7 +321,7 @@ TableLayer.prototype.addDates = function() {
 								  fontSize: fontSize,
 								  fontFamily: 'Assistant',
 								  fontStyle: 'bold',
-								  text: bio.meta.date_of_birth,
+								  text: bio.date_of_birth,
 								  }),
         dop = new Konva.TextPath({
 								  fill: DIALS_COLOR,
@@ -321,7 +329,7 @@ TableLayer.prototype.addDates = function() {
                                   fontStyle: 'bold',
 								  fontFamily: 'Assistant',
 								  fontStyle: 'bold',
-								  text: bio.meta.date_of_passing
+								  text: bio.date_of_passing
 								 });
     dob.initialFontSize = fontSize;
     dop.initialFontSize = fontSize;
@@ -372,9 +380,11 @@ GalleryLayer.prototype.draw = function () {
 
 	// create the array for PhotoSwipe
 	for(i=0; i < spriteFrames.length; i++)
-		this.psImages.push(bio.images[spriteFrames[i].filename]);
+		this.psImages.push(bio.images[spriteFrames[i].filename.slice(0,-4)]);
 
     var spriteSheet = new Image(bio.thumbs.meta.width, bio.thumbs.meta.width);
+
+    spriteSheet.src = bio.thumbs.meta.sprite_url;
 
 	var layer = this.layer,
 		images = this.images;
@@ -435,7 +445,6 @@ GalleryLayer.prototype.draw = function () {
         }
 		layer.draw();
     };
-    spriteSheet.src = bio.url+bio.thumbs.meta.sprite_path;
 };
 
 function requestFullScreen(element) {
@@ -458,7 +467,7 @@ function drawChronus (stage) {
 
 	//TODO: make the name konva based
     name = header.firstChild;
-    header.innerHTML = '<h1>' + bio.meta.first_name + ' ' + bio.meta.last_name + '</h1>';
+    header.innerHTML = '<h1>' + bio.full_name + '</h1>';
 
   tableLayer = new TableLayer(stage);
   galleryLayer = new GalleryLayer(stage);
@@ -474,42 +483,37 @@ function drawWelcome(welcome) {
 	section.className = 'centered';
 	welcome.appendChild(section);
 	elm = document.createElement('h1');
-	elm.innerHTML = bio.meta.first_name + ' ' + bio.meta.last_name;
-	section.appendChild(elm);
-	if (bio.meta.more_name) {
-		elm = document.createElement('h1');
-		elm.innerHTML = bio.meta.more_name;
-		section.appendChild(elm);
-	}
-	if (bio.meta.date_of_birth_he) {
+    elm.innerHTML = bio.full_name;
+    section.appendChild(elm);
+	if (bio.date_of_birth_he) {
 		elm = document.createElement('h2');
-		elm.innerHTML = bio.meta.date_of_birth_he + ' - ' + bio.meta.date_of_passing_he;
+		elm.innerHTML = bio.date_of_birth_he + ' - ' + bio.date_of_passing_he;
 		section.appendChild(elm);
 	}
 	elm = document.createElement('h2');
 	elm.style.direction = 'ltr';
-	elm.innerHTML = bio.meta.date_of_birth + ' - ' + bio.meta.date_of_passing;
+	elm.innerHTML = bio.date_of_birth + ' - ' + bio.date_of_passing;
 	section.appendChild(elm);
 	elm = document.createElement('h2');
 	elm.innerHTML = '&#10048;';
 	section.appendChild(elm);
 	elm = document.createElement('h2');
-	elm.innerHTML = (bio.meta.sex=='F')?'תהי נשמתה צרורה':'תהי נשמתו צרורה';
+	elm.innerHTML = (bio.sex=='F')?'תהי נשמתה צרורה':'תהי נשמתו צרורה';
 	section.appendChild(elm);
 	elm = document.createElement('h2');
 	elm.innerHTML = 'בצרור החיים';
 	section.appendChild(elm);
 	elm = document.createElement('button');
 	elm.className = 'enter';
-	elm.innerHTML = (bio.meta.sex=='F')?'לזכרה':'לזכרו';
+	elm.innerHTML = (bio.sex=='F')?'לזכרה':'לזכרו';
 	section.appendChild(elm);
 	section = document.createElement('section');
 	section.className = 'centered';
 	welcome.appendChild(section);
 	elm = document.createElement('img');
 	elm.width = 350;
-	elm.src = bio.meta.cover_photo;
-	elm.alt = 'cover photo for '+bio.meta.first_name;
+	elm.src = bio.cover_photo;
+	elm.alt = 'cover photo for '+bio.first_name;
 	section.appendChild(elm);
 }
 
@@ -587,7 +591,7 @@ function gotoState(state, message) {
 		// make it fullscreen
         console.log(message);
         window.bio.meta = window.bios[message];
-        console.log(window.bio.meta);
+        console.log(window.bio);
         chronusStage.clear();
 		fscreen.requestFullscreen(document.body);
 
@@ -634,8 +638,8 @@ route('/*', function(encodedName) {
     myFamily.style.display = 'none';
     footer.style.display = 'none';
     welcome.style.display = 'none';
-    window.bio.meta = window.bios[name];
-    console.log(window.bio.meta);
+    window.bio = window.bios[name];
+    console.log(window.bio);
     
     chronusStage.destroyChildren();
     chronusStage.clear();
@@ -691,15 +695,8 @@ function readBios(snapshot) {
             }
             bio.spans = spans;
         }
-        if (bio.images_url)
-            getAjax(bio.images_url, function (data) {
-                window.bio.images = data;
-            });
-        if (bio.thumbs_url)
-            getAjax(bio.thumbs_url, function (data) {
-                window.bio.thumbs = data;
-            });
     }
+    chronusStage.destroyChildren();
     window.bios = data;
     route.start(true);
 }
@@ -721,7 +718,9 @@ document.addEventListener("DOMContentLoaded", function() {
     drawMyFamily();
 
 	//TODO: merge these three data sources
-    var ref = firebase.database().ref('noya');
+    var ref = firebase.database().ref('bios');
     ref.on('value', readBios);
 
 });
+// Initialize Firebase
+firebase.initializeApp(fb_config);
