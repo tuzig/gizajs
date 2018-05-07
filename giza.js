@@ -598,7 +598,7 @@ route('/', function() {
     route('/%D7%92%D7%99%D7%96%D7%94%20%D7%92%D7%95%D7%9C%D7%93%D7%A4%D7%90%D7%A8%D7%91%20%D7%9C%D7%91%D7%99%D7%AA%20%D7%91%D7%A8%D7%90%D7%95');
 });
 
-route('/noya/family', function() {
+route('/noya', function() {
     var welcome = document.getElementById('welcome');
     var myFamily = document.getElementById('myFamily');
 
@@ -679,6 +679,8 @@ function readBios(snapshot) {
         var bio = data[name];
         var spans = [];
         if (bio.spans !== undefined) {
+            // to make it easier on the display we translate the spans into
+            // an array of ring arrays
             for (var i = 0; i < bio.spans.length; i++) {
                 var span = bio.spans[i];
                 var ring = span.ring - 1;
@@ -689,6 +691,14 @@ function readBios(snapshot) {
             }
             bio.spans = spans;
         }
+        if (bio.images_url)
+            getAjax(bio.images_url, function (data) {
+                window.bio.images = data;
+            });
+        if (bio.thumbs_url)
+            getAjax(bio.thumbs_url, function (data) {
+                window.bio.thumbs = data;
+            });
     }
     window.bios = data;
     route.start(true);
@@ -713,11 +723,5 @@ document.addEventListener("DOMContentLoaded", function() {
 	//TODO: merge these three data sources
     var ref = firebase.database().ref('noya');
     ref.on('value', readBios);
-    getAjax(bio.url + 'images.json', function (data) {
-        window.bio.images = data;
-    });
-    getAjax(bio.url + 'thumbs.json', function (data) {
-        window.bio.thumbs = data;
-    });
 
 });
