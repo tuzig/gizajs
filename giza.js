@@ -60,29 +60,6 @@ function getPoint(age, ring) {
         y: stageRadius+Math.round(Math.sin(rad)*ringHeight*ring)
     };
 }
-// from https://plainjs.com/javascript/ajax/send-ajax-get-and-post-requests-47/
-function getAjax(url, callback) {
-	    var xhr = new XMLHttpRequest();
-	    xhr.addEventListener("load", function() {
-			var json;
-	        if (this.readyState > 3 && this.status === 200) {
-				try {
-					json = JSON.parse(this.responseText);
-				} catch(e) {
-					console.log('getAjax('+url+') got error: '+e);
-					callback(e);
-					return;
-				}
-				callback(json);
-				return;
-			}
-			callback(json);
-		});
-	    // xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-	    xhr.open('GET', url);
-	    xhr.send();
-	    return xhr;
-}
 // from https://stackoverflow.com/a/901144
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
@@ -205,9 +182,10 @@ function showDescription (ev) {
     // fix the position based on size so it'll be centerd
     var h = text.getHeight(),
         w = text.getWidth(),
-        text_pos = {x: stageCenter.x + w / 2 -50,
+        text_pos = {x: stageCenter.x - w / 2 -50,
                     y: stageCenter.y - h / 2};
 
+    console.log(text_pos);
 
     text.position(text_pos);
     rect.position(text_pos);
@@ -273,7 +251,6 @@ TableLayer.prototype.addSpanShapes = function(span, ring) {
 	 				    group:this.textsGroup};
 	 this.textsGroup.add(textShape);
     if (span.description) {
-        console.log('got description');
         arcShape.span = span;
         textShape.span = span;
         arcShape.on('click tap', showDescription);
@@ -350,7 +327,6 @@ var GalleryLayer = function(stage) {
 
 GalleryLayer.prototype.scale = function (scale) {
     var imageScale = Math.min(scale.x, scale.y);
-    console.log('imageScale', imageScale);
 	for (var i=0; i < this.images.length; i++) {
 		this.images[i].x(this.images[i].loc.x*scale.x);
 		this.images[i].y(this.images[i].loc.y*scale.y);
@@ -370,7 +346,6 @@ GalleryLayer.prototype.draw = function () {
 
 	this.psImages = [];
 
-    console.log(imageScale);
     // sort the thumbs according to age
     spriteFrames.sort(function (a,b) {
         var aAge = Number(a.filename.match(ageRE)[1]);
@@ -555,48 +530,6 @@ function drawMyFamily() {
     face.draw();
     myFamily.style.display = '';
 }
-function gotoState(state, message) {
-    // Main state machine, where routing takes place.
-    // currently supported states are:  welcome, visible, photo & myFamily
-    //
-    var welcome = document.getElementById('welcome');
-	var footer = document.querySelector('footer');
-
-	// only work when all data is here should add a timeout to retry
-    // if (!(window.bio.meta && window.bio.images && window.bio.thumbs)) 
-    //  return;
-
-	if (state == 'welcome') {
-
-		drawWelcome(welcome);
-		biochronus.style.display = 'none';
-		welcome.style.display = '';
-		footer.style.display = '';
-		welcome.addEventListener("click", function () {
-				gotoState('biochronus');
-		});
-    }
-    else if (state == 'myFamily') {
-		welcome.style.display = 'none';
-		footer.style.display = 'none';
-		biochronus.style.display = 'none';
-		myFamily.style.display = '';
-    }
-	else if (state == 'biochronus') {
-		welcome.style.display = 'none';
-		footer.style.display = 'none';
-		myFamily.style.display = 'none';
-		// biochronus.style.display = 'none';
-		// container.style.display = 'none';
-		// make it fullscreen
-        console.log(message);
-        window.bio.meta = window.bios[message];
-        console.log(window.bio);
-        chronusStage.clear();
-		fscreen.requestFullscreen(document.body);
-
-	}
-}
 
 route('/', function() {
     route('giza/welcome');
@@ -618,7 +551,7 @@ route('/*/photo/*', function(name, photoId) {
                              galleryLayer.psImages);
     gallery.init();
     gallery.listen('close', function () {
-        gotoState('biochronus');
+        route(name);
     });
 });
 
@@ -672,7 +605,6 @@ fscreen.addEventListener('fullscreenchange', function() {
 	if (!tableLayer) {
 		biochronus.style.display = 'none';
 		drawChronus(chronusStage);
-        console.log('drawing');
         chronusStage.draw();
 		biochronus.style.display = '';
     }
@@ -727,8 +659,6 @@ document.addEventListener("DOMContentLoaded", function() {
 										width: container.offsetWidth,
 										height: window.innerHeight,
 										visible: true });
-    bio.url = getParameterByName('u') || 'bios/local/';
-
     myFamily.style.display = '';
     biochronus.style.display = '';
     drawMyFamily();
