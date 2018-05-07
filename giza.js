@@ -599,7 +599,7 @@ function gotoState(state, message) {
 }
 
 route('/', function() {
-    route('giza');
+    route('giza/welcome');
 });
 
 route('/noya', function() {
@@ -621,6 +621,22 @@ route('/*/photo/*', function(name, photoId) {
         gotoState('biochronus');
     });
 });
+
+route('/*/welcome', function(encodedName) {
+	var footer = document.querySelector('footer');
+    var myFamily = document.getElementById('myFamily');
+    var name = decodeURIComponent(encodedName);
+
+    myFamily.style.display = 'none';
+    biochronus.style.display = 'none';
+    window.bio = window.bios[name];
+    drawWelcome(welcome);
+    welcome.style.display = '';
+    footer.style.display = '';
+    welcome.addEventListener("click", function () {
+            route('/'+name);
+    });
+})
 
 route('/*', function(encodedName) {
     var welcome = document.getElementById('welcome');
