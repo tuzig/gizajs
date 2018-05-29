@@ -479,6 +479,7 @@ function drawWelcome(welcome) {
 	elm.innerHTML = 'בצרור החיים';
 	section.appendChild(elm);
 	elm = document.createElement('button');
+    elm.setAttribute('name', 'enter');
 	elm.className = 'enter';
 	elm.innerHTML = (bio.sex=='F')?'לזכרה':'לזכרו';
 	section.appendChild(elm);

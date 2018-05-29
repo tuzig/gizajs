@@ -80,6 +80,15 @@ at http://localhost:8000 and start playing with your giza.
 
 ## Contribuiting
 
-Just fork, fix|improve and open a Pull Request. If you're not sure where to
+Just fork, fix or/and improve and open a Pull Request. If you're not sure where to
 start there are always a few open issues marked [good first
 issue](https://github.com/daonb/biochronus/labels/good%20first%20issue).
+
+### Testing
+
+```bash
+
+$ cd test
+$ pipenv shell
+$ python tests.py
+```
