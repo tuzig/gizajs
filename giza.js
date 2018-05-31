@@ -37,10 +37,6 @@ var stageLen = 1000,
 var bio = {};
 // display elements
 var gallery;
-var biochronus;
-var container;
-var welcome;
-var chronusStage;
 // layers
 var tableLayer;
 var galleryLayer;
@@ -74,18 +70,18 @@ function getParameterByName(name, url) {
  * Our bottom layer - the table layer, complete with dials, and arcs
  * TODO: add buttons
  */
-var TableLayer = function(stage) {
+var TableLayer = function(params) {
 	this.currentScale = {x:1,y:1};
-	this.stage = this.stage;
+	this.stage = params.stage;
+	this.bio = params.bio;
   	this.layer = new Konva.Layer();
-
+    // the groups differ on the way they scale
 	this.arcsGroup = new Konva.Group();
 	this.textsGroup = new Konva.Group();
 	this.dialsGroup = new Konva.Group();
-    this.groups = [this.arcsGroup, this.textsGroup, this.dialsGroup];
 
 	this.layer.add(this.arcsGroup, this.textsGroup, this.dialsGroup); // this.groups);
-	stage.add(this.layer);
+	this.stage.add(this.layer);
 };
 
 TableLayer.prototype.draw = function() {
@@ -191,7 +187,7 @@ function showDescription (ev) {
     rect.position(text_pos);
 
     layer.add(rect, text);
-    chronusStage.add(layer);
+    this.stage.add(layer);
     layer.draw();
 }
 
@@ -318,11 +314,12 @@ TableLayer.prototype.addDates = function() {
 };
 /* End of TableLayer */
 
-var GalleryLayer = function(stage) {
-	this.stage = stage;
+var GalleryLayer = function(params) {
+	this.stage = params.stage;
+	this.bio = params.bio;
   	this.layer = new Konva.Layer();
 	this.images = [];
-	stage.add(this.layer);
+	this.stage.add(this.layer);
 };
 
 GalleryLayer.prototype.scale = function (scale) {
@@ -339,7 +336,7 @@ GalleryLayer.prototype.scale = function (scale) {
 GalleryLayer.prototype.draw = function () {
 	var that = this;
     var ageRE = /^age_(\d+)/;
-    var spriteFrames = bio.thumbs.frames;
+    var spriteFrames = this.bio.thumbs.frames;
 	var i;
     var scale = calcScale(),
 	    imageScale = Math.min(scale.x, scale.y);
@@ -355,11 +352,11 @@ GalleryLayer.prototype.draw = function () {
 
 	// create the array for PhotoSwipe
 	for(i=0; i < spriteFrames.length; i++)
-		this.psImages.push(bio.images[spriteFrames[i].filename.slice(0,-4)]);
+		this.psImages.push(this.bio.images[spriteFrames[i].filename.slice(0,-4)]);
 
-    var spriteSheet = new Image(bio.thumbs.meta.width, bio.thumbs.meta.width);
+    var spriteSheet = new Image(this.bio.thumbs.meta.width, this.bio.thumbs.meta.width);
 
-    spriteSheet.src = bio.thumbs.meta.sprite_url;
+    spriteSheet.src = this.bio.thumbs.meta.sprite_url;
 
 	var layer = this.layer,
 		images = this.images;
@@ -431,67 +428,6 @@ function requestFullScreen(element) {
     }
 }
 
-function drawChronus (stage) {
-  // draw the biochronus complete with dials and the gallery
-    var header = document.getElementById('biocHeader');
-    var ring,
-      ringPeriods,
-	  layer,
-	  name,
-      i;
-
-	//TODO: make the name konva based
-    name = header.firstChild;
-    header.innerHTML = '<h1>' + bio.full_name + '</h1>';
-
-  tableLayer = new TableLayer(stage);
-  galleryLayer = new GalleryLayer(stage);
-
-  tableLayer.draw();
-  galleryLayer.draw();
-}
-
-function drawWelcome(welcome) {
-	var section, elm;
-
-	section = document.createElement('section');
-	section.className = 'centered';
-	welcome.appendChild(section);
-	elm = document.createElement('h1');
-    elm.innerHTML = bio.full_name;
-    section.appendChild(elm);
-	if (bio.date_of_birth_he) {
-		elm = document.createElement('h2');
-		elm.innerHTML = bio.date_of_birth_he + ' - ' + bio.date_of_passing_he;
-		section.appendChild(elm);
-	}
-	elm = document.createElement('h2');
-	elm.style.direction = 'ltr';
-	elm.innerHTML = bio.date_of_birth + ' - ' + bio.date_of_passing;
-	section.appendChild(elm);
-	elm = document.createElement('h2');
-	elm.innerHTML = '&#10048;';
-	section.appendChild(elm);
-	elm = document.createElement('h2');
-	elm.innerHTML = (bio.sex=='F')?'תהי נשמתה צרורה':'תהי נשמתו צרורה';
-	section.appendChild(elm);
-	elm = document.createElement('h2');
-	elm.innerHTML = 'בצרור החיים';
-	section.appendChild(elm);
-	elm = document.createElement('button');
-    elm.setAttribute('name', 'enter');
-	elm.className = 'enter';
-	elm.innerHTML = (bio.sex=='F')?'לזכרה':'לזכרו';
-	section.appendChild(elm);
-	section = document.createElement('section');
-	section.className = 'centered';
-	welcome.appendChild(section);
-	elm = document.createElement('img');
-	elm.width = 350;
-	elm.src = bio.cover_photo;
-	elm.alt = 'cover photo for '+bio.first_name;
-	section.appendChild(elm);
-}
 
 function drawMyFamily() {
     var family = [['נויה דאון'],
@@ -560,17 +496,19 @@ route('/*/welcome', function(encodedName) {
 	var footer = document.querySelector('footer');
     var myFamily = document.getElementById('myFamily');
     var name = decodeURIComponent(encodedName);
+    var welcome = document.getElementById('welcome');
 
     myFamily.style.display = 'none';
     biochronus.style.display = 'none';
-    window.bio = window.bios[name];
-    drawWelcome(welcome);
+    var bio = window.bios[name];
+    window.chronus.update(bio);
+    window.chronus.drawWelcome(welcome);
     welcome.style.display = '';
     footer.style.display = '';
     welcome.addEventListener("click", function () {
             route('/'+name);
     });
-})
+});
 
 route('/*', function(encodedName) {
     var welcome = document.getElementById('welcome');
@@ -588,14 +526,10 @@ route('/*', function(encodedName) {
     myFamily.style.display = 'none';
     footer.style.display = 'none';
     welcome.style.display = 'none';
-    window.bio = window.bios[name];
-    console.log(window.bio);
-    
-    chronusStage.destroyChildren();
-    chronusStage.clear();
-
-    drawChronus(chronusStage);
-    chronusStage.draw();
+    var bio = window.bios[name];
+    console.log(bio);
+    window.chronus.update(bio);
+    window.chronus.draw();
     // fscreen.requestFullscreen(document.body);
     biochronus.style.display = '';
     resizeBioChronus();
@@ -605,8 +539,8 @@ route('/*', function(encodedName) {
 fscreen.addEventListener('fullscreenchange', function() {
 	if (!tableLayer) {
 		biochronus.style.display = 'none';
-		drawChronus(chronusStage);
-        chronusStage.draw();
+		drawChronus(this.stage);
+        this.stage.draw();
 		biochronus.style.display = '';
     }
 });
@@ -619,21 +553,20 @@ function calcScale() {
 window.addEventListener('resize', resizeBioChronus);
 function resizeBioChronus() {
     var scale = calcScale();
-    chronusStage.width(stageLen * scale.x );
-    chronusStage.height(stageLen * scale.y );
-    tableLayer.scale(scale);
-    galleryLayer.scale(scale);
+    window.chronus.scale(scale)
 };
 
 function readBios(snapshot) {
-    var data = snapshot.val();
-    // var giza = data["גיזה גולדפארב לבית בראו"];
-    for (var name in data) {
-        var bio = data[name];
+    // save the data we got. For now, it's the entire database as 
+    // an array of bios.
+    window.bios = snapshot.val();
+
+    for (var name in window.bios) {
+        var bio = window.bios[name];
         var spans = [];
+        // to make it easier on the display we translate the spans into
+        // an array of ring arrays.
         if (bio.spans !== undefined) {
-            // to make it easier on the display we translate the spans into
-            // an array of ring arrays
             for (var i = 0; i < bio.spans.length; i++) {
                 var span = bio.spans[i];
                 var ring = span.ring - 1;
@@ -645,24 +578,114 @@ function readBios(snapshot) {
             bio.spans = spans;
         }
     }
-    chronusStage.destroyChildren();
-    window.bios = data;
     route.start(true);
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    welcome = document.getElementById('welcome');
-	biochronus = document.getElementById('biochronus');
-	container = document.getElementById('container');
-	var myFamily = document.getElementById('myFamily');
+var Chronus = function (params) {
+    this.params = params;
+    // todo: create the welcome and biochronus here and simplif index.html
+    this.welcome = document.getElementById('welcome');
+	this.biochronus = document.getElementById('biochronus');
 
-    chronusStage = new Konva.Stage({container: 'container',
-										width: container.offsetWidth,
-										height: window.innerHeight,
-										visible: true });
-    myFamily.style.display = '';
-    biochronus.style.display = '';
+    this.stage = new Konva.Stage(params);
+    //TODO: make it resize
+    this.stage.width(params.width || 1000);
+    this.stage.height(params.height || 1000);
+    // next to line belong in an outer layer
+    // myFamily.style.display = '';
+    // biochronus.style.display = '';
+    // 
+};
+Chronus.prototype = {
+    clear: function() {
+        // clear the chronus display
+        this.stage.destroyChildren();
+        this.stage.clear();
+    },
+    scale: function(scale) {
+        this.stage.width(stageLen * scale.x );
+        this.stage.height(stageLen * scale.y );
+        this.table.scale(scale);
+        this.gallery.scale(scale);
+    },
+    update: function(bio) {
+        // draw the chronus based on a fresh bio
+        this.bio = bio;
+        var i, name, ring, layer, ringPeriods;
+
+        this.clear();
+
+        // TODO: make the name konva based
+        // TODO: create this element on object init
+        var header = document.getElementById('biocHeader');
+        name = header.firstChild;
+        header.innerHTML = '<h1>' + bio.full_name + '</h1>';
+
+        var layerParams = {stage: this.stage, bio: bio};
+        this.table = new TableLayer(layerParams);
+        this.gallery = new GalleryLayer(layerParams);
+    },
+    draw: function() {
+        this.table.draw();
+        this.gallery.draw();
+        this.stage.draw();
+    },
+    drawWelcome: function(welcome) {
+        var section, elm;
+
+        section = document.createElement('section');
+        section.className = 'centered';
+        welcome.appendChild(section);
+        elm = document.createElement('h1');
+        elm.innerHTML = this.bio.full_name;
+        section.appendChild(elm);
+        if (this.bio.date_of_birth_he) {
+            elm = document.createElement('h2');
+            elm.innerHTML = this.bio.date_of_birth_he + ' - ' + this.bio.date_of_passing_he;
+            section.appendChild(elm);
+        }
+        elm = document.createElement('h2');
+        elm.style.direction = 'ltr';
+        elm.innerHTML = this.bio.date_of_birth + ' - ' + this.bio.date_of_passing;
+        section.appendChild(elm);
+        elm = document.createElement('h2');
+        elm.innerHTML = '&#10048;';
+        section.appendChild(elm);
+        elm = document.createElement('h2');
+        elm.innerHTML = (this.bio.sex=='F')?'תהי נשמתה צרורה':'תהי נשמתו צרורה';
+        section.appendChild(elm);
+        elm = document.createElement('h2');
+        elm.innerHTML = 'בצרור החיים';
+        section.appendChild(elm);
+        elm = document.createElement('button');
+        elm.setAttribute('name', 'enter');
+        elm.className = 'enter';
+        elm.innerHTML = (this.bio.sex=='F')?'לזכרה':'לזכרו';
+        section.appendChild(elm);
+        section = document.createElement('section');
+        section.className = 'centered';
+        welcome.appendChild(section);
+        elm = document.createElement('img');
+        elm.width = 350;
+        elm.src = this.bio.cover_photo;
+        elm.alt = 'cover photo for '+this.bio.first_name;
+        section.appendChild(elm);
+    }
+};
+
+
+document.addEventListener("DOMContentLoaded", function() {
+	var container = document.getElementById('container');
+
+    window.chronus = new Chronus({container: 'container',
+                              width: container.offsetWidth,
+                              height: window.innerHeight,
+                              visible: true });
+    // -----------------------------
+    // needs refactoring
+	var myFamily = document.getElementById('myFamily');
     drawMyFamily();
+    // -----------------------------
 
 	//TODO: merge these three data sources
     var ref = firebase.database().ref('bios');
