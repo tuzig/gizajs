@@ -35,11 +35,8 @@ var stageLen = 1000,
 
 // the data
 var bio = {};
-// display elements
+// refactor into window.chronus.gallery.photoSwipe
 var gallery;
-// layers
-var tableLayer;
-var galleryLayer;
 
 function reverse(s){
         return s.split("").reverse().join("");
@@ -84,66 +81,186 @@ var TableLayer = function(params) {
 	this.stage.add(this.layer);
 };
 
-TableLayer.prototype.draw = function() {
-	var i, ring, ringSpans;
-	// start with the dates and the dials
-	this.addDates();
-    this.addDialsShapes();
-	// draw the life spans
-    if (bio.spans !== undefined) 
-        for (ring=0; ring < bio.spans.length; ring++) {
-            ringSpans = bio.spans[ring];
-            for (i=0; i < ringSpans.length; i++) {
-              var span = ringSpans[i];
-              this.addSpanShapes(span, 11-ring);
+TableLayer.prototype = {
+    draw: function() {
+        var i, ring, ringSpans;
+        // start with the dates and the dials
+        this.drawDials();
+        this.drawDates();
+        // draw the life spans
+        if (bio.spans !== undefined) 
+            for (ring=0; ring < bio.spans.length; ring++) {
+                ringSpans = bio.spans[ring];
+                for (i=0; i < ringSpans.length; i++) {
+                  var span = ringSpans[i];
+                  this.drawSpan(span, 11-ring);
+                }
             }
+
+        this.layer.draw();
+    },
+    scale: function (scale) {
+        var fontScale = Math.min(scale.x, scale.y);
+        this.arcsGroup.scale(scale);
+        this.textsGroup.scale(scale);
+        this.dialsGroup.scale(scale);
+
+        // scaling the movingShapes
+        var movingShapes = this.textsGroup.getChildren();
+        for (var i=0; i < movingShapes.length; i++ ) {
+            var path = movingShapes[i];
+            var attrs = {
+                x: this.layer.width()/2,
+                y: this.layer.height()/2
+            };
+            if (path.pathConfig)
+                attrs.data = this.getPath(path.pathConfig);
+            if (path.initialFontSize)
+                attrs.fontSize = path.initialFontSize*fontScale;
+            path.setAttrs(attrs);
         }
+        this.currentScale = scale;
+        this.layer.draw();
+    },
+    getPath: function(config) {
+      // config is expected to have ring, startDeg & endDeg
+      var myRingWidth = (config.ring+0.5) * ringHeight;
+      var scale = this.arcsGroup.scale();
 
-	this.layer.draw();
-};
+      var deg, rad, x, y;
 
-TableLayer.prototype.scale = function (scale) {
-	var fontScale = Math.min(scale.x, scale.y);
-	this.arcsGroup.scale(scale);
-	this.dialsGroup.scale(scale);
+      var ret = "M ";
 
-	// scaling the movingShapes
-	var movingShapes = this.textsGroup.getChildren();
-	for (var i=0; i < movingShapes.length; i++ ) {
-		var path = movingShapes[i];
-        var attrs = {
-			x: this.layer.width()/2,
-			y: this.layer.height()/2
-        };
-        if (path.pathConfig)
-			attrs.data = this.getPath(path.pathConfig);
-		if (path.initialFontSize)
-			attrs.fontSize = path.initialFontSize*fontScale;
-		path.setAttrs(attrs);
+      for (deg=config.startDeg+2; deg < config.endDeg; deg++) {
+
+        
+        rad = toRad(deg);
+        x = Math.round(Math.cos(rad)*myRingWidth)*scale.x;
+        y = Math.round(Math.sin(rad)*myRingWidth)*scale.y;
+        ret += x+" "+y+" L ";
+      }
+      ret = ret.slice(0,-3);
+      return ret;
+    },
+    drawSpan: function(span, ring) {
+        var ageSpan = span.end_age-span.start_age,
+            endDeg = span.end_age*years2deg-90,
+            startDeg = span.start_age*years2deg-90,
+            name,
+            fontSize, fontStyle,
+            glyphRotation,
+            text,
+            arcShape,
+            textShape,
+            i;
+
+     
+        if (startDeg > 0 && startDeg < 180) {
+            glyphRotation = 180;
+            name = span.name;
+        } else {
+            glyphRotation = 0;
+            name = reverse(span.name);
+        }
+        text = name ;
+        // add the arc 
+        arcShape = new Konva.Arc({
+                opacity: 0.3,
+                angle: endDeg-startDeg,
+                x: stageRadius,
+                y: stageRadius,
+                outerRadius: (ring+1)*ringHeight,
+                innerRadius: ring*ringHeight,
+                fill: '#fff',
+                stroke: '#81aa8d',
+                strokeWidth: 3,
+                rotation: startDeg
+              });
+        this.arcsGroup.add(arcShape);
+        // add the arc's text
+        if (span.name == 'יד מרדכי') {
+            fontSize = 14;
+            fontStyle='normal';
+        } else {
+            fontSize = 40;
+            fontStyle='bold';
+        }
+        textShape = new Konva.TextPath({
+                text: text,
+                fill: '#81aa8d',
+                fontFamily: 'Assistant',
+                fontStyle: fontStyle,
+                fontSize: fontSize,
+                glyphRotation: glyphRotation
+            });
+         textShape.initialFontSize = fontSize;
+         textShape.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
+                            group:this.textsGroup};
+         this.textsGroup.add(textShape);
+        if (span.description) {
+            arcShape.span = span;
+            textShape.span = span;
+            arcShape.on('click tap', showDescription);
+            textShape.on('click tap', showDescription);
+        }
+    },
+    drawDials: function() {
+        // returning 4 dials at 1/8. 3/8, 5/8 & 7/8. each dial is made from two 
+        // shapes - a line and a text.
+
+        // add a border for the whole thing
+        this.dialsGroup.add(
+            new Konva.Arc({
+                opacity: 0.3,
+                angle: totalDeg,
+                x: stageRadius,
+                y: stageRadius,
+                outerRadius: 12*ringHeight+4,
+                innerRadius: 12*ringHeight,
+                fill: '#81aa8d',
+                rotation: -90
+            })
+        );
+        for (var i=0; i <= maxAge; i++) {
+            var from = getPoint(i, 12);
+            var to = getPoint(i, 11.9);
+            this.dialsGroup.add(
+                new Konva.Line({
+                    points: [from.x, from.y, to.x,to.y],
+                    stroke: DIALS_COLOR,
+                    strokeWidth: (i % 10 == 0)?6:3,
+                    lineCap: 'round',
+                    lineJoin: 'round'
+                })
+            );
+       }
+    },
+    drawDates: function() {
+        var fontSize = 40; 
+
+        var dob = new Konva.TextPath({
+                                      fill: DIALS_COLOR,
+                                      fontSize: fontSize,
+                                      fontFamily: 'Assistant',
+                                      fontStyle: 'bold',
+                                      text: this.bio.date_of_birth,
+                                      }),
+            dop = new Konva.TextPath({
+                                      fill: DIALS_COLOR,
+                                      fontSize: fontSize,
+                                      fontStyle: 'bold',
+                                      fontFamily: 'Assistant',
+                                      text: this.bio.date_of_passing
+                                     });
+        dob.initialFontSize = fontSize;
+        dop.initialFontSize = fontSize;
+        dob.pathConfig = {ring: 9.8, startDeg: -96, endDeg: 100.4,
+                               group: this.textsGroup};
+        dop.pathConfig = {ring: 8.8, startDeg: -106, endDeg: 0.4,
+                               group: this.textsGroup};
+        this.textsGroup.add(dob);
+        this.textsGroup.add(dop);
     }
-	this.currentScale = scale;
-	this.layer.draw();
-};
-
-TableLayer.prototype.getPath = function(config) {
-  // config is expected to have ring, startDeg & endDeg
-  var myRingWidth = (config.ring+0.5) * ringHeight;
-  var scale = this.arcsGroup.scale();
-
-  var deg, rad, x, y;
-
-  var ret = "M ";
-
-  for (deg=config.startDeg+2; deg < config.endDeg; deg++) {
-
-    
-    rad = toRad(deg);
-    x = Math.round(Math.cos(rad)*myRingWidth)*scale.x;
-    y = Math.round(Math.sin(rad)*myRingWidth)*scale.y;
-    ret += x+" "+y+" L ";
-  }
-  ret = ret.slice(0,-3);
-  return ret;
 };
 
 function showDescription (ev) {
@@ -191,128 +308,6 @@ function showDescription (ev) {
     layer.draw();
 }
 
-TableLayer.prototype.addSpanShapes = function(span, ring) {
-    var ageSpan = span.end_age-span.start_age,
-        endDeg = span.end_age*years2deg-90,
-		startDeg = span.start_age*years2deg-90,
-		name,
-		fontSize, fontStyle,
-		glyphRotation,
-		text,
-        arcShape,
-		textShape,
-		i;
-
- 
-	if (startDeg > 0 && startDeg < 180) {
-		glyphRotation = 180;
-		name = span.name;
-	} else {
-		glyphRotation = 0;
-		name = reverse(span.name);
-	}
-	text = name ;
-	// add the arc 
-    arcShape = new Konva.Arc({
-            opacity: 0.3,
-            angle: endDeg-startDeg,
-            x: stageRadius,
-            y: stageRadius,
-            outerRadius: (ring+1)*ringHeight,
-            innerRadius: ring*ringHeight,
-            fill: '#fff',
-            stroke: '#81aa8d',
-            strokeWidth: 3,
-            rotation: startDeg
-          });
-	this.arcsGroup.add(arcShape);
-	// add the arc's text
-    if (span.name == 'יד מרדכי') {
-        fontSize = 14;
-        fontStyle='normal';
-    } else {
-        fontSize = 40;
-        fontStyle='bold';
-    }
-	textShape = new Konva.TextPath({
-			text: text,
-			fill: '#81aa8d',
-			fontFamily: 'Assistant',
-            fontStyle: fontStyle,
-			fontSize: fontSize,
-			glyphRotation: glyphRotation
-		});
-	 textShape.initialFontSize = fontSize;
-	 textShape.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
-	 				    group:this.textsGroup};
-	 this.textsGroup.add(textShape);
-    if (span.description) {
-        arcShape.span = span;
-        textShape.span = span;
-        arcShape.on('click tap', showDescription);
-        textShape.on('click tap', showDescription);
-    }
-};
-
-TableLayer.prototype.addDialsShapes = function() {
-	// returning 4 dials at 1/8. 3/8, 5/8 & 7/8. each dial is made from two 
-	// shapes - a line and a text.
-
-    // add a border for the whole thing
-    this.dialsGroup.add(
-        new Konva.Arc({
-            opacity: 0.3,
-            angle: totalDeg,
-            x: stageRadius,
-            y: stageRadius,
-            outerRadius: 12*ringHeight+4,
-            innerRadius: 12*ringHeight,
-            fill: '#81aa8d',
-            rotation: -90
-        })
-    );
-    for (var i=0; i <= maxAge; i++) {
-        var from = getPoint(i, 12);
-        var to = getPoint(i, 11.9);
-        this.dialsGroup.add(
-            new Konva.Line({
-                points: [from.x, from.y, to.x,to.y],
-                stroke: DIALS_COLOR,
-                strokeWidth: (i % 10 == 0)?6:3,
-                lineCap: 'round',
-                lineJoin: 'round'
-            })
-        );
-   }
-};
-
-TableLayer.prototype.addDates = function() {
-    var fontSize = 40; 
-
-    var dob = new Konva.TextPath({
-								  fill: DIALS_COLOR,
-								  fontSize: fontSize,
-								  fontFamily: 'Assistant',
-								  fontStyle: 'bold',
-								  text: bio.date_of_birth,
-								  }),
-        dop = new Konva.TextPath({
-								  fill: DIALS_COLOR,
-								  fontSize: fontSize,
-                                  fontStyle: 'bold',
-								  fontFamily: 'Assistant',
-								  fontStyle: 'bold',
-								  text: bio.date_of_passing
-								 });
-    dob.initialFontSize = fontSize;
-    dop.initialFontSize = fontSize;
-	dob.pathConfig = {ring: 9.8, startDeg: -96, endDeg: 100.4,
-						   group: this.textsGroup};
-	dop.pathConfig = {ring: 8.8, startDeg: -106, endDeg: 0.4,
-						   group: this.textsGroup};
-    this.textsGroup.add(dob, dop);
-};
-/* End of TableLayer */
 
 var GalleryLayer = function(params) {
 	this.stage = params.stage;
@@ -419,173 +414,11 @@ GalleryLayer.prototype.draw = function () {
     };
 };
 
-function requestFullScreen(element) {
-    // Supports most browsers and their versions.
-    var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
-
-    if (requestMethod) { // Native full screen.
-        requestMethod.call(element);
-    }
-}
-
-
-function drawMyFamily() {
-    var family = [['נויה דאון'],
-                  ['ליבי דאון לבית בלודז',
-                   'בני דאון'],
-                  ['איזבלה בלודז לבית גינסבורג',
-                   'דניאל בלודז',
-                   'רחל דאון לבית רייכר',
-                   'יצחק דאון לבית דואני']
-                 ];
-	var myFamily = document.getElementById('myFamily');
-    var face = new AngleFace({container: 'myFamily',
-                              scale: 8,
-                              startAngle: 0,
-                              rings: 8,
-                              endAngle: 360,
-                              fullScreen: true,
-                              visible: true });
-    var arc;
-
-    face.addBorder();
-    for (var r=0; r < family.length; r++) {
-        var arcLength = 360 / Math.pow(2, r);
-        for (var i=0; i < family[r].length; i++) {
-            var name = family[r][i];
-            arc = {text: name,
-                   ring: (r==0)?0.5:r*3,
-                   start: i*arcLength,
-                   len: arcLength,
-                   onClick: function (ev) {
-                      // ev.dial is very usefull
-                       route('/'+encodeURIComponent(ev.target.text));
-                   }};
-            face.addArc(arc);
-        }
-    }
-    face.draw();
-    myFamily.style.display = '';
-}
-
-route('/', function() {
-    route('giza/welcome');
-});
-
-route('/noya', function() {
-    var welcome = document.getElementById('welcome');
-    var myFamily = document.getElementById('myFamily');
-
-    welcome.style.display = 'none';
-    biochronus.style.display = 'none';
-    myFamily.style.display = '';
-});
-
-route('/*/photo/*', function(name, photoId) {
-    state = 'photo';
-    gallery = new PhotoSwipe(document.getElementById('photos'),
-                             PhotoSwipeUI_Default,
-                             galleryLayer.psImages);
-    gallery.init();
-    gallery.listen('close', function () {
-        route(name);
-    });
-});
-
-route('/*/welcome', function(encodedName) {
-	var footer = document.querySelector('footer');
-    var myFamily = document.getElementById('myFamily');
-    var name = decodeURIComponent(encodedName);
-    var welcome = document.getElementById('welcome');
-
-    myFamily.style.display = 'none';
-    biochronus.style.display = 'none';
-    var bio = window.bios[name];
-    window.chronus.update(bio);
-    window.chronus.drawWelcome(welcome);
-    welcome.style.display = '';
-    footer.style.display = '';
-    welcome.addEventListener("click", function () {
-            route('/'+name);
-    });
-});
-
-route('/*', function(encodedName) {
-    var welcome = document.getElementById('welcome');
-    var myFamily = document.getElementById('myFamily');
-	var footer = document.querySelector('footer');
-    var name = decodeURIComponent(encodedName);
-    var cid = 'stage-'+encodedName;
-    var containers = biochronus.querySelectorAll('.stage');
-
-    /*
-    welcome.style.display = 'none';
-    footer.style.display = 'none';
-    myFamily.style.display = 'none';
-    */
-    myFamily.style.display = 'none';
-    footer.style.display = 'none';
-    welcome.style.display = 'none';
-    var bio = window.bios[name];
-    console.log(bio);
-    window.chronus.update(bio);
-    window.chronus.draw();
-    // fscreen.requestFullscreen(document.body);
-    biochronus.style.display = '';
-    resizeBioChronus();
-});
-
-
-fscreen.addEventListener('fullscreenchange', function() {
-	if (!tableLayer) {
-		biochronus.style.display = 'none';
-		drawChronus(this.stage);
-        this.stage.draw();
-		biochronus.style.display = '';
-    }
-});
-
-function calcScale() {
-    return {x: (window.innerWidth - 20) / stageLen,
-		    y: (window.innerHeight * 0.91 - 20) / stageLen};
-}
-
-window.addEventListener('resize', resizeBioChronus);
-function resizeBioChronus() {
-    var scale = calcScale();
-    window.chronus.scale(scale)
-};
-
-function readBios(snapshot) {
-    // save the data we got. For now, it's the entire database as 
-    // an array of bios.
-    window.bios = snapshot.val();
-
-    for (var name in window.bios) {
-        var bio = window.bios[name];
-        var spans = [];
-        // to make it easier on the display we translate the spans into
-        // an array of ring arrays.
-        if (bio.spans !== undefined) {
-            for (var i = 0; i < bio.spans.length; i++) {
-                var span = bio.spans[i];
-                var ring = span.ring - 1;
-                if (ring >= spans.length)
-                    spans.push([span]);
-                else
-                    spans[ring].push(span);
-            }
-            bio.spans = spans;
-        }
-    }
-    route.start(true);
-}
-
 var Chronus = function (params) {
     this.params = params;
     // todo: create the welcome and biochronus here and simplif index.html
     this.welcome = document.getElementById('welcome');
-	this.biochronus = document.getElementById('biochronus');
+    this.biochronus = document.getElementById('biochronus');
 
     this.stage = new Konva.Stage(params);
     //TODO: make it resize
@@ -672,7 +505,162 @@ Chronus.prototype = {
         section.appendChild(elm);
     }
 };
+/* end of Chronus */
 
+
+function requestFullScreen(element) {
+    // Supports most browsers and their versions.
+    var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+
+    if (requestMethod) { // Native full screen.
+        requestMethod.call(element);
+    }
+}
+
+
+function drawMyFamily() {
+    var family = [['נויה דאון'],
+                  ['ליבי דאון לבית בלודז',
+                   'בני דאון'],
+                  ['איזבלה בלודז לבית גינסבורג',
+                   'דניאל בלודז',
+                   'רחל דאון לבית רייכר',
+                   'יצחק דאון לבית דואני']
+                 ];
+	var myFamily = document.getElementById('myFamily');
+    var face = new AngleFace({container: 'myFamily',
+                              scale: 8,
+                              startAngle: 0,
+                              rings: 8,
+                              endAngle: 360,
+                              fullScreen: true,
+                              visible: true });
+    var arc;
+
+    face.addBorder();
+    for (var r=0; r < family.length; r++) {
+        var arcLength = 360 / Math.pow(2, r);
+        for (var i=0; i < family[r].length; i++) {
+            var name = family[r][i];
+            arc = {text: name,
+                   ring: (r==0)?0.5:r*3,
+                   start: i*arcLength,
+                   len: arcLength,
+                   onClick: function (ev) {
+                      // ev.dial is very usefull
+                       route('/'+encodeURIComponent(ev.target.text));
+                   }};
+            face.addArc(arc);
+        }
+    }
+    face.draw();
+    myFamily.style.display = '';
+}
+
+route('/', function() {
+    route('giza/welcome');
+});
+
+route('/noya', function() {
+    var welcome = document.getElementById('welcome');
+    var myFamily = document.getElementById('myFamily');
+
+    welcome.style.display = 'none';
+    biochronus.style.display = 'none';
+    myFamily.style.display = '';
+});
+
+route('/*/photo/*', function(name, photoId) {
+    state = 'photo';
+    gallery = new PhotoSwipe(document.getElementById('photos'),
+                             PhotoSwipeUI_Default,
+                             window.chronus.gallery.psImages);
+    gallery.init();
+    gallery.listen('close', function () {
+        route(name);
+    });
+});
+
+route('/*/welcome', function(encodedName) {
+	var footer = document.querySelector('footer');
+    var myFamily = document.getElementById('myFamily');
+    var name = decodeURIComponent(encodedName);
+    var welcome = document.getElementById('welcome');
+
+    myFamily.style.display = 'none';
+    biochronus.style.display = 'none';
+    var bio = window.bios[name];
+    window.chronus.update(bio);
+    window.chronus.drawWelcome(welcome);
+    welcome.style.display = '';
+    footer.style.display = '';
+    welcome.addEventListener("click", function () {
+            route('/'+name);
+    });
+});
+
+route('/*', function(encodedName) {
+    var welcome = document.getElementById('welcome');
+    var myFamily = document.getElementById('myFamily');
+	var footer = document.querySelector('footer');
+    var name = decodeURIComponent(encodedName);
+    var cid = 'stage-'+encodedName;
+    var containers = biochronus.querySelectorAll('.stage');
+
+    /*
+    welcome.style.display = 'none';
+    footer.style.display = 'none';
+    myFamily.style.display = 'none';
+    */
+    myFamily.style.display = 'none';
+    footer.style.display = 'none';
+    welcome.style.display = 'none';
+    var bio = window.bios[name];
+    console.log(bio);
+    window.chronus.update(bio);
+    window.chronus.draw();
+    // fscreen.requestFullscreen(document.body);
+    biochronus.style.display = '';
+    resizeBioChronus();
+});
+
+function calcScale() {
+    return {x: (window.innerWidth - 20) / stageLen,
+		    y: (window.innerHeight * 0.91 - 20) / stageLen};
+}
+
+function resizeBioChronus() {
+    var scale = calcScale();
+    window.chronus.scale(scale);
+}
+window.addEventListener('resize', resizeBioChronus);
+fscreen.addEventListener('fullscreenchange', resizeBioChronus);
+
+
+function readBios(snapshot) {
+    // save the data we got. For now, it's the entire database as 
+    // an array of bios.
+    window.bios = snapshot.val();
+
+    for (var name in window.bios) {
+        var bio = window.bios[name];
+        var spans = [];
+        // to make it easier on the display we translate the spans into
+        // an array of ring arrays.
+        if (bio.spans !== undefined) {
+            for (var i = 0; i < bio.spans.length; i++) {
+                var span = bio.spans[i];
+                var ring = span.ring - 1;
+                if (ring >= spans.length)
+                    spans.push([span]);
+                else
+                    spans[ring].push(span);
+            }
+            bio.spans = spans;
+        }
+    }
+    route.start(true);
+}
 
 document.addEventListener("DOMContentLoaded", function() {
 	var container = document.getElementById('container');
@@ -687,10 +675,8 @@ document.addEventListener("DOMContentLoaded", function() {
     drawMyFamily();
     // -----------------------------
 
-	//TODO: merge these three data sources
     var ref = firebase.database().ref('bios');
     ref.on('value', readBios);
-
 });
 // Initialize Firebase
 firebase.initializeApp(fb_config);
