@@ -88,11 +88,12 @@ TableLayer.prototype = {
         this.drawDials();
         this.drawDates();
         // draw the life spans
-        if (bio.spans !== undefined) 
-            for (ring=0; ring < bio.spans.length; ring++) {
-                ringSpans = bio.spans[ring];
+        if (this.bio.spans !== undefined) 
+            for (ring=0; ring < this.bio.spans.length; ring++) {
+                ringSpans = this.bio.spans[ring];
                 for (i=0; i < ringSpans.length; i++) {
                   var span = ringSpans[i];
+                    console.log(span);
                   this.drawSpan(span, 11-ring);
                 }
             }
@@ -102,7 +103,6 @@ TableLayer.prototype = {
     scale: function (scale) {
         var fontScale = Math.min(scale.x, scale.y);
         this.arcsGroup.scale(scale);
-        // this.textsGroup.scale(scale);
         this.dialsGroup.scale(scale);
 
         // scaling the movingShapes
