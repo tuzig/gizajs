@@ -102,7 +102,7 @@ TableLayer.prototype = {
     scale: function (scale) {
         var fontScale = Math.min(scale.x, scale.y);
         this.arcsGroup.scale(scale);
-        this.textsGroup.scale(scale);
+        // this.textsGroup.scale(scale);
         this.dialsGroup.scale(scale);
 
         // scaling the movingShapes
