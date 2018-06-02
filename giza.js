@@ -264,6 +264,8 @@ TableLayer.prototype = {
 };
 
 function showDescription (ev) {
+    // TODO: fix this
+    return;
     var span = ev.target.span;
     var layer = new Konva.Layer();
     var canvas = layer.getCanvas()._canvas;
@@ -664,6 +666,7 @@ function readBios(snapshot) {
 
 document.addEventListener("DOMContentLoaded", function() {
 	var container = document.getElementById('container');
+	var myFamily = document.getElementById('myFamily');
 
     window.chronus = new Chronus({container: 'container',
                               width: container.offsetWidth,
@@ -671,8 +674,7 @@ document.addEventListener("DOMContentLoaded", function() {
                               visible: true });
     // -----------------------------
     // needs refactoring
-	var myFamily = document.getElementById('myFamily');
-    drawMyFamily();
+    // drawMyFamily();
     // -----------------------------
 
     var ref = firebase.database().ref('bios');
