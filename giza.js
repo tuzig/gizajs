@@ -160,7 +160,7 @@ TableLayer.prototype = {
             i;
 
      
-        if (startDeg > 0 && startDeg < 180) {
+        if (startDeg > -30 && startDeg < 220) {
             glyphRotation = 180;
             name = span.name;
         } else {
@@ -198,15 +198,19 @@ TableLayer.prototype = {
                 fontSize: fontSize,
                 glyphRotation: glyphRotation
             });
+         this.textsGroup.add(textShape);
          textShape.initialFontSize = fontSize;
          textShape.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
                             group:this.textsGroup};
-         this.textsGroup.add(textShape);
         if (span.description) {
-            arcShape.span = span;
-            textShape.span = span;
-            arcShape.on('click tap', showDescription);
-            textShape.on('click tap', showDescription);
+            textShape.description = span.description;
+            arcShape.description = span.description;
+            arcShape.on('click tap', function(ev) {
+                window.gizaDesc.draw(ev.target.description);
+            });
+            textShape.on('click tap', function(ev) {
+                window.gizaDesc.draw(ev.target.description);
+            });
         }
     },
     drawDials: function() {
@@ -421,6 +425,77 @@ GalleryLayer.prototype.draw = function () {
     };
 };
 
+var Description = function (params) {
+    this.params = params;
+    this.stage = params.stage;
+    this.layer = new Konva.Layer();
+    this.stage.add(this.layer);
+    this.layer.moveToTop();
+};
+
+
+Description.prototype = {
+    scale: function(scale) {;
+        this.stage.width(stageLen * scale.x );
+        this.stage.height(stageLen * scale.y );
+        this.table.scale(scale);
+        this.gallery.scale(scale);
+    },
+    show: function(text) {
+        if (!this.konvaText)
+            this.draw(text);
+        else {
+            this.konvaText.setText(text);
+            this.konvaBox.height(this.konvaText.height()+10);
+            this.konvaBox.width(this.konvaText.width()+10);
+            this.layer.draw();
+        }
+    },
+    draw: function(text) {
+        this.layer.destroyChildren();
+        this.konvaText = new Konva.Text({
+          x: 0,
+          y: 0,
+          text: text || 'טוען...',
+          fontSize: 22,
+          fontFamily: 'Assistant',
+          fill: theme.descripton_color,
+          width: this.stage.width()*0.5,
+          padding: 20,
+          align: 'right'
+        });
+        var h = this.konvaText.getHeight(),
+            w = this.konvaText.getWidth(),
+            pos = {x: stageCenter.x - w / 2,
+                   y: stageCenter.y - h / 2
+            };
+
+        this.konvaBox = new Konva.Rect({
+          stroke: theme.stroke_color,
+          strokeWidth: 5,
+          fill: theme.fill_color,
+          width: w*1.1,
+          height: h*1.1,
+          shadowColor: 'black',
+          shadowBlur: 20,
+          shadowOffset: {x : 10, y : 10},
+          shadowOpacity: 0.3,
+          cornerRadius: 10
+        });
+        // fix the position based on size so it'll be centerd
+
+        console.log(pos);
+
+        this.konvaText.position(pos);
+        this.konvaBox.position(pos);
+
+        this.layer.add(this.konvaBox);
+        this.layer.add(this.konvaText);
+        if (text)
+            this.layer.draw();
+    }
+};
+
 var Chronus = function (params) {
     this.params = params;
     // todo: create the welcome and biochronus here and simplif index.html
@@ -439,8 +514,10 @@ var Chronus = function (params) {
 Chronus.prototype = {
     clear: function() {
         // clear the chronus display
-        this.stage.destroyChildren();
-        this.stage.clear();
+        if (this.table)
+            this.table.layer.destroyChildren();
+        if (this.gallery)
+            this.gallery.layer.destroyChildren();
     },
     scale: function(scale) {
         this.stage.width(stageLen * scale.x );
@@ -450,6 +527,7 @@ Chronus.prototype = {
     },
     update: function(bio) {
         // draw the chronus based on a fresh bio
+        document.title = bio.full_name;
         this.bio = bio;
         // TODO: this one is still a global make it a property
         setMaxAge(parseInt(bio.date_of_passing.match(/\d{4}$/)) - 
@@ -679,6 +757,7 @@ document.addEventListener("DOMContentLoaded", function() {
                               width: container.offsetWidth,
                               height: window.innerHeight,
                               visible: true });
+    window.gizaDesc = new Description({stage: window.chronus.stage});
     // -----------------------------
     // needs refactoring
     // drawMyFamily();
