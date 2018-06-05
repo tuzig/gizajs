@@ -26,10 +26,16 @@ var stageLen = 1000,
     stageCenter = {x: stageLen / 2,
                    y: stageLen / 2},
     ringHeight = stageRadius / 12.5,
-    totalDeg = 350,
+    totalDeg = 350;
+
+var maxAge, years2deg;
     // refactor to this.scale and remove maxAge
-    maxAge = 95, 
-    years2deg = totalDeg / 95; // 95 is giza's age, should come from bio
+
+function setMaxAge(age) {
+    // TODO: these are globals, yacks!;
+    maxAge = age, 
+    years2deg = totalDeg / age; // 95 is giza's age, should come from bio
+}
 
 // three sizes: 0, 1 & 2 for small, medium, large
 
@@ -93,7 +99,6 @@ TableLayer.prototype = {
                 ringSpans = this.bio.spans[ring];
                 for (i=0; i < ringSpans.length; i++) {
                   var span = ringSpans[i];
-                    console.log(span);
                   this.drawSpan(span, 11-ring);
                 }
             }
@@ -446,6 +451,9 @@ Chronus.prototype = {
     update: function(bio) {
         // draw the chronus based on a fresh bio
         this.bio = bio;
+        // TODO: this one is still a global make it a property
+        setMaxAge(parseInt(bio.date_of_passing.match(/\d{4}$/)) - 
+                  parseInt(bio.date_of_birth.match(/\d{4}$/)));
         var i, name, ring, layer, ringPeriods;
 
         this.clear();
@@ -618,7 +626,6 @@ route('/*', function(encodedName) {
     footer.style.display = 'none';
     welcome.style.display = 'none';
     var bio = window.bios[name];
-    console.log(bio);
     window.chronus.update(bio);
     window.chronus.draw();
     // fscreen.requestFullscreen(document.body);
