@@ -263,9 +263,9 @@ TableLayer.prototype = {
                                      });
         dob.initialFontSize = fontSize;
         dop.initialFontSize = fontSize;
-        dob.pathConfig = {ring: 9.8, startDeg: -96, endDeg: 100.4,
+        dob.pathConfig = {ring: 9.8, startDeg: -92, endDeg: 100.4,
                                group: this.textsGroup};
-        dop.pathConfig = {ring: 8.8, startDeg: -106, endDeg: 0.4,
+        dop.pathConfig = {ring: 8.5, startDeg: -100, endDeg: 0.4,
                                group: this.textsGroup};
         this.textsGroup.add(dob);
         this.textsGroup.add(dop);
