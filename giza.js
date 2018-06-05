@@ -430,7 +430,6 @@ var Description = function (params) {
     this.stage = params.stage;
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
-    this.layer.moveToTop();
 };
 
 
@@ -488,10 +487,10 @@ Description.prototype = {
 
         this.konvaText.position(pos);
         this.konvaBox.position(pos);
-
         this.layer.add(this.konvaBox);
         this.layer.add(this.konvaText);
         if (text)
+            this.layer.moveToTop();
             this.layer.draw();
     }
 };
