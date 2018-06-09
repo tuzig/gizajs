@@ -553,6 +553,8 @@ Chronus.prototype = {
     drawWelcome: function(container) {
         var section, elm;
 
+        container.innerHTML='';
+       
         section = document.createElement('section');
         section.className = 'centered';
         elm = document.createElement('h1');
