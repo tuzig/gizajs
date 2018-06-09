@@ -10,7 +10,7 @@
 var DIALS_COLOR = '#81aa8d';
 var theme = {
     stroke_color: '#81aa8d',
-    descripton_color: '#fffadf',
+    textColor: '#fffadf',
     fill_color: '#5B946B'
 };
 var fb_config = {
@@ -286,7 +286,7 @@ function showDescription (ev) {
       text: span.description,
       fontSize: 22,
       fontFamily: 'Assistant',
-      fill: theme.descripton_color,
+      fill: theme.textColor,
       width: 600,
       padding: 20,
       align: 'right'
@@ -458,7 +458,7 @@ Description.prototype = {
           text: text || 'טוען...',
           fontSize: 22,
           fontFamily: 'Assistant',
-          fill: theme.descripton_color,
+          fill: theme.textColor,
           width: this.stage.width()*0.5,
           padding: 20,
           align: 'right'
@@ -556,6 +556,7 @@ Chronus.prototype = {
         container.innerHTML='';
        
         section = document.createElement('section');
+        section.style.paddingTop = '3em';
         section.className = 'centered';
         elm = document.createElement('h1');
         elm.innerHTML = this.bio.full_name;
@@ -578,11 +579,6 @@ Chronus.prototype = {
         elm = document.createElement('h2');
         elm.innerHTML = 'בצרור החיים';
         section.appendChild(elm);
-        elm = document.createElement('button');
-        elm.setAttribute('name', 'enter');
-        elm.className = 'enter';
-        elm.innerHTML = (this.bio.sex=='F')?'לזכרה':'לזכרו';
-        section.appendChild(elm);
         container.appendChild(section);
         /* begining of left section */
         section = document.createElement('section');
@@ -591,6 +587,18 @@ Chronus.prototype = {
         elm.width = 350;
         elm.src = this.bio.cover_photo;
         elm.alt = 'cover photo for '+this.bio.first_name;
+        section.appendChild(elm);
+        container.appendChild(section);
+        /* begining of bottom button section */
+        section = document.createElement('section');
+        section.style.textAlign = 'center';
+        section.style.width = '100%';
+        elm = document.createElement('button');
+        elm.setAttribute('name', 'enter');
+        elm.className = 'enter';
+        elm.style.backgroundColor = theme.fill_color;
+        elm.style.color = theme.textColor;
+        elm.innerHTML = (this.bio.sex=='F')?'לזכרה':'לזכרו';
         section.appendChild(elm);
         container.appendChild(section);
     }
