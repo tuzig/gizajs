@@ -272,54 +272,6 @@ TableLayer.prototype = {
     }
 };
 
-function showDescription (ev) {
-    // TODO: fix this
-    return;
-    var span = ev.target.span;
-    var layer = new Konva.Layer();
-    var canvas = layer.getCanvas()._canvas;
-
-    canvas.setAttribute('dir', 'rtl');
-    var text = new Konva.Text({
-      x: 0,
-      y: 0,
-      text: span.description,
-      fontSize: 22,
-      fontFamily: 'Assistant',
-      fill: theme.textColor,
-      width: 600,
-      padding: 20,
-      align: 'right'
-    });
-    var rect = new Konva.Rect({
-      stroke: theme.stroke_color,
-      strokeWidth: 5,
-      fill: theme.fill_color,
-      width: 600,
-      height: text.getHeight()+10,
-      shadowColor: 'black',
-      shadowBlur: 20,
-      shadowOffset: {x : 10, y : 10},
-      shadowOpacity: 0.3,
-      cornerRadius: 10
-    });
-    // fix the position based on size so it'll be centerd
-    var h = text.getHeight(),
-        w = text.getWidth(),
-        text_pos = {x: stageCenter.x - w / 2 -50,
-                    y: stageCenter.y - h / 2};
-
-    console.log(text_pos);
-
-    text.position(text_pos);
-    rect.position(text_pos);
-
-    layer.add(rect, text);
-    this.stage.add(layer);
-    layer.draw();
-}
-
-
 var GalleryLayer = function(params) {
 	this.stage = params.stage;
 	this.bio = params.bio;
