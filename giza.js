@@ -550,12 +550,11 @@ Chronus.prototype = {
         this.gallery.draw();
         this.stage.draw();
     },
-    drawWelcome: function(welcome) {
+    drawWelcome: function(container) {
         var section, elm;
 
         section = document.createElement('section');
         section.className = 'centered';
-        welcome.appendChild(section);
         elm = document.createElement('h1');
         elm.innerHTML = this.bio.full_name;
         section.appendChild(elm);
@@ -582,14 +581,16 @@ Chronus.prototype = {
         elm.className = 'enter';
         elm.innerHTML = (this.bio.sex=='F')?'לזכרה':'לזכרו';
         section.appendChild(elm);
+        container.appendChild(section);
+        /* begining of left section */
         section = document.createElement('section');
         section.className = 'centered';
-        welcome.appendChild(section);
         elm = document.createElement('img');
         elm.width = 350;
         elm.src = this.bio.cover_photo;
         elm.alt = 'cover photo for '+this.bio.first_name;
         section.appendChild(elm);
+        container.appendChild(section);
     }
 };
 /* end of Chronus */
