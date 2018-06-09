@@ -392,16 +392,6 @@ Description.prototype = {
         this.table.scale(scale);
         this.gallery.scale(scale);
     },
-    show: function(text) {
-        if (!this.konvaText)
-            this.draw(text);
-        else {
-            this.konvaText.setText(text);
-            this.konvaBox.height(this.konvaText.height()+10);
-            this.konvaBox.width(this.konvaText.width()+10);
-            this.layer.draw();
-        }
-    },
     draw: function(text) {
         this.layer.destroyChildren();
         this.konvaText = new Konva.Text({
