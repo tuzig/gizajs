@@ -192,7 +192,6 @@ TableLayer.prototype = {
             fontSize = 40;
             fontStyle='bold';
         }
-        console.log(fontSize);
         textShape = new Konva.TextPath({
                 text: text,
                 fill: '#81aa8d',
@@ -446,12 +445,6 @@ ArticleLayer.prototype = {
               opacity: 0.3,
               cornerRadius: 10
             });
-            /*
-            this.konvaBack.on('click tap', function(ev) {
-                ev.evt.stopPropagation();
-                window.chronus.article.draw();
-            });
-            */
             // fix the position based on size so it'll be centerd
 
 
@@ -787,25 +780,33 @@ route('/*/photo/*', function(name, photoId) {
     });
 });
 
-route('/*/welcome', function(encodedName) {
-	var footer = document.querySelector('footer');
-    var myFamily = document.getElementById('myFamily');
+function hideAllElements() {
+    [document.querySelector('footer'),
+     document.getElementById('myFamily'),
+     document.getElementById('biochronus'),
+     document.getElementById('welcome')]
+    .forEach(function (elm) {
+        elm.style.display = 'none';
+    });
+}
+route('/*', function(encodedName) {
     var name = decodeURIComponent(encodedName);
+    var bio = window.bios[name];
+
+	var footer = document.querySelector('footer');
     var welcome = document.getElementById('welcome');
 
-    myFamily.style.display = 'none';
-    biochronus.style.display = 'none';
-    var bio = window.bios[name];
+    hideAllElements();
     window.chronus.update(bio);
     window.chronus.drawWelcome(welcome);
     welcome.style.display = '';
     footer.style.display = '';
     welcome.addEventListener("click", function () {
-            route('/'+name);
+            route('/'+name+'/bio');
     });
 });
 
-route('/*', function(encodedName) {
+route('/*/bio', function(encodedName) {
     var welcome = document.getElementById('welcome');
     var myFamily = document.getElementById('myFamily');
 	var footer = document.querySelector('footer');
@@ -813,11 +814,6 @@ route('/*', function(encodedName) {
     var cid = 'stage-'+encodedName;
     var containers = biochronus.querySelectorAll('.stage');
 
-    /*
-    welcome.style.display = 'none';
-    footer.style.display = 'none';
-    myFamily.style.display = 'none';
-    */
     myFamily.style.display = 'none';
     footer.style.display = 'none';
     welcome.style.display = 'none';
