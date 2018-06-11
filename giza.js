@@ -684,10 +684,11 @@ Chronus.prototype = {
         section.appendChild(elm);
         container.appendChild(section);
         /* begining of left section */
+        var height = section.offsetHeight;
         section = document.createElement('section');
         section.className = 'centered';
         elm = document.createElement('img');
-        elm.width = 350;
+        elm.width = 400;
         elm.src = this.bio.cover_photo;
         elm.alt = 'cover photo for '+this.bio.first_name;
         section.appendChild(elm);
