@@ -152,8 +152,9 @@ TableLayer.prototype = {
         var ageSpan = span.end_age-span.start_age,
             endDeg = span.end_age*years2deg-90,
             startDeg = span.start_age*years2deg-90,
+            fontStyle = (span.description)?'bold':'normal',
+            fontSize,
             name,
-            fontSize, fontStyle,
             glyphRotation,
             text,
             arcShape,
@@ -171,7 +172,7 @@ TableLayer.prototype = {
         text = name ;
         // add the arc 
         arcShape = new Konva.Arc({
-                opacity: 0.3,
+                opacity: (fontStyle=='bold')?0.6:0.3,
                 angle: endDeg-startDeg,
                 x: stageRadius,
                 y: stageRadius,
@@ -191,6 +192,7 @@ TableLayer.prototype = {
             fontSize = 40;
             fontStyle='bold';
         }
+        console.log(fontSize);
         textShape = new Konva.TextPath({
                 text: text,
                 fill: '#81aa8d',
