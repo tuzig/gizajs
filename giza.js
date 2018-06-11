@@ -384,6 +384,10 @@ var ArticleLayer = function (params) {
     this.params = params;
     this.stage = params.stage;
     this.layer = new Konva.Layer();
+            this.layer.on('click tap', function(ev) {
+                ev.evt.stopPropagation();
+                window.chronus.article.draw();
+            });
     this.layer.getCanvas()._canvas.setAttribute('dir', 'rtl');
     this.stage.add(this.layer);
 };
@@ -405,23 +409,170 @@ ArticleLayer.prototype = {
         var h, w, pos;
         this.layer.destroyChildren();
 
-        if (!text)
-            return;
+        if (text) {
 
-        this.konvaText = new Konva.Text({
-          x: 0,
-          y: 0,
-          text: text,
-          fontSize: 22,
-          fontFamily: 'Assistant',
-          fill: theme.textColor,
-          width: this.width(),
-          padding: 20,
-          align: 'right'});
-        h = this.konvaText.getHeight();
-        w = this.konvaText.getWidth();
-        pos = {x: (this.w - w) / 2,
-               y: (this.h - h) / 2};
+            this.konvaText = new Konva.Text({
+              x: 0,
+              y: 0,
+              text: text,
+              fontSize: 22,
+              fontFamily: 'Assistant',
+              fill: theme.textColor,
+              width: this.width(),
+              padding: 20,
+              align: 'right'});
+            h = this.konvaText.getHeight();
+            w = this.konvaText.getWidth();
+            pos = {x: (this.w - w) / 2,
+                   y: (this.h - h) / 2};
+
+            this.konvaBox = new Konva.Rect({
+              stroke: theme.stroke_color,
+              strokeWidth: 5,
+              fill: theme.fill_color,
+              width: w,
+              height: h,
+              shadowColor: 'black',
+              shadowBlur: 20,
+              shadowOffset: {x : 10, y : 10},
+              shadowOpacity: 0.3,
+              cornerRadius: 10
+            });
+
+            this.konvaBack = new Konva.Rect({
+              fill: theme.fill_color,
+              width: this.w,
+              height: this.h,
+              opacity: 0.3,
+              cornerRadius: 10
+            });
+            /*
+            this.konvaBack.on('click tap', function(ev) {
+                ev.evt.stopPropagation();
+                window.chronus.article.draw();
+            });
+            */
+            // fix the position based on size so it'll be centerd
+
+
+            this.konvaText.position(pos);
+            this.konvaBox.position(pos);
+            this.layer.add(this.konvaBack);
+            this.layer.add(this.konvaBox);
+            this.layer.add(this.konvaText);
+            this.layer.moveToTop();
+        }
+        this.layer.draw();
+    }
+};
+
+var Chronus = function (params) {
+    this.params = params;
+    // todo: create the welcome and biochronus here and simplif index.html
+    this.welcome = document.getElementById('welcome');
+    this.biochronus = document.getElementById('biochronus');
+
+    this.stage = new Konva.Stage(params);
+    //TODO: make it resize
+    this.stage.width(params.width || 1000);
+    this.stage.height(params.height || 1000);
+    // next to line belong in an outer layer
+    // myFamily.style.display = '';
+    // biochronus.style.display = '';
+    // 
+};
+Chronus.prototype = {
+    clear: function() {
+        // clear the chronus display
+        if (this.table)
+            this.table.layer.destroyChildren();
+        if (this.gallery)
+            this.gallery.layer.destroyChildren();
+    },
+    scale: function(scale) {
+        this.stage.width(stageLen * scale.x );
+        this.stage.height(stageLen * scale.y );
+        this.table.scale(scale);
+        this.gallery.scale(scale);
+        this.article.scale(scale);
+    },
+    update: function(bio) {
+        // draw the chronus based on a fresh bio
+        document.title = bio.full_name;
+        this.bio = bio;
+        // TODO: this one is still a global make it a property
+        setMaxAge(parseInt(bio.date_of_passing.match(/\d{4}$/)) - 
+                  parseInt(bio.date_of_birth.match(/\d{4}$/)));
+        var i, name, ring, layer, ringPeriods;
+
+        this.clear();
+
+        // TODO: make the name konva based
+        // TODO: create this element on object init
+        var header = document.getElementById('biocHeader');
+        name = header.firstChild;
+        header.innerHTML = '<h1>' + bio.full_name + '</h1>';
+
+        this.createLayers({stage: this.stage, bio: bio});
+    },
+    createLayers: function(layerParams) {
+        this.table = new TableLayer(layerParams);
+        this.gallery = new GalleryLayer(layerParams);
+        this.article = new ArticleLayer(layerParams);
+    },
+    draw: function() {
+        this.table.draw();
+        this.gallery.draw();
+        this.stage.draw();
+    },
+    drawWelcome: function(container) {
+        var section, elm;
+
+        container.innerHTML='';
+       
+        section = document.createElement('section');
+        section.style.paddingTop = '3em';
+        section.className = 'centered';
+        elm = document.createElement('h1');
+        elm.innerHTML = this.bio.full_name;
+        section.appendChild(elm);
+        if (this.bio.date_of_birth_he) {
+            elm = document.createElement('h2');
+            elm.innerHTML = this.bio.date_of_birth_he + ' - ' + this.bio.date_of_passing_he;
+            section.appendChild(elm);
+        }
+        elm = document.createElement('h2');
+        elm.style.direction = 'ltr';
+        elm.innerHTML = this.bio.date_of_birth + ' - ' + this.bio.date_of_passing;
+        section.appendChild(elm);
+        elm = document.createElement('h2');
+        elm.innerHTML = '&#10048;';
+        section.appendChild(elm);
+        elm = document.createElement('h2');
+        elm.innerHTML = (this.bio.sex=='F')?'תהי נשמתה צרורה':'תהי נשמתו צרורה';
+        section.appendChild(elm);
+        elm = document.createElement('h2');
+        elm.innerHTML = 'בצרור החיים';
+        section.appendChild(elm);
+        container.appendChild(section);
+        /* begining of left section */
+        section = document.createElement('section');
+        section.className = 'centered';
+        elm = document.createElement('img');
+        elm.width = 350;
+        elm.src = this.bio.cover_photo;
+        elm.alt = 'cover photo for '+this.bio.first_name;
+        section.appendChild(elm);
+        container.appendChild(section);
+        /* begining of bottom button section */
+        section = document.createElement('section');
+        section.style.textAlign = 'center';
+        section.style.width = '100%';
+        elm = document.createElement('button');
+        elm.setAttribute('name', 'enter');
+        elm.className = 'enter';
+        elm.style.backgroundColor = theme.fill_color;
+        elm.style.color = theme.textColor;
 
         this.konvaBox = new Konva.Rect({
           stroke: theme.stroke_color,
@@ -440,6 +591,7 @@ ArticleLayer.prototype = {
 
         this.konvaText.position(pos);
         this.konvaBox.position(pos);
+        this.layer.add(this.konvaBack);
         this.layer.add(this.konvaBox);
         this.layer.add(this.konvaText);
         this.layer.moveToTop();
