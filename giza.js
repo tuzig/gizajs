@@ -11,7 +11,8 @@ var DIALS_COLOR = '#81aa8d';
 var theme = {
     stroke_color: '#81aa8d',
     textColor: '#fffadf',
-    fill_color: '#5B946B'
+    fill_color: '#5B946B',
+    articleSize: 0.8 // 1 is for full screen
 };
 var fb_config = {
     apiKey: "AIzaSyD0d0qCzvALRaBWdVdgAgrLucodjgWNu0Y",
@@ -206,10 +207,10 @@ TableLayer.prototype = {
             textShape.description = span.description;
             arcShape.description = span.description;
             arcShape.on('click tap', function(ev) {
-                window.gizaDesc.draw(ev.target.description);
+                window.chronus.article.draw(ev.target.description);
             });
             textShape.on('click tap', function(ev) {
-                window.gizaDesc.draw(ev.target.description);
+                window.chronus.article.draw(ev.target.description);
             });
         }
     },
@@ -377,46 +378,55 @@ GalleryLayer.prototype.draw = function () {
     };
 };
 
-var Description = function (params) {
+var ArticleLayer = function (params) {
     this.params = params;
     this.stage = params.stage;
     this.layer = new Konva.Layer();
+    this.layer.getCanvas()._canvas.setAttribute('dir', 'rtl');
     this.stage.add(this.layer);
 };
 
 
-Description.prototype = {
-    scale: function(scale) {;
-        this.stage.width(stageLen * scale.x );
-        this.stage.height(stageLen * scale.y );
-        this.table.scale(scale);
-        this.gallery.scale(scale);
+ArticleLayer.prototype = {
+    scale: function(scale) {
+        this.w = this.stage.width();
+        this.h = this.stage.height();
+        this.draw(this.text);
+    },
+    width: function() {
+        this.w = this.stage.width();
+        return (this.w > 600/theme.articleSize)? 600 : this.w*theme.articleSize;
     },
     draw: function(text) {
+        /* draws text in a box. pass a false to clear */
+        this.text = text;
+        var h, w, pos;
         this.layer.destroyChildren();
+
+        if (!text)
+            return;
+
         this.konvaText = new Konva.Text({
           x: 0,
           y: 0,
-          text: text || 'טוען...',
+          text: text,
           fontSize: 22,
           fontFamily: 'Assistant',
           fill: theme.textColor,
-          width: this.stage.width()*0.5,
+          width: this.width(),
           padding: 20,
-          align: 'right'
-        });
-        var h = this.konvaText.getHeight(),
-            w = this.konvaText.getWidth(),
-            pos = {x: stageCenter.x - w / 2,
-                   y: stageCenter.y - h / 2
-            };
+          align: 'right'});
+        h = this.konvaText.getHeight();
+        w = this.konvaText.getWidth();
+        pos = {x: (this.w - w) / 2,
+               y: (this.h - h) / 2};
 
         this.konvaBox = new Konva.Rect({
           stroke: theme.stroke_color,
           strokeWidth: 5,
           fill: theme.fill_color,
-          width: w*1.1,
-          height: h*1.1,
+          width: w,
+          height: h,
           shadowColor: 'black',
           shadowBlur: 20,
           shadowOffset: {x : 10, y : 10},
@@ -425,15 +435,13 @@ Description.prototype = {
         });
         // fix the position based on size so it'll be centerd
 
-        console.log(pos);
 
         this.konvaText.position(pos);
         this.konvaBox.position(pos);
         this.layer.add(this.konvaBox);
         this.layer.add(this.konvaText);
-        if (text)
-            this.layer.moveToTop();
-            this.layer.draw();
+        this.layer.moveToTop();
+        this.layer.draw();
     }
 };
 
@@ -465,6 +473,7 @@ Chronus.prototype = {
         this.stage.height(stageLen * scale.y );
         this.table.scale(scale);
         this.gallery.scale(scale);
+        this.article.scale(scale);
     },
     update: function(bio) {
         // draw the chronus based on a fresh bio
@@ -483,9 +492,12 @@ Chronus.prototype = {
         name = header.firstChild;
         header.innerHTML = '<h1>' + bio.full_name + '</h1>';
 
-        var layerParams = {stage: this.stage, bio: bio};
+        this.createLayers({stage: this.stage, bio: bio});
+    },
+    createLayers: function(layerParams) {
         this.table = new TableLayer(layerParams);
         this.gallery = new GalleryLayer(layerParams);
+        this.article = new ArticleLayer(layerParams);
     },
     draw: function() {
         this.table.draw();
@@ -709,7 +721,6 @@ document.addEventListener("DOMContentLoaded", function() {
                               width: container.offsetWidth,
                               height: window.innerHeight,
                               visible: true });
-    window.gizaDesc = new Description({stage: window.chronus.stage});
     // -----------------------------
     // needs refactoring
     // drawMyFamily();
