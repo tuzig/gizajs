@@ -148,11 +148,11 @@ TableLayer.prototype = {
       ret = ret.slice(0,-3);
       return ret;
     },
-    drawSpan: function(span, ring) {
-        var ageSpan = span.end_age-span.start_age,
-            endDeg = span.end_age*years2deg-90,
-            startDeg = span.start_age*years2deg-90,
-            fontStyle = (span.description)?'bold':'normal',
+    drawSpan: function(doc, ring) {
+        var ageSpan = doc.end_age-doc.start_age,
+            endDeg = doc.end_age*years2deg-90,
+            startDeg = doc.start_age*years2deg-90,
+            fontStyle = (doc.description)?'bold':'normal',
             fontSize,
             name,
             glyphRotation,
@@ -164,10 +164,10 @@ TableLayer.prototype = {
      
         if (startDeg > -30 && startDeg < 220) {
             glyphRotation = 180;
-            name = span.name;
+            name = doc.name;
         } else {
             glyphRotation = 0;
-            name = reverse(span.name);
+            name = reverse(doc.name);
         }
         text = name ;
         // add the arc 
@@ -185,7 +185,7 @@ TableLayer.prototype = {
               });
         this.arcsGroup.add(arcShape);
         // add the arc's text
-        if (span.name == 'יד מרדכי') {
+        if (doc.name == 'יד מרדכי') {
             fontSize = 14;
             fontStyle='normal';
         } else {
@@ -204,14 +204,16 @@ TableLayer.prototype = {
          textShape.initialFontSize = fontSize;
          textShape.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
                             group:this.textsGroup};
-        if (span.description) {
-            textShape.description = span.description;
-            arcShape.description = span.description;
+        if (doc.description) {
+
+            textShape.doc = arcShape.doc = doc;
+            textShape.ring = arcShape.ring = ring;
+
             arcShape.on('click tap', function(ev) {
-                window.chronus.article.draw(ev.target.description);
+                window.chronus.showDescription(ev.target);
             });
             textShape.on('click tap', function(ev) {
-                window.chronus.article.draw(ev.target.description);
+                window.chronus.showDescription(ev.target);
             });
         }
     },
@@ -702,6 +704,9 @@ Chronus.prototype = {
         elm.innerHTML = (this.bio.sex=='F')?'לזכרה':'לזכרו';
         section.appendChild(elm);
         container.appendChild(section);
+    },
+    showDescription: function(shape) {
+        this.article.draw(shape.doc.description);
     }
 };
 /* end of Chronus */
@@ -757,7 +762,7 @@ function drawMyFamily() {
 }
 
 route('/', function() {
-    route('giza/welcome');
+    route('/giza');
 });
 
 route('/noya', function() {
