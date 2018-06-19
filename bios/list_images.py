@@ -19,7 +19,8 @@ for filename in os.listdir(args.dir):
     if not filename.startswith('age_'):
         continue
     im = Image.open(os.path.join(args.dir, filename))
-    o[filename] = {
+    k = filename.split(".")[0]
+    o[k] = {
         "src": '/'.join((args.url, filename)),
         "w": im.size[0],
         "h": im.size[1],
