@@ -15,8 +15,6 @@ parser.add_argument('dir', help='where the age_* files are')
 parser.add_argument('--url', help='public url of the images dir')
 args = parser.parse_args()
 
-BUCKET_URL = "http://galeds.s3-website.eu-central-1.amazonaws.com/giza/"
-
 for filename in os.listdir(args.dir):
     if not filename.startswith('age_'):
         continue
