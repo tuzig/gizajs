@@ -444,8 +444,7 @@ ArticleLayer.prototype = {
               fill: theme.fill_color,
               width: this.w,
               height: this.h,
-              opacity: 0.3,
-              cornerRadius: 10
+              opacity: 0.4
             });
             // fix the position based on size so it'll be centerd
 
