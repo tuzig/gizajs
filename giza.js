@@ -486,9 +486,9 @@ Chronus.prototype = {
     scale: function(scale) {
         this.stage.width(stageLen * scale.x );
         this.stage.height(stageLen * scale.y );
-        this.table.scale(scale);
-        this.gallery.scale(scale);
-        this.article.scale(scale);
+        if (this.table) this.table.scale(scale);
+        if (this.gallery) this.gallery.scale(scale);
+        if (this.article) this.article.scale(scale);
     },
     update: function(bio) {
         // draw the chronus based on a fresh bio
@@ -607,7 +607,7 @@ function drawMyFamily() {
                               endAngle: 360,
                               fullScreen: true,
                               visible: true });
-    var arc;
+    var arc;getParameterByName('pid');
 
     face.addBorder();
     for (var r=0; r < family.length; r++) {
@@ -642,17 +642,6 @@ route('/noya', function() {
     myFamily.style.display = '';
 });
 
-route('/*/photo/*', function(name, photoId) {
-    state = 'photo';
-    gallery = new PhotoSwipe(document.getElementById('photos'),
-                             PhotoSwipeUI_Default,
-                             window.chronus.gallery.psImages);
-    gallery.init();
-    gallery.listen('close', function () {
-        route(name);
-    });
-});
-
 function hideAllElements() {
     [document.querySelector('footer'),
      document.getElementById('myFamily'),
@@ -679,13 +668,14 @@ route('/*', function(encodedName) {
     });
 });
 
-route('/*/bio', function(encodedName) {
+route('/*/bio..', function(encodedName) {
     var welcome = document.getElementById('welcome');
     var myFamily = document.getElementById('myFamily');
 	var footer = document.querySelector('footer');
     var name = decodeURIComponent(encodedName);
     var cid = 'stage-'+encodedName;
     var containers = biochronus.querySelectorAll('.stage');
+    var pid = route.query().pid;
 
     myFamily.style.display = 'none';
     footer.style.display = 'none';
@@ -693,9 +683,20 @@ route('/*/bio', function(encodedName) {
     var bio = window.bios[name];
     window.chronus.update(bio);
     window.chronus.draw();
-    // fscreen.requestFullscreen(document.body);
-    biochronus.style.display = '';
-    resizeBioChronus();
+    if (pid) {
+        gallery = new PhotoSwipe(document.getElementById('photos'),
+                                 PhotoSwipeUI_Default,
+                                 window.chronus.gallery.psImages);
+        gallery.init();
+        gallery.listen('close', function () {
+            route(name+'/bio');
+        });
+    }
+    else {
+        // fscreen.requestFullscreen(document.body);
+        biochronus.style.display = '';
+        resizeBioChronus();
+    }
 });
 
 function calcScale() {
