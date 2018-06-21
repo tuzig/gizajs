@@ -83,7 +83,7 @@ footer {
 }
 .centered { text-align: center}
 #biochronus {
-  background: url(background.jpg);
+  background: url(/images/background.jpg);
   background-position: center;
 }
 

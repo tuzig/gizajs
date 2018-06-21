@@ -5,11 +5,11 @@ install: clean
 	cp -r home/js $(TARGET)
 	cp -r home/images $(TARGET)
 	ln -s ../bios $(TARGET)              # link to local content
-	cp style.css $(TARGET)/css
+	cp biochronus.css $(TARGET)/css
 	cp home/css/*.css $(TARGET)/css
 	cp home/index.html $(TARGET)/home.html
 	cp angleface.js $(TARGET)
-	cp background.jpg $(TARGET)
+	cp background.jpg $(TARGET)/images
 	cp fscreen.js $(TARGET)
 	cp GitHub-Mark-32px.png $(TARGET)
 	cp giza.js $(TARGET)
