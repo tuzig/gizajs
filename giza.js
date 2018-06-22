@@ -527,6 +527,35 @@ Chronus.prototype = {
        
         section = document.createElement('section');
         section.style.paddingTop = '3em';
+        section.className = 'centered welcome';
+        elm = document.createElement('h1');
+        elm.innerHTML = this.bio.full_name;
+        section.appendChild(elm);
+        elm = document.createElement('img');
+        elm.width = 400;
+        elm.src = this.bio.cover_photo;
+        elm.alt = 'cover photo for '+this.bio.first_name;
+        section.appendChild(elm);
+        container.appendChild(section);
+        section = document.createElement('section');
+        section.style.textAlign = 'center';
+        section.style.width = '100%';
+        elm = document.createElement('button');
+        elm.setAttribute('name', 'enter');
+        elm.className = 'enter';
+        elm.style.backgroundColor = theme.fill_color;
+        elm.style.color = theme.textColor;
+        elm.innerHTML = "כנסו"
+        section.appendChild(elm);
+        container.appendChild(section);
+    },
+    drawMemorial: function(container) {
+        var section, elm;
+
+        container.innerHTML='';
+       
+        section = document.createElement('section');
+        section.style.paddingTop = '3em';
         section.className = 'centered';
         elm = document.createElement('h1');
         elm.innerHTML = this.bio.full_name;
@@ -660,9 +689,11 @@ route('/*', function(encodedName) {
 
     hideAllElements();
     window.chronus.update(bio);
-    window.chronus.drawWelcome(welcome);
+    if (bio.date_of_passing)
+        window.chronus.drawMemorial(welcome);
+    else
+        window.chronus.drawWelcome(welcome);
     welcome.style.display = '';
-    footer.style.display = '';
     welcome.addEventListener("click", function () {
             route('/'+name+'/bio');
     });
