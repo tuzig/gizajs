@@ -495,9 +495,10 @@ Chronus.prototype = {
         document.title = bio.full_name;
         this.bio = bio;
         // TODO: this one is still a global make it a property
-        setMaxAge(parseInt(bio.date_of_passing.match(/\d{4}$/)) ||
-                  (new Date()).getFullYear() - 
-                  parseInt(bio.date_of_birth.match(/\d{4}$/)));
+        var lastYear = parseInt(bio.date_of_passing.match(/\d{4}$/));
+        if (!lastYear)
+           lastYear = (new Date()).getFullYear();
+        setMaxAge(lastYear - parseInt(bio.date_of_birth.match(/\d{4}$/)));
         var i, name, ring, layer, ringPeriods;
 
         this.clear();
