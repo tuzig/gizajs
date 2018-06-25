@@ -33,7 +33,7 @@ var maxAge, years2deg;
     // refactor to this.scale and remove maxAge
 
 function setMaxAge(age) {
-    // TODO: these are globals, yacks!;
+    // TODO: these are globals, yacks!
     maxAge = age || 120; 
     years2deg = totalDeg / maxAge;
 }
@@ -495,7 +495,8 @@ Chronus.prototype = {
         document.title = bio.full_name;
         this.bio = bio;
         // TODO: this one is still a global make it a property
-        setMaxAge(parseInt(bio.date_of_passing.match(/\d{4}$/)) - 
+        setMaxAge(parseInt(bio.date_of_passing.match(/\d{4}$/)) ||
+                  (new Date()).getFullYear() - 
                   parseInt(bio.date_of_birth.match(/\d{4}$/)));
         var i, name, ring, layer, ringPeriods;
 
