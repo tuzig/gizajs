@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # the tests
     driver = webdriver.Firefox()
     driver.get("http://127.0.0.1:8888")
-    assert "גיזה" in driver.title
+    assert "טוזיג" in driver.title
     elem = WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located((By.NAME, "enter")))
     elem.click()
