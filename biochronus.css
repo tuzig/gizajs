@@ -321,7 +321,7 @@ footer {
 .pswp__button,
 .pswp__button--arrow--left:before,
 .pswp__button--arrow--right:before {
-  background: url(skin.svg) 0 0 no-repeat;
+  background: url(/images/skin.svg) 0 0 no-repeat;
   background-size: 264px 88px;
   }
 
@@ -330,7 +330,7 @@ footer {
   .pswp--svg .pswp__button,
   .pswp--svg .pswp__button--arrow--left:before,
   .pswp--svg .pswp__button--arrow--right:before {
-    background-image: url(skin.svg); }
+    background-image: url(/images/skin.svg); }
   .pswp--svg .pswp__button--arrow--left,
   .pswp--svg .pswp__button--arrow--right {
     background: none; } }

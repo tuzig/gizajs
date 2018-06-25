@@ -19,7 +19,7 @@ install:
 	cp -a photoswipe.min.js $(TARGET)
 	cp -a photoswipe-ui-default.js $(TARGET)
 	cp -a route.min.js $(TARGET)
-	cp -a skin.svg $(TARGET)
+	cp -a skin.svg $(TARGET)/images
 
 clean:
 	rm -rf $(TARGET)
