@@ -34,8 +34,8 @@ var maxAge, years2deg;
 
 function setMaxAge(age) {
     // TODO: these are globals, yacks!;
-    maxAge = age, 
-    years2deg = totalDeg / age; // 95 is giza's age, should come from bio
+    maxAge = age || 120; 
+    years2deg = totalDeg / maxAge;
 }
 
 // three sizes: 0, 1 & 2 for small, medium, large
