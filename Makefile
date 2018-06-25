@@ -1,13 +1,12 @@
 TARGET=dist
 
-install: clean
+install:
 	mkdir -p $(TARGET)/css
 	cp -a home/js $(TARGET)
 	cp -a home/css $(TARGET)
 	cp -a home/images $(TARGET)
 	cp -a home/fonts $(TARGET)
 	cp -a favicon.ico $(TARGET)
-	ln -s ../bios $(TARGET)              # link to local content
 	cp -a biochronus.css $(TARGET)/css
 	cp -a home/index.html $(TARGET)/home.html
 	cp -a angleface.js $(TARGET)
@@ -25,6 +24,6 @@ install: clean
 clean:
 	rm -rf $(TARGET)
 
-deploy: install
+deploy: clean install
 	firebase deploy
 
