@@ -346,7 +346,7 @@ GalleryLayer.prototype.draw = function () {
                 y: (loc.y-0)*scale.y,
                 width: spriteFrames[i].frame.w*imageScale,
                 height: spriteFrames[i].frame.h*imageScale,
-                strokeWidth: 5,
+                strokeWidth: 3,
                 stroke: '#5B946B',
                 image: spriteSheet,
                 shadowColor: 'black',
