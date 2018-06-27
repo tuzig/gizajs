@@ -2,10 +2,10 @@ TARGET=dist
 
 install:
 	mkdir -p $(TARGET)/css
-	cp -a home/js $(TARGET)
-	cp -a home/css $(TARGET)
-	cp -a home/images $(TARGET)
-	cp -a home/fonts $(TARGET)
+	cp -a js $(TARGET)
+	cp -a css $(TARGET)
+	cp -a images $(TARGET)
+	cp -a fonts $(TARGET)
 	cp -a favicon.ico $(TARGET)
 	cp -a biochronus.css $(TARGET)/css
 	cp -a home/index.html $(TARGET)/home.html
