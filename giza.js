@@ -470,10 +470,6 @@ var Chronus = function (params) {
     //TODO: make it resize
     this.stage.width(params.width || 1000);
     this.stage.height(params.height || 1000);
-    // next to line belong in an outer layer
-    // myFamily.style.display = '';
-    // biochronus.style.display = '';
-    // 
 };
 Chronus.prototype = {
     clear: function() {
@@ -661,7 +657,9 @@ function drawMyFamily() {
 }
 
 route('/', function() {
-    route('/giza');
+    hideAllElements();
+    var home = document.getElementById('home-page');
+    home.style.display = '';
 });
 
 route('/noya', function() {
@@ -669,28 +667,36 @@ route('/noya', function() {
     var myFamily = document.getElementById('myFamily');
 
     welcome.style.display = 'none';
-    biochronus.style.display = 'none';
     myFamily.style.display = '';
 });
 
-function hideAllElements() {
+function hideAllElements(bio) {
+    // hide all elements
     [document.querySelector('footer'),
      document.getElementById('myFamily'),
      document.getElementById('biochronus'),
+     document.getElementById('home-page'),
      document.getElementById('welcome')]
     .forEach(function (elm) {
         elm.style.display = 'none';
     });
 }
+function initChronus(bio) {
+    hideAllElements();
+    if (!window.chronus)
+        window.chronus = new Chronus({container: 'biocFace',
+                                  height: window.innerHeight,
+                                  visible: true });
+    window.chronus.update(bio);
+}
 route('/*', function(encodedName) {
     var name = decodeURIComponent(encodedName);
     var bio = window.bios[name];
 
-	var footer = document.querySelector('footer');
     var welcome = document.getElementById('welcome');
 
-    hideAllElements();
-    window.chronus.update(bio);
+    initChronus(bio);
+
     if (bio.date_of_passing)
         window.chronus.drawMemorial(welcome);
     else
@@ -702,19 +708,12 @@ route('/*', function(encodedName) {
 });
 
 route('/*/bio..', function(encodedName) {
-    var welcome = document.getElementById('welcome');
-    var myFamily = document.getElementById('myFamily');
-	var footer = document.querySelector('footer');
     var name = decodeURIComponent(encodedName);
-    var cid = 'stage-'+encodedName;
-    var containers = biochronus.querySelectorAll('.stage');
     var pid = route.query().pid;
-
-    myFamily.style.display = 'none';
-    footer.style.display = 'none';
-    welcome.style.display = 'none';
     var bio = window.bios[name];
-    window.chronus.update(bio);
+
+    initChronus(bio);
+
     window.chronus.draw();
     if (pid) {
         gallery = new PhotoSwipe(document.getElementById('photos'),
@@ -774,10 +773,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	var container = document.getElementById('container');
 	var myFamily = document.getElementById('myFamily');
 
-    window.chronus = new Chronus({container: 'container',
-                              width: container.offsetWidth,
-                              height: window.innerHeight,
-                              visible: true });
     // -----------------------------
     // needs refactoring
     // drawMyFamily();
