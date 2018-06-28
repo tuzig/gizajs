@@ -486,10 +486,13 @@ Chronus.prototype = {
         if (this.gallery) this.gallery.scale(scale);
         if (this.article) this.article.scale(scale);
     },
-    update: function(bio) {
+    update: function(slug) {
         // draw the chronus based on a fresh bio
-        document.title = bio.full_name;
+        this.clear();
+        var bio = window.bios[slug];
+        this.slug = slug;
         this.bio = bio;
+        document.title = bio.full_name;
         // TODO: this one is still a global make it a property
         var lastYear = parseInt(bio.date_of_passing.match(/\d{4}$/));
         if (!lastYear)
@@ -497,14 +500,11 @@ Chronus.prototype = {
         setMaxAge(lastYear - parseInt(bio.date_of_birth.match(/\d{4}$/)));
         var i, name, ring, layer, ringPeriods;
 
-        this.clear();
 
         // TODO: make the name konva based
         // TODO: create this element on object init
         var header = document.getElementById('biocHeader');
-        name = header.firstChild;
         header.innerHTML = '<h1>' + bio.full_name + '</h1>';
-
         this.createLayers({stage: this.stage, bio: bio});
     },
     createLayers: function(layerParams) {
@@ -681,23 +681,23 @@ function hideAllElements(bio) {
         elm.style.display = 'none';
     });
 }
-function initChronus(bio) {
+function initChronus(slug) {
     hideAllElements();
     if (!window.chronus)
         window.chronus = new Chronus({container: 'biocFace',
                                   height: window.innerHeight,
                                   visible: true });
-    window.chronus.update(bio);
+
+    window.chronus.update(slug);
 }
 route('/*', function(encodedName) {
     var name = decodeURIComponent(encodedName);
-    var bio = window.bios[name];
 
     var welcome = document.getElementById('welcome');
 
-    initChronus(bio);
+    initChronus(name);
 
-    if (bio.date_of_passing)
+    if (window.chronus.bio.date_of_passing)
         window.chronus.drawMemorial(welcome);
     else
         window.chronus.drawWelcome(welcome);
@@ -710,11 +710,10 @@ route('/*', function(encodedName) {
 route('/*/bio..', function(encodedName) {
     var name = decodeURIComponent(encodedName);
     var pid = route.query().pid;
-    var bio = window.bios[name];
 
-    initChronus(bio);
-
+    initChronus(name);
     window.chronus.draw();
+
     if (pid) {
         gallery = new PhotoSwipe(document.getElementById('photos'),
                                  PhotoSwipeUI_Default,
