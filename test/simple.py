@@ -9,6 +9,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 httpd = None
 
+PORT = 8765
+
 
 def run_server(httpd):
     sa = httpd.socket.getsockname()
@@ -23,12 +25,12 @@ def run_server(httpd):
 
 if __name__ == '__main__':
     # server setup
-    httpd = HTTPServer(("", 8888), SimpleHTTPRequestHandler)
+    httpd = HTTPServer(("", PORT), SimpleHTTPRequestHandler)
     Thread(target=run_server, args=(httpd, )).start()
 
     # the tests
     driver = webdriver.Firefox()
-    driver.get("http://127.0.0.1:8888")
+    driver.get(f"http://127.0.0.1:{PORT}")
     assert "טוזיג" in driver.title
     elem = WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located((By.NAME, "enter")))
