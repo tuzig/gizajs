@@ -699,6 +699,8 @@ function initChronus(slug, cb) {
     }
     if (window.chronus.slug != slug)
         window.chronus.get(slug, cb);
+    else
+        cb(window.chronus.bio);
 }
 route('/*', function(encodedName) {
     var name = decodeURIComponent(encodedName);
