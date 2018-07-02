@@ -529,8 +529,10 @@ blockquote p {
 	line-height: 0;
 }
 .team-member .team-thumb img {
-	width: 100%;
-	height: auto;
+	width: auto;
+	max-height: 300px;
+    display: block;
+    margin: 0 auto;
 }
 .team-member .team-desc {
 	padding: 10px;
