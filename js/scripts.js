@@ -20,12 +20,9 @@ $('.video_slide').css("height",height_responsive);
 var   window_height = $(window).height(),
       testMobile,
 	  loadingError = '<p class="error">The Content cannot be loaded.</p>',
-	  nameError = '<div class="alert-message error">Please enter your name.<span class="close" href="#">x</span></div>',
-	  emailError = '<div class="alert-message error">Please enter your e-mail address.<span class="close" href="#">x</span></div>',
-	  invalidEmailError = '<div class="alert-message error">Please enter a valid e-mail address.<span class="close" href="#">x</span></div>',	  
-	  subjectError = '<div class="alert-message error">Please enter the subject.<span class="close" href="#">x</span></div>',
-	  messageError = '<div class="alert-message error">Please enter your message.<span class="close" href="#">x</span></div>',	
-	  mailSuccess = '<div class="alert-message success">Your message has been sent. Thank you!<span class="close" href="#">x</span></div>', 
+	  nameError = '<div class="alert-message error">אנא הכניסו את שמכן.<span class="close" href="#">x</span></div>',
+	  emailError = '<div class="alert-message error">אנא הכניסו כתובת דואל חוקית.<span class="close" href="#">x</span></div>',	  
+	  mailSuccess = '<div class="alert-message success">הטופס נשלח בהצלחה, נחזור אליך בהקדם &#128591; <span class="close" href="#">x</span></div>', 
 	  mailResult = $('#contact .result'),
       current,
 	  next, 
@@ -312,48 +309,23 @@ function home_parallax() {
 
     $("#contact form").submit(function()
     {
-        var form = $(this);
-        var formParams = form.serialize();
-        $.ajax(
-        {
-            url: 'contact.php',
-            type: 'POST',
-            traditional: true,
-            data: formParams,
-            success: function(data){
-                var response = jQuery.parseJSON(data);				
-                if(response.success)
-                {   $('#contact form').slideUp().height('0');
-                    $('#contact .result').append(mailSuccess);
-                }
-                else
-                {
-				   for(i=0; i<response.errors.length; i++){
-					 if(response.errors[i].error == 'empty_name')  {                          
-					   mailResult.append(nameError);
-					 }
-					 if(response.errors[i].error == 'empty_email')  {                          
-					   mailResult.append(emailError);
-					 }
-					 if(response.errors[i].error == 'empty_subject')  {                          
-					   mailResult.append(subjectError);
-					 }
-					 if(response.errors[i].error == 'empty_message')  {                          
-					   mailResult.append(messageError);
-					 }
-					 if(response.errors[i].error == 'invalid'){
-						mailResult.append(invalidEmailError);
-					 }
-				   }
-                }
-            }
-        })
-        return false;
-    });
-	
+        var email = this.email.value;
+        var name = this.name.value;
 
-  
-
+        if (!( /(.+)@(.+){2,}\.(.+){2,}/.test(email)))
+            mailResult.append(emailError);
+        else if (name.length < 3)
+            mailResult.append(nameError);
+        else 
+            firebase.database().ref('forms/register/').push().set({
+                name: name,
+                email: email,
+                message: this.message.value
+            }, function(data) {
+                $('#contact form').slideUp().height('0');
+                $('#contact .result').append(mailSuccess);
+            });
+});
 /*----------------------------------------------------*/
 // LOAD PROJECT
 /*----------------------------------------------------*/ 

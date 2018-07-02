@@ -398,28 +398,26 @@
 	   <!-- START CONTACT BOX -->
       <div class="contact-box">
         <!-- START CONTACT FORM -->
-         <div id="contact-form">			
-            <form action="#" method="post">
-           
+         <div id="register-form">			
+            <form onsubmit="return submitForm(this);">
                 <div id="contact-input">
                  <!--[if IE]>
                     <label for="name">Name</label>
                 <![endif]-->
-                  <input type="text" name="contact[name]" id="name" placeholder="Name (required)" >
+                  <input type="text" name="contact[name]" id="name" placeholder="שם (חובה)" >
                    <!--[if IE]>
                    		<label for="email">Email</label>
                     <![endif]-->
-                  <input type="text" name="contact[email]" id="email" placeholder="Email (required)">
+                  <input type="text" name="contact[email]" id="email" placeholder="דואל (חובה)">
                    <!--[if IE]>
                    		<label for="subject">Subject</label>
                     <![endif]-->
-                  <input type="text" name="contact[subject]" id="subject" placeholder="Subject" >
                 </div>
                 <div id="contact-textarea">
                  <!--[if IE]>
                    		<label for="message">Your Message Here</label>
                     <![endif]-->
-                  <textarea name="contact[message]" id="message" cols="39" rows="4" placeholder="Your Message"></textarea>
+                  <textarea name="contact[message]" id="message" cols="39" rows="4" placeholder="ספרו לנו עבור מי תירצו להכין אתר"></textarea>
                 </div>
                 <div id="contact-submit">
                   <div>
