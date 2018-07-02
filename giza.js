@@ -464,13 +464,13 @@ var Chronus = function (params) {
     this.params = params;
     // todo: create the welcome and biochronus here and simplif index.html
     this.welcome = document.getElementById('welcome');
-    this.biochronus = document.getElementById('biochronus');
 
     this.stage = new Konva.Stage(params);
     //TODO: make it resize
     this.stage.width(params.width || 1000);
     this.stage.height(params.height || 1000);
 };
+
 Chronus.prototype = {
     clear: function() {
         // clear the chronus display
@@ -486,26 +486,30 @@ Chronus.prototype = {
         if (this.gallery) this.gallery.scale(scale);
         if (this.article) this.article.scale(scale);
     },
-    update: function(slug) {
-        // draw the chronus based on a fresh bio
+    get: function(slug, cb) {
+        // get a bio and display the chronus
+        var that = this;
         this.clear();
-        var bio = window.bios[slug];
-        this.slug = slug;
-        this.bio = bio;
-        document.title = bio.full_name;
-        // TODO: this one is still a global make it a property
-        var lastYear = parseInt(bio.date_of_passing.match(/\d{4}$/));
-        if (!lastYear)
-           lastYear = (new Date()).getFullYear();
-        setMaxAge(lastYear - parseInt(bio.date_of_birth.match(/\d{4}$/)));
-        var i, name, ring, layer, ringPeriods;
+        // TODO: loading....
+        readBio(slug, function (bio) {
+            that.slug = slug;
+            that.bio = bio;
+            document.title = bio.full_name;
+            // TODO: that one is still a global make it a property
+            var lastYear = parseInt(bio.date_of_passing.match(/\d{4}$/));
+            if (!lastYear)
+               lastYear = (new Date()).getFullYear();
+            setMaxAge(lastYear - parseInt(bio.date_of_birth.match(/\d{4}$/)));
+            var i, name, ring, layer, ringPeriods;
 
 
-        // TODO: make the name konva based
-        // TODO: create this element on object init
-        var header = document.getElementById('biocHeader');
-        header.innerHTML = '<h1>' + bio.full_name + '</h1>';
-        this.createLayers({stage: this.stage, bio: bio});
+            // TODO: make the name konva based
+            // TODO: create that element on object init
+            var header = document.getElementById('biocHeader');
+            header.innerHTML = '<h1>' + bio.full_name + '</h1>';
+            that.createLayers({stage: that.stage, bio: bio});
+            cb(bio);
+        });
     },
     createLayers: function(layerParams) {
         this.table = new TableLayer(layerParams);
@@ -658,8 +662,8 @@ function drawMyFamily() {
 
 route('/', function() {
     hideAllElements();
-    var home = document.getElementById('home-page');
-    home.style.display = '';
+    document.getElementById('home-page').style.display = '';
+    document.getElementById('back-to-top').style.display = '';
 });
 
 route('/noya', function() {
@@ -676,34 +680,37 @@ function hideAllElements(bio) {
      document.getElementById('myFamily'),
      document.getElementById('biochronus'),
      document.getElementById('home-page'),
+     document.getElementById('back-to-top'),
      document.getElementById('welcome')]
     .forEach(function (elm) {
         elm.style.display = 'none';
     });
 }
-function initChronus(slug) {
+function initChronus(slug, cb) {
     hideAllElements();
     if (!window.chronus)
         window.chronus = new Chronus({container: 'biocFace',
                                   height: window.innerHeight,
                                   visible: true });
-
-    window.chronus.update(slug);
+    if (window.chronus.slug != slug)
+        window.chronus.get(slug, cb);
 }
 route('/*', function(encodedName) {
     var name = decodeURIComponent(encodedName);
 
-    var welcome = document.getElementById('welcome');
 
-    initChronus(name);
-
-    if (window.chronus.bio.date_of_passing)
-        window.chronus.drawMemorial(welcome);
-    else
-        window.chronus.drawWelcome(welcome);
-    welcome.style.display = '';
-    welcome.addEventListener("click", function () {
-            route('/'+name+'/bio');
+    initChronus(name, function (bio) {
+        var welcome = document.getElementById('welcome');
+        if (bio.date_of_passing)
+            window.chronus.drawMemorial(welcome);
+        else
+            window.chronus.drawWelcome(welcome);
+        welcome.style.display = '';
+        var welcome = document.getElementById('welcome');
+        welcome.addEventListener("click tap", function () {
+                window.location.href='/'+name+'/bio';
+                route.start();
+        });
     });
 });
 
@@ -711,23 +718,25 @@ route('/*/bio..', function(encodedName) {
     var name = decodeURIComponent(encodedName);
     var pid = route.query().pid;
 
-    initChronus(name);
-    window.chronus.draw();
+    initChronus(name, function (bio) { 
+        var biochronus = document.getElementById('biochronus');
 
-    if (pid) {
-        gallery = new PhotoSwipe(document.getElementById('photos'),
-                                 PhotoSwipeUI_Default,
-                                 window.chronus.gallery.psImages);
-        gallery.init();
-        gallery.listen('close', function () {
-            route(name+'/bio');
-        });
-    }
-    else {
-        // fscreen.requestFullscreen(document.body);
-        biochronus.style.display = '';
+        window.chronus.draw();
         resizeBioChronus();
-    }
+        if (pid) {
+            gallery = new PhotoSwipe(document.getElementById('photos'),
+                                     PhotoSwipeUI_Default,
+                                     window.chronus.gallery.psImages);
+            gallery.init();
+            gallery.listen('close', function () {
+                route(name+'/bio');
+            });
+        }
+        else {
+            // fscreen.requestFullscreen(document.body);
+            biochronus.style.display = '';
+        }
+    });
 });
 
 function calcScale() {
@@ -743,13 +752,13 @@ window.addEventListener('resize', resizeBioChronus);
 fscreen.addEventListener('fullscreenchange', resizeBioChronus);
 
 
-function readBios(snapshot) {
+function readBio(slug, cb) {
     // save the data we got. For now, it's the entire database as 
     // an array of bios.
-    window.bios = snapshot.val();
-
-    for (var name in window.bios) {
-        var bio = window.bios[name];
+    var ref = firebase.database().ref('bios/'+slug);
+    ref.on('value', function (snapshot) {
+        var bio = snapshot.val();
+        bio.slug = slug;
         var spans = [];
         // to make it easier on the display we translate the spans into
         // an array of ring arrays.
@@ -764,8 +773,8 @@ function readBios(snapshot) {
             }
             bio.spans = spans;
         }
-    }
-    route.start(true);
+        cb(bio)
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -777,8 +786,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // drawMyFamily();
     // -----------------------------
 
-    var ref = firebase.database().ref('bios');
-    ref.on('value', readBios);
+    route.start(true);
 });
 // Initialize Firebase
 firebase.initializeApp(fb_config);
+// and the router
+route.base('/');

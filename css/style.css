@@ -38,8 +38,8 @@ BEGIN THEME STYLESHEET
 --------------------------------------------------------*/
 @font-face {
 	font-family: 'BebasNeueRegular';
-	src: url('../fonts/BebasNeue-webfont.eot');
-	src: url('../fonts/BebasNeue-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/BebasNeue-webfont.woff') format('woff'), url('../fonts/BebasNeue-webfont.ttf') format('truetype'), url('../fonts/BebasNeue-webfont.svg#BebasNeueRegular') format('svg');
+	src: url('/fonts/BebasNeue-webfont.eot');
+	src: url('/fonts/BebasNeue-webfont.eot?#iefix') format('embedded-opentype'), url('/fonts/BebasNeue-webfont.woff') format('woff'), url('/fonts/BebasNeue-webfont.ttf') format('truetype'), url('/fonts/BebasNeue-webfont.svg#BebasNeueRegular') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -523,7 +523,7 @@ nav.light .main-menu li.active a, nav.dark .main-menu li.active a {
 /*-----------------------------------------------------------------------------------*/
 
 #home.home-fullscreenslider {
-	background: url(../images/pattern.png);
+	background: url(/images/pattern.png);
 	position: relative;
 	overflow: hidden;
 	height: 100%;
@@ -557,7 +557,7 @@ nav.light .main-menu li.active a, nav.dark .main-menu li.active a {
 	overflow:hidden;
 }
 .overlay {
-	background: url(../images/pattern.png);
+	background: url(/images/pattern.png);
 	width: 100%;
 	position: absolute;
 	overflow:hidden;
@@ -576,7 +576,7 @@ nav.light .main-menu li.active a, nav.dark .main-menu li.active a {
 /* PARALLAX SECTION 1
 --------------------------------------------------------*/
 .bg1 {
-	background-image: url(../images/parallax/parallax1.jpg);
+	background-image: url(/images/parallax/parallax1.jpg);
 }
 p.quote {
 	font-family: 'BebasNeueRegular', sans-serif;
@@ -615,7 +615,7 @@ p.quote {
 --------------------------------------------------------*/
 	
 .bg2 {
-	background-image: url(../images/parallax/parallax2.jpg);
+	background-image: url(/images/parallax/parallax2.jpg);
 }
 .twitter-slider {
 	width: 85%;
@@ -683,7 +683,7 @@ p.quote {
 --------------------------------------------------------*/
 
 .bg3 {
-	background-image: url(../images/parallax/parallax3.jpg);
+	background-image: url(/images/parallax/parallax3.jpg);
 }
 .testimonial-slider {
 	position: relative;
@@ -731,7 +731,7 @@ p.quote {
 --------------------------------------------------------*/
 
 .bg4 {
-	background-image: url(../images/parallax/parallax4.jpg);
+	background-image: url(/images/parallax/parallax4.jpg);
 }
 /*--------------------------------------------------------
 /* COLOR BLOCK SECTION
@@ -839,7 +839,7 @@ p.quote {
 	background: radial-gradient(center center, circle cover, #FFD600 0%, #E2BE01 100%);
 }
 .home-parallax {
-	background: url(../images/parallax/parallax4.jpg) fixed;
+	background: url(/images/parallax/parallax4.jpg) fixed;
 	background-size: cover;
 	background-position: center top;
 	background-color: #FFD600;
@@ -958,12 +958,12 @@ p.quote {
 	padding: 0;
 }
 #project-navigation ul li#prevProject a {
-	background: url(../images/arrow_left.png) center center no-repeat;
+	background: url(/images/arrow_left.png) center center no-repeat;
 	float: right;
 	margin-right: 64px;
 }
 #project-navigation ul li#nextProject a {
-	background: url(../images/arrow_right.png) center center no-repeat;
+	background: url(/images/arrow_right.png) center center no-repeat;
 	float: right;
 	margin-right: 10px;
 }
@@ -1046,7 +1046,7 @@ p.quote {
 	padding-top: 16px;
 }
 #ajax-section #loader {
-	background: url(../images/loader.gif) center center no-repeat;
+	background: url(/images/loader.gif) center center no-repeat;
 }
 #ajax-section #loader.projectError p {
 	color: #666 !important;
@@ -1619,7 +1619,7 @@ p.quote {
 	width: 50%;
 	cursor: pointer;
 	text-indent: -9999px;
-	background-image: url(../images/mail.png);
+	background-image: url(/images/mail.png);
 	background-position: center center;
 	background-repeat: no-repeat;
 	float: right;
@@ -1770,7 +1770,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 	display: block;
 	width: 40px;
 	height: 40px;
-	background: #515A5F url(../images/backtotop.png) no-repeat center center;
+	background: #515A5F url(/images/backtotop.png) no-repeat center center;
 	text-indent: -9999px;
 	-webkit-border-radius: 100px;
 	-moz-border-radius: 100px;
@@ -1824,17 +1824,17 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 
 
 .home-parallax2{
-     background: url(../images/parallax/parallax5.jpg) fixed;
+     background: url(/images/parallax/parallax5.jpg) fixed;
      background-size: cover;
 }
 
 .home-parallax3{
-     background: url(../images/parallax/parallax6.jpg) fixed;
+     background: url(/images/parallax/parallax6.jpg) fixed;
      background-size: cover;
 }
 
 .home-parallax4{
-     background: url(../images/parallax/parallax7.jpg) fixed;
+     background: url(/images/parallax/parallax7.jpg) fixed;
      background-size: cover;
 }
 
