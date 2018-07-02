@@ -868,7 +868,6 @@ p.quote {
 	text-align: center;
 	line-height: 1;
 	padding: 5px 15px;
-	border: 5px solid;
 	color: #FFD600;
 }
 .home-logo-text.light a {
@@ -1574,7 +1573,7 @@ p.quote {
 	font-size: 13px;
 	color: #747474;
 	padding: 20px 2%;
-	float: left;
+	float: right;
 	margin: 0 1% 2%;
 	border-radius: 2px;
 }
@@ -1603,7 +1602,7 @@ p.quote {
 }
 #contact-textarea {
 	width: 50%;
-	float: right;
+	float: left;
 }
 #contact-input label, #contact-textarea label{
 	display: block;
