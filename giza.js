@@ -316,8 +316,9 @@ GalleryLayer.prototype.draw = function () {
 	for(i=0; i < spriteFrames.length; i++)
 		this.psImages.push(this.bio.images[spriteFrames[i].filename.slice(0,-4)]);
 
-    var spriteSheet = new Image(this.bio.thumbs.meta.width, this.bio.thumbs.meta.width);
-
+    // create the sprite shhet element
+    var spriteSheet = new Image(
+                    this.bio.thumbs.meta.width, this.bio.thumbs.meta.width);
     spriteSheet.src = this.bio.thumbs.meta.sprite_url;
 
 	var layer = this.layer,
@@ -326,24 +327,25 @@ GalleryLayer.prototype.draw = function () {
         var ringMin = 5,
             ringMax = 8,
             ring = ringMin,
-            center_age = 0,
             i,
             age,
 			loc,
+            offset = {x:0, y:0},
 			img;
 
         for (i = 0; i < spriteFrames.length; i++) {
             age = Number(spriteFrames[i].filename.match(ageRE)[1]);
             if (age == 0) {
-                loc = getPoint(center_age, 1);
-                center_age += 25;
+                loc = getPoint(0, 1);
+                offset = {x: -0.5 * spriteFrames[i].frame.w*imageScale,
+                          y: -0.5 * spriteFrames[i].frame.h*imageScale};
             }
             else {
                 loc = getPoint(age, ring);
             }
             img = new Konva.Image({
-                x: loc.x*scale.x,
-                y: (loc.y-0)*scale.y,
+                x: (loc.x+offset.x)*scale.x,
+                y: (loc.y+offset.y)*scale.y,
                 width: spriteFrames[i].frame.w*imageScale,
                 height: spriteFrames[i].frame.h*imageScale,
                 strokeWidth: 3,

@@ -1,12 +1,14 @@
 TARGET=dist
 
+test:
+	pipenv run python test/simple.py
+
 install:
 	mkdir -p $(TARGET)/css
 	cp -a js $(TARGET)
 	cp -a css $(TARGET)
 	cp -a images $(TARGET)
 	cp -a fonts $(TARGET)
-	cp -a favicon.ico $(TARGET)
 	cp -a angleface.js $(TARGET)
 	cp -a fscreen.js $(TARGET)
 	cp -a GitHub-Mark-32px.png $(TARGET)
