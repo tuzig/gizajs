@@ -688,10 +688,13 @@ function hideAllElements(bio) {
 }
 function initChronus(slug, cb) {
     hideAllElements();
-    if (!window.chronus)
+    if (!window.chronus) {
         window.chronus = new Chronus({container: 'biocFace',
                                   height: window.innerHeight,
                                   visible: true });
+        window.addEventListener('resize', resizeBioChronus);
+        fscreen.addEventListener('fullscreenchange', resizeBioChronus);
+    }
     if (window.chronus.slug != slug)
         window.chronus.get(slug, cb);
 }
@@ -706,11 +709,12 @@ route('/*', function(encodedName) {
         else
             window.chronus.drawWelcome(welcome);
         welcome.style.display = '';
-        var welcome = document.getElementById('welcome');
-        welcome.addEventListener("click tap", function () {
+        document.getElementsByName('enter')[0].addEventListener("click",
+            function () {
                 window.location.href='/'+name+'/bio';
                 route.start();
-        });
+            }
+        );
     });
 });
 
@@ -748,8 +752,6 @@ function resizeBioChronus() {
     var scale = calcScale();
     window.chronus.scale(scale);
 }
-window.addEventListener('resize', resizeBioChronus);
-fscreen.addEventListener('fullscreenchange', resizeBioChronus);
 
 
 function readBio(slug, cb) {
