@@ -1,17 +1,18 @@
 <!DOCTYPE HTML>
+*/
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="de">  <!--<![endif]-->
 <head>
 
-	<!-- META DATA -->
+    <!-- META DATA -->
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-	<meta charset="UTF-8">
-	<title>טוזיג - סיפורי חיים בענן</title>
+    <meta charset="UTF-8">
+    <title>טוזיג - סיפורי חיים בענן</title>
     <meta name="description" content="בוטיק לפיתוח  סיפורי חיים בענן"/>
     <meta name="author" content="Benny Daon"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -20,44 +21,102 @@
 <meta name="msapplication-TileColor" content="#58bd24">
 <meta name="theme-color" content="#ffffff">
 
-	<!-- JARVIS THEME STYLESHEETS -->
-	<link href='https://fonts.googleapis.com/css?family=Oswald|Open+Sans:400,600' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="/css/skeleton.css" type="text/css">
-	<link rel="stylesheet" href="/css/reset.css" type="text/css">    
-	<link rel="stylesheet" href="/css/style.css" type="text/css">
-	<link rel="stylesheet" href="/css/social.css" type="text/css">             
-	<link rel="stylesheet" href="/css/prettyPhoto.css" type="text/css" media="screen"/><!-- PrettyPhoto -->	
-	<link rel="stylesheet" href="/css/font-awesome.css" type="text/css"/><!-- PrettyPhoto -->  
-	<link rel="stylesheet" href="/css/shortcodes.css" type="text/css"/>  	
-	<link rel="stylesheet" href="/css/media.css"><!-- Media Queries -->
- 	<link id="layout_color" href="/css/light.css" rel="stylesheet" type="text/css"/>   
+    <!-- JARVIS THEME STYLESHEETS -->
+    <link href='https://fonts.googleapis.com/css?family=Oswald|Open+Sans:400,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/css/skeleton.css" type="text/css">
+    <link rel="stylesheet" href="/css/reset.css" type="text/css">    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <link rel="stylesheet" href="/css/social.css" type="text/css">             
+    <link rel="stylesheet" href="/css/prettyPhoto.css" type="text/css" media="screen"/><!-- PrettyPhoto -->    
+    <link rel="stylesheet" href="/css/font-awesome.css" type="text/css"/><!-- PrettyPhoto -->  
+    <link rel="stylesheet" href="/css/shortcodes.css" type="text/css"/>      
+    <link rel="stylesheet" href="/css/media.css"><!-- Media Queries -->
+     <link id="layout_color" href="/css/light.css" rel="stylesheet" type="text/css"/>   
     <link id="primary_color_scheme" href="css/colors/yellow.css" rel="stylesheet" type="text/css"/>      
-	<!-- BIOCHRONUS STYLESSHHETS & FONT-->
+    <!-- BIOCHRONUS STYLESSHHETS & FONT-->
     <link href="https://fonts.googleapis.com/css?family=Assistant|Rubik" rel="stylesheet"> 
     <link rel="stylesheet" href="/css/biochronus.css" rel="stylesheet">
-		   
+           
     <!--[if lt IE 9]>
-	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 </head>
 
  <body dir="rtl" class="onepage" data-spy="scroll" data-target=".navigation">
  <div id="load"></div>
-    	
+
+<script id="member-template" type="x-tmpl-mustache">
+ <div class="row">      
+  <div class="sixteen columns">               
+    <!-- START TEAM MEMBER --> 
+   {{#member}}
+       <div class="team-member">
+          <!-- START TEAM THUMBNAIL -->  
+          <div class="team-thumb img-wrp">
+            <!-- START MEMBER IMAGE --> 
+            <img src="{{image}}" alt="התמונה של {{name}}">    
+            <!-- END MEMBER IMAGE -->
+             <!-- START TEAM OVERLAY -->  
+             <div class="team-overlay">
+                <div class="img-overlay"></div>
+                  <!-- START OVERLAY CONTENT -->  
+                  <div class="overlay-content">                            
+                    <!-- START MEMBER ROLE --> 
+                    <h4>{{role}}</h4>
+                    <!-- END MEMBER ROLE --> 
+                    <p><a data-toggle="modal" href="#{{slug}}"
+                          class="modal-popup-link view-profile">
+                          הצג פרופיל
+                    </a></p>
+                 </div><!-- END OVERLAY CONTENT -->  
+              </div><!-- END TEAM OVERLAY -->          
+           </div><!-- END TEAM THUMBNAIL -->  
+        <!-- START TEAM DESCRIPTION -->  
+        <div class="team-desc">
+            <h4>{{name}}</h4>
+        </div>  
+        <!-- END TEAM DESCRIPTION -->  
+        <!-- START TEAM MEMBER BIO MODAL POPUP  -->
+         <div id="{{slug}}" class="modal hide fade.in animated fadeIn">
+         <!-- START TEAM BIO -->       
+            <div class="member-bio">
+             <div class="container">      
+             <a href="#" class="close" data-dismiss="modal">×</a>
+              <div class="member-role">
+                <h1>{{name}}</h1>
+                <h4 class="highlight">{{role}}</h4>
+              </div>
+              <div class="row">
+                <div class="seven columns">
+                  <img src="{{image}}" alt="התמונה של {{name}}">    
+                </div><!-- END COLUMN --> 
+                <div class="eight columns member-description">
+                {{profile}}
+                </div><!-- END MEMBER DESCRIPTION -->    
+              </div><!-- END ROW -->  
+             </div><!-- END CONTAINER --> 
+          </div><!-- END TEAM BIO -->                     
+       </div><!-- END TEAM MEMBER BIO MODAL POPUP -->  
+     </div><!-- END TEAM MEMBER -->            
+    {{/member}}
+   </div><!-- END SIXTEEN COULMNS --> 
+  </div> <!-- END ROW -->     
+</script> <!-- END OF TEMPLATE -->
+        
     
     <!-- START PAGE WRAP -->    
     <div class="page-wrap" id="home-page">
     
     
-	<!-- START HOME SECTION -->    
-	<div id="home" class="home-parallax home1">
+    <!-- START HOME SECTION -->    
+    <div id="home" class="home-parallax home1">
       <div class="home-text-wrapper">
       
           <div class="home-logo-text">
             <a href="#about">ברוכים הבאים לטוזיג</a>
           </div>
           
-      	   <div class="container clearfix">
+             <div class="container clearfix">
               <div class="home-quote">
                 <h1>
                  שירות שעוזר לכם לסרוק,
@@ -67,23 +126,23 @@
               </div>
            </div><!-- END CONTAINER -->
        </div><!-- END CS TEXT CONTAINER -->
-	</div>
-	<!-- END HOME SECTION -->
-	
-	
+    </div>
+    <!-- END HOME SECTION -->
+    
+    
     <!-- START NAVIGATION -->
     <nav class="light sticky-nav navigation">
-     <!-- START CONTAINER -->	
-      <div class="container clearfix">			
-          <div class="four columns">			
-              <!-- START LOGO -->	
+     <!-- START CONTAINER -->    
+      <div class="container clearfix">            
+          <div class="four columns">            
+              <!-- START LOGO -->    
               <div class="logo large">
                </div>
-              <!-- END LOGO -->			
+              <!-- END LOGO -->            
           </div><!-- END FOUR COLUMNS -->   
           
                    
-          <div class="twelve columns">            		
+          <div class="twelve columns">                    
               <!-- START NAVIGATION MENU ITEMS -->
               <ul class="main-menu large nav" id="nav">
                   <li><a href="#home">בית</a></li>                
@@ -92,22 +151,22 @@
                   <li><a href="#portfolio">סיפורים</a></li>
                   <li><a href="#contact">הרשמה</a></li>
               </ul>
-              <!-- END NAVIGATION MENU ITEMS -->				
-          </div><!-- END TWELVE COLUMNS -->	
-      </div><!-- END CONTAINER -->	
+              <!-- END NAVIGATION MENU ITEMS -->                
+          </div><!-- END TWELVE COLUMNS -->    
+      </div><!-- END CONTAINER -->    
     </nav>
     <!-- END NAVIGATION -->
-	
-	
-	<!-- START ABOUT US SECTION -->	
-	<div id="about" class="page">
-	
-		<div class="container">	
-           <div class="row">	
-			<div class="sixteen columns">            
-	            <!-- START TITLE -->	            
-				<div class="title">
-				  <h1>אודות טוזיג</h1>
+    
+    
+    <!-- START ABOUT US SECTION -->    
+    <div id="about" class="page">
+    
+        <div class="container">    
+           <div class="row">    
+            <div class="sixteen columns">            
+                <!-- START TITLE -->                
+                <div class="title">
+                  <h1>אודות טוזיג</h1>
                   <div class="subtitle">
                       <p>
                       לכל אחד מאיתנו סיפור חיים שונה ויחד עם זאת, לכולנו יש אותם 'עוגנים' בסיפור:  תאריך הלידה, מקום הלידה, תמונה ראשונה, תמונת חתונה ועוד. 
@@ -116,8 +175,8 @@
 
 
                   </div><!-- END SUBTITLE -->
-                </div><!-- END TITLE -->  	                           
-			</div><!-- END SIXTEEN COLUMNS -->  
+                </div><!-- END TITLE -->                                 
+            </div><!-- END SIXTEEN COLUMNS -->  
            </div><!-- END ROW -->         
           </div><!-- END CONTAINER -->
           
@@ -169,185 +228,53 @@
                   </div>               
                 </div><!-- END ONE THIRD COLUMN -->
                  
-            </div><!-- END ROW -->                            		
-		</div><!-- END CONTAINER --> 
+            </div><!-- END ROW -->                                    
+        </div><!-- END CONTAINER --> 
         </div>        
            
                 
       
             
-        		
-	  </div>
-	  <!-- End ABOUT US SECTION -->
-	
-	
-	<!-- START PARALLAX SECTION -->	
-	<div id="parallax1" class="parallax">
-		<div class="bg1 parallax-bg"></div><!-- END PARALLAX BACKGROUND -->
-		<div class="overlay"></div><!-- END PATTERN OVERLAY -->
-		<div class="container clearfix">
-			<div class="parallax-content">
+                
+      </div>
+      <!-- End ABOUT US SECTION -->
+    
+    
+    <!-- START PARALLAX SECTION -->    
+    <div id="parallax1" class="parallax">
+        <div class="bg1 parallax-bg"></div><!-- END PARALLAX BACKGROUND -->
+        <div class="overlay"></div><!-- END PATTERN OVERLAY -->
+        <div class="container clearfix">
+            <div class="parallax-content">
         <p class="quote"><i class="icon-quote-right"></i>
         הזיכרון מעוצב באמצעות השיכחה <br /> בדומה לאופן שבו <br />מעוצב קו החוף על ידי הים.
         <i class="icon-quote-left"></i></p>
-				<div class="quote-author">-- מרק אוז'ה --</div>
-			</div><!-- END PARALLAX CONTENT -->
-		</div><!-- END CONTAINER -->
-	</div>
-	<!-- END PARALLAX SECTION -->
-	
-	
-	<!-- START TEAM SECTION --> 
-	<div id="team" class="page">
-		
-		<div class="container">	
-           <div class="row">	
-			<div class="sixteen columns">            
-	            <!-- START TITLE -->	            
-				<div class="title">
-				  <h1>הצוות</h1>
-        </div><!-- END TITLE -->  	                           
-			</div><!-- END SIXTEEN COLUMNS -->  
-           </div><!-- END ROW -->         
-          </div><!-- END CONTAINER -->            
-            
-
-       <div class="fullwidth grey">  
-       
-        <div class="fancy-header2">       
-           <h4>מי אנחנו?</h4>
-        </div>     
-                    
-          <div class="container">	
-             <div class="row">      
-              
-              <div class="sixteen columns">               
-                  
-                   <!-- START TEAM MEMBER --> 
-                   <div class="team-member">
-                      <!-- START TEAM THUMBNAIL -->  
-                      <div class="team-thumb img-wrp">
-                      
-                        <!-- START MEMBER IMAGE --> 
-                        <img src="images/team/hilit.jpg" alt="team">	
-                        <!-- END MEMBER IMAGE -->
-                         <!-- START TEAM OVERLAY -->  
-                         <div class="team-overlay">
-                            <div class="img-overlay"></div>
-                              <!-- START OVERLAY CONTENT -->  
-                              <div class="overlay-content">                            
-                                
-                                <!-- START MEMBER ROLE --> 
-                                <h4>מייסדת</h4>
-                                <!-- END MEMBER ROLE --> 
-                                
-                                  <!-- START PROFILE LINK --> 
-                                  <p><a href="https://www.linkedin.com/in/hilitmaayan/"
-                                        target="_blank"
-                                      class="view-profile">הצג פרופיל</a></p>
-                                <!-- END PROFILE LINK -->  
-                             </div><!-- END OVERLAY CONTENT -->  
-                             
-                        </div><!-- END TEAM OVERLAY -->          
-                       </div><!-- END TEAM THUMBNAIL -->  
-                                       
-                    <!-- START TEAM DESCRIPTION -->  
-                    <div class="team-desc">
-                        <h4>ד"ר הלית מעיין</h4>
-                    </div>  
-                    <!-- END TEAM DESCRIPTION -->  
-                         
-                 </div><!-- END TEAM MEMBER -->            
-               
-                  
-                   <!-- START TEAM MEMBER --> 
-                   <div class="team-member">
-                      <!-- START TEAM THUMBNAIL -->  
-                      <div class="team-thumb img-wrp">
-                      
-                        <!-- START MEMBER IMAGE --> 
-                        <img src="images/team/filler.jpg" alt="benny daon's profile">	
-                        <!-- END MEMBER IMAGE --> 
-                         <!-- START TEAM OVERLAY -->  
-                         <div class="team-overlay">
-                            <div class="img-overlay"></div>
-                              <!-- START OVERLAY CONTENT -->  
-                              <div class="overlay-content">                            
-                                
-                                <!-- START MEMBER ROLE --> 
-                                <h4>מייסד</h4>
-                                <!-- END MEMBER ROLE --> 
-                                
-                                <!-- START PROFILE LINK --> 
-                                  <p><a href="https://www.linkedin.com/in/daonb/"
-                                        target="_blank"
-                                      class="view-profile">הצג פרופיל</a></p>
-                                <!-- END PROFILE LINK -->  
-                             </div><!-- END OVERLAY CONTENT -->  
-                             
-                        </div><!-- END TEAM OVERLAY -->          
-                       </div><!-- END TEAM THUMBNAIL -->  
-                                       
-                    <!-- START TEAM DESCRIPTION -->  
-                    <div class="team-desc">
-                      <h4>בני דאון</h4>
-                    </div>  
-                    <!-- END TEAM DESCRIPTION -->  
-                    
-                    
-                    
-                         
-                 </div><!-- END TEAM MEMBER -->           
-                 
-                  
-                   <!-- START TEAM MEMBER --> 
-                   <div class="team-member">
-                      <!-- START TEAM THUMBNAIL -->  
-                      <div class="team-thumb img-wrp">
-                      
-                        <!-- START MEMBER IMAGE --> 
-                        <img src="images/team/zvi.jpg" alt="team">	
-                        <!-- END MEMBER IMAGE --> 
-                         <!-- START TEAM OVERLAY -->  
-                         <div class="team-overlay">
-                            <div class="img-overlay"></div>
-                              <!-- START OVERLAY CONTENT -->  
-                              <div class="overlay-content">                            
-                                
-                                <!-- START MEMBER ROLE --> 
-                                <h4>מייסד</h4>
-                                <!-- END MEMBER ROLE --> 
-                                
-                                <!-- START PROFILE LINK --> 
-                                  <p><a href="https://he.wikipedia.org/wiki/%D7%A6%D7%91%D7%99_%D7%9C%D7%A0%D7%99%D7%A8"
-                                        target="_blank"
-                                      class="view-profile">הצג פרופיל</a></p>
-                                <!-- END PROFILE LINK -->  
-                             </div><!-- END OVERLAY CONTENT -->  
-                             
-                        </div><!-- END TEAM OVERLAY -->          
-                       </div><!-- END TEAM THUMBNAIL -->  
-                                       
-                    <!-- START TEAM DESCRIPTION -->  
-                    <div class="team-desc">
-                      <h4>ד"ר צבי לניר</h4>
-                    </div>  
-                    <!-- END TEAM DESCRIPTION -->  
-                 </div><!-- END TEAM MEMBER -->          
-                  
-           </div><!-- END SIXTEEN COULMNS --> 
-          </div> <!-- END ROW -->     
-         </div><!-- END CONTAINER --> 
-       </div>
-
-
-     
-
+                <div class="quote-author">-- מרק אוז'ה --</div>
+            </div><!-- END PARALLAX CONTENT -->
+        </div><!-- END CONTAINER -->
     </div>
-    <!-- END TEAM SECTION --> 
-	
-	
-	
+    <!-- END PARALLAX SECTION -->
+    
+    
+    <!-- START TEAM SECTION --> 
+    <div id="team" class="page">
+      <div class="container">    
+        <div class="row">    
+          <div class="sixteen columns">            
+            <div class="title">
+              <h1>הצוות</h1>
+            </div>
+            <div class="fullwidth grey">  
+              <div class="fancy-header2">       
+                <h4>מי אנחנו?</h4>
+              </div>     
+              <div class="container" id="team-container"></div>
+            </div> 
+          </div> 
+        </div> 
+      </div> 
+    </div> <!-- END TEAM SECTION -->
+    <!-- START CONTACT SECTION -->
 	<!-- START PORTFOLIO SECTION -->
 	<div id="portfolio" class="page">
 		<div class="container">	
@@ -446,17 +373,17 @@
 אם תרצו את עזרתנו בהכנת סיפור חיים, נשמח אם תשאירו כתובת דוא"ל ונחזור אליכם בהקדם.
        </p>
                   </div><!-- END SUBTITLE -->
-                </div><!-- END TITLE -->  	                           
-			</div><!-- END SIXTEEN COLUMNS -->  
+                </div><!-- END TITLE -->                                 
+            </div><!-- END SIXTEEN COLUMNS -->  
            </div><!-- END ROW -->         
           </div><!-- END CONTAINER -->         
-		<div class="container clearfix">
-			<div class="sixteen columns">
-				
-	   <!-- START CONTACT BOX -->
+        <div class="container clearfix">
+            <div class="sixteen columns">
+                
+       <!-- START CONTACT BOX -->
       <div class="contact-box">
         <!-- START CONTACT FORM -->
-         <div id="register-form">			
+         <div id="register-form">            
              <form onsubmit="return false;">
                 <div id="contact-input">
                  <!--[if IE]>
@@ -464,16 +391,16 @@
                 <![endif]-->
                   <input type="text" name="contact[name]" id="name" placeholder="שם (חובה)" >
                    <!--[if IE]>
-                   		<label for="email">Email</label>
+                           <label for="email">Email</label>
                     <![endif]-->
                   <input type="text" name="contact[email]" id="email" placeholder="דואל (חובה)">
                    <!--[if IE]>
-                   		<label for="subject">Subject</label>
+                           <label for="subject">Subject</label>
                     <![endif]-->
                 </div>
                 <div id="contact-textarea">
                  <!--[if IE]>
-                   		<label for="message">Your Message Here</label>
+                           <label for="message">Your Message Here</label>
                     <![endif]-->
                   <textarea name="contact[message]" id="message" cols="39" rows="4" placeholder="ספרו לנו עבור מי תרצו להכין אתר"></textarea>
                 </div>
@@ -486,29 +413,29 @@
          <div class="clear"></div>
           </div>
            <div class="result"></div>  
-		<!-- END CONTACT FORM -->
-	
-        	
-		</div>
+        <!-- END CONTACT FORM -->
+    
+            
+        </div>
 
         <!-- END CONTACT BOX -->
-		</div> <!-- END SIXTEEN COLUMNS -->        
-	</div><!-- END CONTAINER -->
+        </div> <!-- END SIXTEEN COLUMNS -->        
+    </div><!-- END CONTAINER -->
  
-      <!-- START COPYRIGHT SECTION -->   	
+      <!-- START COPYRIGHT SECTION -->       
        <div class="copyright">
      <div class="container clearfix">
-			<p>&copy; 2018 חלק מהזכויות שמורות, עיצוב על ידי <a href="http://themeforest.net/user/RockNRollaDesigns">RockNRolla Designs</a></p>
+            <p>&copy; 2018 חלק מהזכויות שמורות, עיצוב על ידי <a href="http://themeforest.net/user/RockNRollaDesigns">RockNRolla Designs</a></p>
             
          </div> <!-- END SIXTEEN COLUMNS -->        
-	  </div><!-- END CONTAINER -->
+      </div><!-- END CONTAINER -->
      </div>
-     <!-- END COPYRIGHT SECTION -->	 
+     <!-- END COPYRIGHT SECTION -->     
       
-	</div>
-    <!-- END CONTACT SECTION -->		
-	
-	
+    </div>
+    <!-- END CONTACT SECTION -->        
+    
+    
    </div><!-- END PAGE WRAP -->
    <div id="back-to-top"><a href="#">Back to Top</a></div>
      
@@ -592,25 +519,26 @@
           <div style="clear:both"></div>
         <a href="https://github.com/daonb/biochronus"><img src="GitHub-Mark-32px.png" alt="GitHub logo"></a>
       </footer>
-	<!-- JARVIS THEME SCRIPTS -->
+    <!-- JARVIS THEME SCRIPTS -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>         
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>         
     <!--<script type="text/javascript" src="js/jquery.tweet.js"></script>-->         
     <script type="text/javascript" src="/js/jquery.form.js"></script>
-	<script type="text/javascript" src="/js/jquery.queryloader2.js"></script>        
+    <script type="text/javascript" src="/js/jquery.queryloader2.js"></script>        
     <script type="text/javascript" src="/js/modernizr-2.6.2.min.js"></script>  
     <script type="text/javascript" src="/js/jquery.fitvids.js"></script>  
     <script type="text/javascript" src="/js/jquery.appear.js"></script>  
     <script type="text/javascript" src="/js/jquery.slabtext.min.js"></script>   
     <script type="text/javascript" src="/js/jquery.fittext.js"></script>   
-	<script type="text/javascript" src="/js/jquery.easing.min.js"></script>
-	<script type="text/javascript" src="/js/jquery.parallax-1.1.3.js"></script>
-	<script type="text/javascript" src="/js/jquery.prettyPhoto.js"></script>
-	<script type="text/javascript" src="/js/jquery.sticky.js"></script>
-	<script type="text/javascript" src="/js/selectnav.min.js"></script>    
+    <script type="text/javascript" src="/js/jquery.easing.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.parallax-1.1.3.js"></script>
+    <script type="text/javascript" src="/js/jquery.prettyPhoto.js"></script>
+    <script type="text/javascript" src="/js/jquery.sticky.js"></script>
+    <script type="text/javascript" src="/js/selectnav.min.js"></script>    
     <script type="text/javascript" src="/js/isotope.js"></script>   
     <script type="text/javascript" src="/js/bootstrap-modal.js"></script>   
     <script type="text/javascript" src="/js/shortcodes.js"></script>     
-	<script type="text/javascript" src="/js/scripts.js"></script>               
+    <script type="text/javascript" src="/js/scripts.js"></script>               
     
 
   <script src="/photoswipe.min.js"></script>

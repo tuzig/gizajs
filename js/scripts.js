@@ -1,3 +1,4 @@
+/*jshint multistr: true */
 jQuery(document).ready(function($){
 
 var height_video = $(window).width();
@@ -214,22 +215,15 @@ function home_parallax() {
 $(document).ready(function() 
 { 
   $('nav').animate({'opacity': '1'}, 400);	   
-	  
   $(".home-quote h1").slabText({"viewportBreakpoint":300});
-	 
 /*----------------------------------------------------*/
 /* FULLSCREEN IMAGE HEIGHT
 /*----------------------------------------------------*/	     
-	
-
   $('#home, .background-video').css({height:window_height});
   rnr_shortcodes();
-   
-
 /* ------------------------------------------------------------------------ */
 /* BACK TO TOP 
 /* ------------------------------------------------------------------------ */
-
 	$(window).scroll(function(){
 		if($(window).scrollTop() > 200){
 			$("#back-to-top").fadeIn(200);
@@ -242,21 +236,14 @@ $(document).ready(function()
 		  $('html, body').animate({ scrollTop:0 }, '800');
 		  return false;
 	});
-		
-      
-
 /*----------------------------------------------------*/
 // ADD PRETTYPHOTO
 /*----------------------------------------------------*/
 	$("a[data-rel^='prettyPhoto']").prettyPhoto();
-	
-	
 /*----------------------------------------------------*/
 // ADD VIDEOS TO FIT ANY SCREEN
 /*----------------------------------------------------*/
 	 $(".container").fitVids();	 		
-					
-  
 /*----------------------------------------------------*/
 // PRELOADER CALLING
 /*----------------------------------------------------*/    
@@ -268,10 +255,6 @@ $(document).ready(function()
         completeAnimation: "fade",
         minimumTime: 200
     });  
-	
-
-
-	
 /*----------------------------------------------------*/
 // MENU SMOOTH SCROLLING
 /*----------------------------------------------------*/  
@@ -290,12 +273,9 @@ $(document).ready(function()
 
 		event.preventDefault();
     });	
-	
-	  
 /*----------------------------------------------------*/
 // PARALLAX CALLING
 /*----------------------------------------------------*/  
-
     testMobile = isMobile.any();
     
     if (testMobile == null)
@@ -317,7 +297,6 @@ $(document).ready(function()
         });
      });
  });	
- 
     //img overlays
     $('.team-thumb').on('mouseover', function()
     {
@@ -341,6 +320,25 @@ $(document).ready(function()
 		
     }); 	
   
+    $('#team-container').html(Mustache.render(
+            $('#member-template').html(),
+        {member: [
+            {name:'ד"ר הלית מעיין', role:'ממשקים',
+             image: '/images/team/hilit.jpg',
+             profile: '<p class="lead">Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> \
+                 <p>Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> ',
+            },
+            {name:'בני דאון', role:'כלבויניק',
+             image: '/images/team/daonb.jpg',
+             profile: '<p class="lead">Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> \
+                 <p>Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> ',
+            },
+            {name:'ד"ר צבי לניר', role:'הפתעות',
+             image: '/images/team/zvi.jpg',
+             profile: '<p class="lead">Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> \
+                 <p>Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> ',
+            }
+        ]}));
 });
 //END DOCUMENT.READY FUNCTION
 			
