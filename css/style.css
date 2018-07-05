@@ -847,6 +847,7 @@ p.quote {
 /*======== HOME LOGO ========*/	
 #home h1 {
 	font-size: 60px;
+    line-height: 1.1;
 }
 .home-logo, .home-logo-text {
 	margin: 30px 0 100px;
