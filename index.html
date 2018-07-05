@@ -49,53 +49,49 @@
  <div class="row">      
   <div class="sixteen columns">               
     <!-- START TEAM MEMBER --> 
-   {{#member}}
-       <div class="team-member">
-          <!-- START TEAM THUMBNAIL -->  
-          <div class="team-thumb img-wrp">
-            <!-- START MEMBER IMAGE --> 
-            <img src="{{image}}" alt="התמונה של {{name}}">    
-            <!-- END MEMBER IMAGE -->
-             <!-- START TEAM OVERLAY -->  
-             <div class="team-overlay">
-                <div class="img-overlay"></div>
-                  <!-- START OVERLAY CONTENT -->  
-                  <div class="overlay-content">                            
-                    <!-- START MEMBER ROLE --> 
-                    <h4>{{role}}</h4>
-                    <!-- END MEMBER ROLE --> 
-                    <p><a data-toggle="modal" href="#{{slug}}"
-                          class="modal-popup-link view-profile">
-                          הצג פרופיל
-                    </a></p>
-                 </div><!-- END OVERLAY CONTENT -->  
-              </div><!-- END TEAM OVERLAY -->          
-           </div><!-- END TEAM THUMBNAIL -->  
-        <!-- START TEAM DESCRIPTION -->  
-        <div class="team-desc">
-            <h4>{{name}}</h4>
-        </div>  
-        <!-- END TEAM DESCRIPTION -->  
-        <!-- START TEAM MEMBER BIO MODAL POPUP  -->
-         <div id="{{slug}}" class="modal hide fade.in animated fadeIn">
-         <!-- START TEAM BIO -->       
-            <div class="member-bio">
-             <div class="container">      
+    {{#member}}
+     <div class="team-member">
+       <!-- START TEAM THUMBNAIL -->  
+       <div class="team-thumb img-wrp">
+         <img src="{{image}}" alt="התמונה של {{name}}" \>
+         <!-- START TEAM OVERLAY -->  
+         <div class="team-overlay">
+           <div class="img-overlay"></div>
+           <!-- START OVERLAY CONTENT -->  
+           <div class="overlay-content">                            
+             <h4>{{role}}</h4>
+             <p><a data-toggle="modal" href="#member-{{slug}}"
+                   class="modal-popup-link view-profile">
+               הצג פרופיל
+             </a></p>
+           </div><!-- END OVERLAY CONTENT -->  
+         </div><!-- END TEAM OVERLAY -->          
+       </div><!-- END TEAM THUMBNAIL -->  
+       <div class="team-desc">
+             <h4><a data-toggle="modal" href="#member-{{slug}}"
+                   class="modal-popup-link view-profile">
+          {{name}}</a></h4>
+       </div>  
+      <!-- START TEAM MEMBER BIO MODAL POPUP  -->
+       <div id="member-{{slug}}" class="modal hide fade.in animated fadeIn">
+       <!-- START TEAM BIO -->       
+         <div class="member-bio">
+           <div class="container">      
              <a href="#" class="close" data-dismiss="modal">×</a>
-              <div class="member-role">
-                <h1>{{name}}</h1>
-                <h4 class="highlight">{{role}}</h4>
-              </div>
-              <div class="row">
-                <div class="seven columns">
-                  <img src="{{image}}" alt="התמונה של {{name}}">    
-                </div><!-- END COLUMN --> 
-                <div class="eight columns member-description">
-                {{profile}}
-                </div><!-- END MEMBER DESCRIPTION -->    
-              </div><!-- END ROW -->  
-             </div><!-- END CONTAINER --> 
-          </div><!-- END TEAM BIO -->                     
+             <div class="member-role">
+               <h1>{{name}}</h1>
+               <h4 class="highlight">{{role}}</h4>
+             </div>
+             <div class="row">
+               <div class="seven columns">
+                 <img src="{{image}}" alt="התמונה של {{name}}" />
+               </div><!-- END COLUMN --> 
+               <div class="eight columns member-description">
+                 {{{profile}}}
+               </div><!-- END MEMBER DESCRIPTION -->    
+             </div><!-- END ROW -->  
+           </div><!-- END CONTAINER --> 
+         </div><!-- END TEAM BIO -->                     
        </div><!-- END TEAM MEMBER BIO MODAL POPUP -->  
      </div><!-- END TEAM MEMBER -->            
     {{/member}}

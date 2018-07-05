@@ -323,17 +323,17 @@ $(document).ready(function()
     $('#team-container').html(Mustache.render(
             $('#member-template').html(),
         {member: [
-            {name:'ד"ר הלית מעיין', role:'ממשקים',
+            {name:'ד"ר הלית מעיין', role:'ממשקים', slug: 'hilit',
              image: '/images/team/hilit.jpg',
              profile: '<p class="lead">Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> \
                  <p>Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> ',
             },
-            {name:'בני דאון', role:'כלבויניק',
+            {name:'בני דאון', role:'כלבויניק', slug: 'benny',
              image: '/images/team/daonb.jpg',
              profile: '<p class="lead">Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> \
                  <p>Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> ',
             },
-            {name:'ד"ר צבי לניר', role:'הפתעות',
+            {name:'ד"ר צבי לניר', role:'הפתעות', slug: 'zvi',
              image: '/images/team/zvi.jpg',
              profile: '<p class="lead">Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> \
                  <p>Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> ',
