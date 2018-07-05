@@ -666,6 +666,7 @@ route('/', function() {
     hideAllElements();
     document.getElementById('home-page').style.display = '';
     document.getElementById('back-to-top').style.display = '';
+    $(".home-quote h1").slabText({"viewportBreakpoint":300});
 });
 
 route('/noya', function() {
