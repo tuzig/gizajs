@@ -1916,6 +1916,7 @@ a#button-newsletter {
     position: absolute;
 }
 
-
-
-
+.member-bio p {
+  font-size: 22px;
+  line-height: 1.2;
+  }

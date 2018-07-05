@@ -325,18 +325,22 @@ $(document).ready(function()
         {member: [
             {name:'ד"ר הלית מעיין', role:'ממשקים', slug: 'hilit',
              image: '/images/team/hilit.jpg',
-             profile: '<p class="lead">Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> \
-                 <p>Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> ',
+             profile: '<p>ד"ר הילית מעיין מומחית בפיתוח חוויית משתמש ובעלת ניסיון רב שנים בהובלת תהליכי תכנון ועיצוב מערכות דיגיטליות מורכבות. בעלת רקע עשיר בהנדסת אנוש ופסיכולוגיה קוגניטיבית משולבת בגישת "הנדס און" – גישה המעודדת מעורבות משתמש פעילה. ייסדה, ניהלה והובילה צוותי עיצוב ופיתוח מוצר בחברת Trax, Retalix, Intel ועוד. במטרה ליצור מוצרים חדשניים בהסתמך על מחקר ומתודולוגיות לעיצוב מוכוון משתמש. ד"ר מעיין משמשמת כמנטורית חוויית משתמש ומוצר בגוגל.</p>' 
             },
             {name:'בני דאון', role:'כלבויניק', slug: 'benny',
              image: '/images/team/daonb.jpg',
-             profile: '<p class="lead">Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> \
-                 <p>Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> ',
+             profile: '<p>את מתנות הבר-מצווה שלו המיר במחשב אטארי ולימד את עצמו לתכנת בבייסיק. בתיכון למד במגמת מחשבים והתגייס לשירות בממר"ם, סימולטור F16 פעל אז ממש ממש טוב (תודות לבני) אחרי הצבא הפליג ליוון והגיע להודו ברכבות ואוטובוסים.  כששב ארצה, השתלב בתחום פיתוח התוכנה, ויחד עם שותפים הקים את "שונרא", שזה חתול בארמית, אחלה להקת רוק, אבל גם חברת תוכנה שעוסקת בפיתוח פתרונות המקטינים את הסיכון בהטמעת שירותי טכנולוגית מידע (IT) מתקדמים.</p> \
+                 <p>לימים, לאחר שמכר את חלקו ב"שונרא", הלך בני אחר ליבו וחזר לתכנת ולפתח תוכנה בקוד פתוח. בני הקים את "כנסת פתוחה" ואת "הסדנא לידע ציבורי" - שני מיזמים שפועלים לקידום שקיפות שלטונית. </p> ',
             },
             {name:'ד"ר צבי לניר', role:'הפתעות', slug: 'zvi',
              image: '/images/team/zvi.jpg',
-             profile: '<p class="lead">Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> \
-                 <p>Sed ligula magna, porta in scelerisque ac, gravida fringilla sapien. Sed tempus urna in sem ultricies vehicula vulputate purus ultrices. Aenean orci libero, scelerisque non feugiat gravida, dignissim ut tortor. Phasellus et nulla eros.</p> ',
+             profile: '<p>איש רב פעלים מייסד ונשיא חברת "פרקסיס", העוסקת בליווי פרויקטים של פיתוח אזורים, ערים וקהילות, בגישה המדגישה יזמות ויצירתיות כבסיס לפיתוח כלכלי וחברתי ליצירת מציאות של איכות חיים טובה יותר.  לניר בעל תואר ראשון במדע המדינה, כלכלה וסוציולוגיה ותואר שני בהיסטוריה צבאית מאוניברסיטת תל-אביב. השלים את הדוקטורט באוניברסיטה העברית במסגרתו פיתח את תאוריית ההפתעה הבסיסית, לפיה, האמת גלומה בתפישה ולא במידע וכי עלינו לפתח תפישות ודרכי התמודדות חדשות עם שינויים במקום אלו המוכרות.  באחרונה, לניר חוקר את תקופת הבגרות המאוחרת בחיי האדם, עוסק בפיתוח אפשרויות אחרות של קריירה למבוגרים ושינוי תפישה מערכתי בנוגע להזדקנות.</p>'
+ 
+            },
+            {name:'הדסה גרינברג יעקוב', role:'תקתוקים', slug: 'hadasa',
+             image: '/images/team/hadasa.png',
+             profile: '<p>צברה נסיון בתפקידי דוברות והסברה שונים לאורך השנים במשרד התקשורת, מרכז מורשת מנחם בגין ומשרד המדע, התרבות והספורט, ניהלה את פרויקט ההקמה של מוזיאון הכנסת וכיום עצמאית בתחום הפקת תערוכות מוזיאליות, ניהול פרוייקטים מעניינים וייעוץ.  בעלת תואר ראשון ושני בגיאוגרפיה ותכנון ערים, תואר שני בלימודי משפט.  בעלת ניסיון מוכח בפענוח וכתיבת מכרזים ממשלתיים.נשואה ליובל ואם לארבעה, תושבת מבשרת ציון.  סורגת שטיחים להנאתה.</p>'
+ 
             }
         ]}));
 });
