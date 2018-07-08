@@ -716,8 +716,7 @@ route('/*', function(encodedName) {
         welcome.style.display = '';
         document.getElementsByName('enter')[0].addEventListener("click",
             function () {
-                window.location.href='/'+name+'/bio';
-                route.start();
+                route('/'+name+'/bio');
             }
         );
     });
