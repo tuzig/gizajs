@@ -238,10 +238,11 @@ h6 {
 }
 p {
 	margin-bottom: 10px;
+	font-size: 24px;
 }
 p.lead {
 	font-family: 'Open Sans', "Times New Roman", Times, serif;
-	font-size: 16px;
+	font-size: 26px;
 	line-height: 1.2;
 	padding: 0;
 	margin-bottom: 20px;
