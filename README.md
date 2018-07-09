@@ -18,17 +18,9 @@ the number of libs to the bare minimum. Here is what we have:
 
 ```bash
 
-$ npm install live-server
-$ node server.js
-```
-
-## Testing
-
-```bash
-
-$ cd test
-$ pipenv shell
-$ python tests.py
+$ yarn install
+$ npm test
+$ npm run dev
 ```
 
 
