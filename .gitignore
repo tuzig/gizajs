@@ -3,4 +3,5 @@ bios/
 firebase.json
 node_modules/
 dist
+cypress/videos
 
