@@ -549,7 +549,7 @@ Chronus.prototype = {
         elm.className = 'enter';
         elm.style.backgroundColor = theme.fill_color;
         elm.style.color = theme.textColor;
-        elm.innerHTML = "כנסו"
+        elm.innerHTML = "הכנסו"
         section.appendChild(elm);
         container.appendChild(section);
     },
