@@ -602,7 +602,7 @@ Chronus.prototype = {
         elm.className = 'enter';
         elm.style.backgroundColor = theme.fill_color;
         elm.style.color = theme.textColor;
-        elm.innerHTML = (this.bio.sex=='F')?'לזכרה':'לזכרו';
+        elm.innerHTML = 'כנסו';
         section.appendChild(elm);
         container.appendChild(section);
     },
