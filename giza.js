@@ -466,11 +466,9 @@ var Chronus = function (params) {
     this.params = params;
     // todo: create the welcome and biochronus here and simplif index.html
     this.welcome = document.getElementById('welcome');
-
+    
     this.stage = new Konva.Stage(params);
-    //TODO: make it resize
-    this.stage.width(params.width || 1000);
-    this.stage.height(params.height || 1000);
+    this.scale(calcScale());
 };
 
 Chronus.prototype = {
@@ -482,7 +480,7 @@ Chronus.prototype = {
             this.gallery.layer.destroyChildren();
     },
     scale: function(scale) {
-        this.stage.width(stageLen * scale.x );
+        this.stage.width(stageLen * scale.x + 20);
         this.stage.height(stageLen * scale.y );
         if (this.table) this.table.scale(scale);
         if (this.gallery) this.gallery.scale(scale);
@@ -602,7 +600,7 @@ Chronus.prototype = {
         elm.className = 'enter';
         elm.style.backgroundColor = theme.fill_color;
         elm.style.color = theme.textColor;
-        elm.innerHTML = 'כנסו';
+        elm.innerHTML = "הכנסו";
         section.appendChild(elm);
         container.appendChild(section);
     },
@@ -693,7 +691,6 @@ function initChronus(slug, cb) {
     hideAllElements();
     if (!window.chronus) {
         window.chronus = new Chronus({container: 'biocFace',
-                                  height: window.innerHeight,
                                   visible: true });
         window.addEventListener('resize', resizeBioChronus);
         fscreen.addEventListener('fullscreenchange', resizeBioChronus);
@@ -748,8 +745,8 @@ route('/*/bio..', function(encodedName) {
 });
 
 function calcScale() {
-    return {x: (window.innerWidth - 20) / stageLen,
-		    y: (window.innerHeight * 0.91 - 20) / stageLen};
+    return {x: (window.innerWidth) / stageLen,
+		    y: (window.innerHeight * 0.92) / stageLen};
 }
 
 function resizeBioChronus() {
