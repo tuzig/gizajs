@@ -305,12 +305,6 @@ GalleryLayer.prototype.draw = function () {
 
 	this.psImages = [];
 
-    // sort the thumbs according to age
-    spriteFrames.sort(function (a,b) {
-        var aAge = Number(a.filename.match(ageRE)[1]);
-        var bAge = Number(b.filename.match(ageRE)[1]);
-        return aAge-bAge;
-    });
 
 	// create the array for PhotoSwipe
 	for(i=0; i < spriteFrames.length; i++)
