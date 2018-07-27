@@ -32,8 +32,10 @@ body {
   margin: 0 auto;
 }
 #welcome h1 {
-  font-size: 2.8em;
+  font-size: 44px;
+  font-weight: 600;
 }
+.hebrew-date { font-size: 36px;}
 button.enter {
       border: 0;
 	  padding: 1em 5em;

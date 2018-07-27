@@ -546,7 +546,7 @@ Chronus.prototype = {
         container.appendChild(section);
     },
     drawMemorial: function(container) {
-        var section, elm;
+        var section, elm, elm;
 
         container.innerHTML='';
        
@@ -558,6 +558,7 @@ Chronus.prototype = {
         section.appendChild(elm);
         if (this.bio.date_of_birth_he) {
             elm = document.createElement('h2');
+            elm.className = 'hebrew-date';
             elm.innerHTML = this.bio.date_of_birth_he + ' - ' + this.bio.date_of_passing_he;
             section.appendChild(elm);
         }
