@@ -381,10 +381,10 @@ var ArticleLayer = function (params) {
     this.params = params;
     this.stage = params.stage;
     this.layer = new Konva.Layer();
-            this.layer.on('click tap', function(ev) {
-                ev.evt.stopPropagation();
-                window.chronus.article.draw();
-            });
+    this.layer.on('click tap', function(ev) {
+        ev.evt.stopPropagation();
+        window.chronus.article.draw();
+    });
     this.layer.getCanvas()._canvas.setAttribute('dir', 'rtl');
     this.stage.add(this.layer);
 };
@@ -409,19 +409,27 @@ ArticleLayer.prototype = {
         if (text) {
 
             this.konvaText = new Konva.Text({
-              x: 0,
-              y: 0,
-              text: text,
-              fontSize: 22,
-              fontFamily: 'Assistant',
-              fill: theme.textColor,
-              width: this.width(),
-              padding: 20,
-              align: 'right'});
+                                    x: 0,
+                                    y: 0,
+                                    text: text,
+                                    fontSize: 22,
+                                    fontFamily: 'Assistant',
+                                    fill: theme.textColor,
+                                    width: this.width(),
+                                    padding: 20,
+                                    align: 'right'
+            });
             h = this.konvaText.getHeight();
             w = this.konvaText.getWidth();
+
             pos = {x: (this.w - w) / 2,
-                   y: (this.h - h) / 2};
+                   y: (this.stage.height() - h) / 2};
+            console.log(h, this.stage.height(), pos.y);
+            if (pos.y < 200) {
+                this.oldStageHeight = this.stage.height();
+                this.stage.height(this.stage.height()+h-650);
+                pos.y = 200;
+            }
 
             this.konvaBox = new Konva.Rect({
               stroke: theme.stroke_color,
@@ -439,7 +447,7 @@ ArticleLayer.prototype = {
             this.konvaBack = new Konva.Rect({
               fill: theme.fill_color,
               width: this.w,
-              height: this.h,
+              height: this.stage.height(),
               opacity: 0.4
             });
             // fix the position based on size so it'll be centerd
@@ -451,6 +459,9 @@ ArticleLayer.prototype = {
             this.layer.add(this.konvaBox);
             this.layer.add(this.konvaText);
             this.layer.moveToTop();
+        }
+        else {
+            if (this.oldStageHeight) this.stage.height(this.oldStageHeight);
         }
         this.layer.draw();
     }
@@ -483,9 +494,9 @@ Chronus.prototype = {
     get: function(slug, cb) {
         // get a bio and display the chronus
         var that = this;
-        this.clear();
         // TODO: loading....
         readBio(slug, function (bio) {
+            that.clear();
             that.slug = slug;
             that.bio = bio;
             document.title = bio.full_name;
