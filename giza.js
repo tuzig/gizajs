@@ -485,7 +485,7 @@ Chronus.prototype = {
             this.gallery.layer.destroyChildren();
     },
     scale: function(scale) {
-        this.stage.width(stageLen * scale.x + 20);
+        this.stage.width(stageLen * scale.x);
         this.stage.height(stageLen * scale.y );
         if (this.table) this.table.scale(scale);
         if (this.gallery) this.gallery.scale(scale);
