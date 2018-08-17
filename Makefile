@@ -1,9 +1,15 @@
 TARGET=dist
 
 test:
-	pipenv run python test/simple.py
+	npm run test
+
+dev:
+	npm run dev
 
 install:
+	npm install
+
+build:
 	mkdir -p $(TARGET)/css
 	cp -a js $(TARGET)
 	cp -a css $(TARGET)
@@ -22,6 +28,6 @@ install:
 clean:
 	rm -rf $(TARGET)
 
-deploy: clean install
+deploy: clean build
 	firebase deploy
 

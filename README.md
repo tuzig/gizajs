@@ -2,8 +2,7 @@
 
     In memory of Giza Goldfarb, @daonb's grandmother may her soul rest in peace
 
-This is a shot at displaying a *Bio Chronus* - a life's chronology in
-single screen.
+This project displays a *Bio Chronus* - a life's chronology in single screen.
 
 The code draws arcs, labels and images on an HTML5 canvas, making it simple and
 fast to scale and transition. We are following the KISS methodology keeping 
@@ -14,13 +13,16 @@ the number of libs to the bare minimum. Here is what we have:
 - [riot/route](https://github.com/riot/route) for url routing
 
 
-## Running a dev server
+## Development Enviornment
+
+We are using npm for the dev server code and cypress which is used to test 
+the code.
 
 ```bash
 
-$ yarn install
-$ npm test
-$ npm run dev
+$ npm install
+$ make test
+$ make dev
 ```
 
 
@@ -29,5 +31,3 @@ $ npm run dev
 Just fork, fix or/and improve and open a Pull Request. If you're not sure where to
 start there are always a few open issues marked [good first
 issue](https://github.com/daonb/biochronus/labels/good%20first%20issue).
-
-Many 
