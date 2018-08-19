@@ -732,6 +732,7 @@ function initGiza() {
 			welcome.style.display = '';
 			document.getElementsByName('enter')[0].addEventListener("click",
 				function () {
+				    fscreen.requestFullscreen(document.body);
 					route('/'+name+'/bio');
 				}
 			);
@@ -757,7 +758,6 @@ function initGiza() {
 				});
 			}
 			else {
-				// fscreen.requestFullscreen(document.body);
 				biochronus.style.display = '';
 			}
 		});
