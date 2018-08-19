@@ -196,7 +196,7 @@ function initGiza() {
 			textShape = new Konva.TextPath({
 					text: text,
 					fill: '#81aa8d',
-					fontFamily: 'Assistant',
+					fontFamily: theme.fontFamily,
 					fontStyle: fontStyle,
 					fontSize: fontSize,
 					glyphRotation: glyphRotation
@@ -255,7 +255,7 @@ function initGiza() {
 			var dob = new Konva.TextPath({
 										  fill: theme.stroke_color,
 										  fontSize: fontSize,
-										  fontFamily: 'Assistant',
+										  fontFamily: theme.fontFamily,
 										  fontStyle: 'bold',
 										  text: this.bio.date_of_birth,
 										  }),
@@ -263,7 +263,7 @@ function initGiza() {
 										  fill: theme.stroke_color,
 										  fontSize: fontSize,
 										  fontStyle: 'bold',
-										  fontFamily: 'Assistant',
+										  fontFamily: theme.fontFamily,
 										  text: this.bio.date_of_passing
 										 });
 			dob.initialFontSize = fontSize;
@@ -414,7 +414,7 @@ function initGiza() {
 										y: 0,
 										text: text,
 										fontSize: 22,
-										fontFamily: 'Assistant',
+										fontFamily: theme.fontFamily,
 										fill: theme.textColor,
 										width: this.width(),
 										padding: 20,
