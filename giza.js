@@ -9,6 +9,7 @@
 
 function initGiza() {
 	var theme = {
+		fontFamily: 'Assistant',
 		stroke_color: '#81aa8d',
 		textColor: '#fffadf',
 		fill_color: '#5B946B',
