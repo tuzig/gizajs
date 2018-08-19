@@ -557,6 +557,12 @@ function initGiza() {
 			elm.innerHTML = "הכנסו";
 			section.appendChild(elm);
 			container.appendChild(section);
+			section = document.createElement('footer');
+			section.className = 'centered';
+			section.innerHTML = '\
+				<div style="clear:both"></div>\
+				<a href="https://github.com/daonb/biochronus"><img src="GitHub-Mark-32px.png" alt="GitHub logo"></a>';
+			container.appendChild(section);
 		},
 		drawMemorial: function(container) {
 			var section, elm, elm;
@@ -610,6 +616,12 @@ function initGiza() {
 			elm.style.color = theme.textColor;
 			elm.innerHTML = "הכנסו";
 			section.appendChild(elm);
+			container.appendChild(section);
+			section = document.createElement('footer');
+			section.className = 'centered';
+			section.innerHTML = '\
+				<div style="clear:both"></div>\
+				<a href="https://github.com/daonb/biochronus"><img src="GitHub-Mark-32px.png" alt="GitHub logo"></a>';
 			container.appendChild(section);
 		},
 		showDescription: function(shape) {
@@ -685,8 +697,7 @@ function initGiza() {
 
 	function hideAllElements(bio) {
 		// hide all elements
-		[document.querySelector('footer'),
-		 document.getElementById('myFamily'),
+		[document.getElementById('myFamily'),
 		 document.getElementById('biochronus'),
 		 document.getElementById('home-page'),
 		 document.getElementById('back-to-top'),
