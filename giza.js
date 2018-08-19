@@ -703,7 +703,7 @@ function initGiza() {
 		 document.getElementById('back-to-top'),
 		 document.getElementById('welcome')]
 		.forEach(function (elm) {
-			elm.style.display = 'none';
+			if (elm) elm.style.display = 'none';
 		});
 	}
 	function initChronus(slug, cb) {
