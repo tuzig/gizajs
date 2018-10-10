@@ -35,6 +35,26 @@ body {
   font-size: 44px;
   font-weight: 600;
 }
+#loading {
+  position: absolute;
+  top:0;
+  right:0;
+  min-height: 100%; 
+  width:100%;
+  z-index: 2000;
+  opacity: 0.7;
+  background:
+radial-gradient(circle at 0% 50%, rgba(96, 16, 48, 0) 9px, #613 10px, rgba(96, 16, 48, 0) 11px) 0px 10px,
+radial-gradient(at 100% 100%,      rgba(96, 16, 48, 0) 9px, #613 10px, rgba(96, 16, 48, 0) 11px),
+#8a3;
+background-size: 20px 20px; 
+}
+#loading h1 {
+  text-align: center;
+  width: 100%;
+  padding-top: 20%;
+  color: white;
+}
 .hebrew-date { font-size: 36px;}
 button.enter {
       border: 0;
@@ -753,3 +773,4 @@ a.pswp__share--download:hover {
 
 .pswp--minimal--dark .pswp__top-bar {
   background: none; }
+

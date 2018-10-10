@@ -371,11 +371,11 @@ function initGiza() {
 				});
 				images.push(img);
 				layer.add(img);
+				img.draw();
 				ring++;
 				if (ring === ringMax)
 					ring = ringMin;
 			}
-			layer.draw();
 		};
 	};
 
@@ -709,8 +709,8 @@ function initGiza() {
 	function initChronus(slug, cb) {
 		hideAllElements();
 		if (!window.chronus) {
-			window.chronus = new Chronus({container: 'biocFace',
-									  visible: true });
+			window.chronus = new Chronus(
+				{container: 'biocFace', visible: true });
 			window.addEventListener('resize', resizeBioChronus);
 			fscreen.addEventListener('fullscreenchange', resizeBioChronus);
 		}
@@ -721,8 +721,8 @@ function initGiza() {
 	}
 	route('/*', function(encodedName) {
 		var name = decodeURIComponent(encodedName);
-
-
+		var loading = document.getElementById("loading");
+		loading.style.display = 'none';
 		initChronus(name, function (bio) {
 			var welcome = document.getElementById('welcome');
 			if (bio.date_of_passing)
@@ -730,12 +730,13 @@ function initGiza() {
 			else
 				window.chronus.drawWelcome(welcome);
 			welcome.style.display = '';
-			document.getElementsByName('enter')[0].addEventListener("click",
-				function () {
+			document.getElementsByName('enter').forEach(function (elm) {
+				elm.addEventListener("click", function () {
+					loading.style.display = '';
+					window.chronus.state = "pre_bio";
 				    fscreen.requestFullscreen(document.body);
-					route('/'+name+'/bio');
-				}
-			);
+				});
+			});
 		});
 	});
 
@@ -745,8 +746,10 @@ function initGiza() {
 
 		initChronus(name, function (bio) { 
 			var biochronus = document.getElementById('biochronus');
+			var loading = document.getElementById("loading");
 
 			window.chronus.draw();
+			window.chronus.state = 'bio';
 			resizeBioChronus();
 			if (pid) {
 				gallery = new PhotoSwipe(document.getElementById('photos'),
@@ -760,6 +763,7 @@ function initGiza() {
 			else {
 				biochronus.style.display = '';
 			}
+			loading.style.display = 'none';
 		});
 	});
 
@@ -770,7 +774,13 @@ function initGiza() {
 
 	function resizeBioChronus() {
 		var scale = calcScale();
+		var loading = document.getElementById("loading");
+		loading.style.display = '';
 		window.chronus.scale(scale);
+		if (window.chronus.state == "pre_bio") {
+			route('/'+window.chronus.bio.slug+'/bio');
+		}
+		loading.style.display = 'none';
 	}
 
 
@@ -795,7 +805,7 @@ function initGiza() {
 				}
 				bio.spans = spans;
 			}
-			cb(bio)
+			cb(bio);
 		});
 	}
 
