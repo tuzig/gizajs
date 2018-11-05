@@ -94,8 +94,7 @@ footer {
   width: 50%;
   float: right;
   margin: 0;
-  padding: 0;
-  padding-bottom: 3em;
+  padding: 3em 0;
 }
 @media all and (max-width : 768px) {
   .twoCols section {
