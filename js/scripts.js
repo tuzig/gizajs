@@ -1,21 +1,4 @@
 /*jshint multistr: true */
-jQuery(document).ready(function($){
-
-var height_video = $(window).width();
-var height_responsive = (height_video / 1.78011) + 1;
-$('.video_slide').css("height",height_responsive);
-
-
-
-$(window).resize(function() {
-
-var height_video = $(window).width();
-var height_responsive = (height_video / 1.78011) + 1;
-$('.video_slide').css("height",height_responsive);
-
-});
-});
-
 
  
 var   window_height = $(window).height(),
@@ -70,27 +53,6 @@ var   window_height = $(window).height(),
 	var container = $('#portfolio-wrap');	
 	
 
-	container.isotope({
-		animationEngine : 'best-available',
-	  	animationOptions: {
-	     	duration: 200,
-	     	queue: false
-	   	},
-		layoutMode: 'fitRows'
-	});	
-
-
-	// filter items when filter link is clicked
-	$('#filters a').click(function(){
-		$('#filters a').removeClass('active');
-		$(this).addClass('active');
-		var selector = $(this).attr('data-filter');
-	  	container.isotope({ filter: selector });
-        setProjects();		
-	  	return false;
-	});
-		
-		
 		function splitColumns() { 
 			var winWidth = $(window).width(), 
 				columnNumb = 1;
@@ -123,14 +85,8 @@ var   window_height = $(window).height(),
 		
 		function setProjects() { 
 			setColumns();
-			container.isotope('reLayout');
 		}		
 		
-		container.imagesLoaded(function () { 
-			setColumns();
-		});
-		
-	
 		$(window).bind('resize', function () { 
 			setProjects();			
 		});
@@ -211,7 +167,6 @@ function home_parallax() {
             });
 });
 	  
-//BEGIN DOCUMENT.READY FUNCTION
 $(document).ready(function() 
 { 
   $('nav').animate({'opacity': '1'}, 400);	   
@@ -245,17 +200,6 @@ $(document).ready(function()
 /*----------------------------------------------------*/
 	 $(".container").fitVids();	 		
 /*----------------------------------------------------*/
-// PRELOADER CALLING
-/*----------------------------------------------------*/    
-    $("body.onepage").queryLoader2({
-        barColor: "#111111",
-        backgroundColor: "#ffffff",
-        percentage: true,
-        barHeight: 3,
-        completeAnimation: "fade",
-        minimumTime: 200
-    });  
-/*----------------------------------------------------*/
 // MENU SMOOTH SCROLLING
 /*----------------------------------------------------*/  
     $(".main-menu a, .logo a, .home-logo-text a, .home-logo a, .scroll-to").bind('click',function(event){
@@ -286,17 +230,6 @@ $(document).ready(function()
         $('.parallax .bg4').parallax("50%", 0.6);				
     } 
 	
-	jQuery('.milestone-counter').appear(function() {
-		$('.milestone-counter').each(function(){
-			dataperc = $(this).attr('data-perc'),
-			$(this).find('.milestone-count').delay(6000).countTo({
-            from: 0,
-            to: dataperc,
-            speed: 2000,
-            refreshInterval: 100
-        });
-     });
- });	
     //img overlays
     $('.team-thumb').on('mouseover', function()
     {
@@ -401,6 +334,9 @@ $(window).load(function(){
 		indent: '-'
 	}); 
 	
+    /* hide the loading overlay */
+    var loading = document.getElementById("loading");
+    loading.style.display = 'none';
 	
  
 });
