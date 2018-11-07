@@ -13,6 +13,7 @@ function initGiza() {
 		stroke_color: '#81aa8d',
 		textColor: '#fffadf',
 		fill_color: '#5B946B',
+		cardColor: '#5B946B',
 		articleSize: 0.8 // 1 is for full screen
 	};
 	var fb_config = {
@@ -301,15 +302,15 @@ function initGiza() {
 		var that = this;
 		var ageRE = /^age_(\d+)/;
 		var spriteFrames = this.bio.thumbs.frames;
-		var i;
-		var scale = calcScale(),
-			imageScale = Math.min(scale.x, scale.y);
+		var scale = calcScale()
+		var	imageScale = Math.min(scale.x, scale.y);
+
 
 		this.psImages = [];
 
 
 		// create the array for PhotoSwipe
-		for(i=0; i < spriteFrames.length; i++)
+		for(var i=0; i < spriteFrames.length; i++)
 			this.psImages.push(this.bio.images[spriteFrames[i].filename.slice(0,-4)]);
 
 		// create the sprite shhet element
@@ -317,8 +318,7 @@ function initGiza() {
 						this.bio.thumbs.meta.width, this.bio.thumbs.meta.width);
 		spriteSheet.src = this.bio.thumbs.meta.sprite_url;
 
-		var layer = this.layer,
-			images = this.images;
+        // update stuff
 		spriteSheet.onload = function () {
 			var ringMin = 5,
 				ringMax = 8,
@@ -333,8 +333,11 @@ function initGiza() {
 				age = Number(spriteFrames[i].filename.match(ageRE)[1]);
 				if (age == 0) {
 					loc = getPoint(0, 1);
+					offset = {x: 0, y: 0};
+                    /*
 					offset = {x: -0.5 * spriteFrames[i].frame.w*imageScale,
 							  y: -0.5 * spriteFrames[i].frame.h*imageScale};
+                    */
 				}
 				else {
 					loc = getPoint(age, ring);
@@ -359,18 +362,15 @@ function initGiza() {
 						y: 0 - spriteFrames[i].frame.y
 				});
 				img.i = i;
+                img.chronus = {ring: ring, age: age};
 				img.spriteFrame = spriteFrames[i];
 				img.loc = loc;
-				img.on('mouseup touchend', function() {
-					  gallery = new PhotoSwipe(document.getElementById('photos'),
-						  PhotoSwipeUI_Default, that.psImages, {index: this.i } );
-					  //TODO: capture the on exit and carry on with the drawing
-					  gallery.init();
-
-
-				});
-				images.push(img);
-				layer.add(img);
+                img.scale = 1;
+				img.on('click tap', function () {
+                    route('/'+window.chronus.bio.slug+'/photo/'+this.i);
+                });
+				that.images.push(img);
+				that.layer.add(img);
 				img.draw();
 				ring++;
 				if (ring === ringMax)
@@ -471,6 +471,7 @@ function initGiza() {
 
 	var Chronus = function (params) {
 		this.params = params;
+        this.state = "new";
 		// todo: create the welcome and biochronus here and simplif index.html
 		this.welcome = document.getElementById('welcome');
 		
@@ -626,7 +627,49 @@ function initGiza() {
 		},
 		showDescription: function(shape) {
 			this.article.draw(shape.doc.description);
-		}
+		},
+        zoomPhoto: function(imgNumber) {
+            var img;
+
+            console.log(imgNumber);
+            try {
+                this.hiddenThumb = this.gallery.images[imgNumber];
+                this.hiddenThumb.hide();
+            } catch(error) {
+                var that=this;
+                setTimeout(function() {
+                    that.zoomPhoto(imgNumber);
+                }, 50);
+                return;
+            };
+            var img = new Konva.Rect({
+				  fill: theme.cardColor,
+				  width: this.hiddenThumb.width(),
+				  height: this.hiddenThumb.height(),
+				  opacity: 1
+				});
+            img.position(this.hiddenThumb.position());
+            img.chronus = this.hiddenThumb.chronus;
+
+            this.gallery.layer.add(img);
+            var anim = new Konva.Animation(function(frame) {
+                img.scaleY(img.getScaleY() * 1.2);
+                img.scaleX(img.getScaleX() * 1.2);
+
+                var last = img.position();
+                img.chronus.ring --;
+                var next = getPoint(img.chronus.age, img.chronus.ring);
+                console.log(last, next);
+
+                img.move({x: next.x-last.x, y: next.y-last.y});
+                if (img.chronus.ring <= 0) {
+                    // load the image
+                    this.stop();
+                }
+                            
+            }, this.gallery.layer);
+            anim.start();
+        }
 	};
 	/* end of Chronus */
 
@@ -733,38 +776,33 @@ function initGiza() {
 			document.getElementsByName('enter').forEach(function (elm) {
 				elm.addEventListener("click", function () {
 					loading.style.display = '';
-					window.chronus.state = "pre_bio";
+					window.chronus.state = "new";
 				    fscreen.requestFullscreen(document.body);
 				});
 			});
 		});
 	});
 
-	route('/*/bio..', function(encodedName) {
-		var name = decodeURIComponent(encodedName);
-		var pid = route.query().pid;
+	route(function(encodedName, chapter, id) {
+        var name = decodeURIComponent(encodedName);
+        console.log(encodedName, chapter, id);
+        initChronus(name, function (bio) { 
+            var biochronus = document.getElementById('biochronus');
+            var loading = document.getElementById("loading");
 
-		initChronus(name, function (bio) { 
-			var biochronus = document.getElementById('biochronus');
-			var loading = document.getElementById("loading");
+            if (window.chronus.state == "new") {
+                window.chronus.draw();
+                resizeBioChronus();
+            }
+            window.chronus.state = chapter;
 
-			window.chronus.draw();
-			window.chronus.state = 'bio';
-			resizeBioChronus();
-			if (pid) {
-				gallery = new PhotoSwipe(document.getElementById('photos'),
-										 PhotoSwipeUI_Default,
-										 window.chronus.gallery.psImages);
-				gallery.init();
-				gallery.listen('close', function () {
-					route(name+'/bio');
-				});
-			}
-			else {
-				biochronus.style.display = '';
-			}
-			loading.style.display = 'none';
-		});
+            biochronus.style.display = '';
+            loading.style.display = 'none';
+
+            if (chapter == 'photo') {
+                window.chronus.zoomPhoto(Number(id));
+            } 
+        });
 	});
 
 	function calcScale() {
@@ -777,7 +815,7 @@ function initGiza() {
 		var loading = document.getElementById("loading");
 		loading.style.display = '';
 		window.chronus.scale(scale);
-		if (window.chronus.state == "pre_bio") {
+		if (window.chronus.state == "new") {
 			route('/'+window.chronus.bio.slug+'/bio');
 		}
 		loading.style.display = 'none';
