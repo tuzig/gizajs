@@ -283,6 +283,7 @@ function initGiza() {
 		this.stage = params.stage;
 		this.bio = params.bio;
 		this.layer = new Konva.Layer();
+		this.layer = new Konva.Layer();
 		this.images = [];
 		this.stage.add(this.layer);
 	};
@@ -302,7 +303,7 @@ function initGiza() {
 		var that = this;
 		var ageRE = /^age_(\d+)/;
 		var spriteFrames = this.bio.thumbs.frames;
-		var scale = calcScale()
+		var scale = calcScale();
 		var	imageScale = Math.min(scale.x, scale.y);
 
 
@@ -630,13 +631,13 @@ function initGiza() {
 		},
         zoomPhoto: function(imgNumber) {
             var img;
+            var that = this;
 
             console.log(imgNumber);
             try {
                 this.hiddenThumb = this.gallery.images[imgNumber];
                 this.hiddenThumb.hide();
             } catch(error) {
-                var that=this;
                 setTimeout(function() {
                     that.zoomPhoto(imgNumber);
                 }, 50);
@@ -651,23 +652,35 @@ function initGiza() {
             img.position(this.hiddenThumb.position());
             img.chronus = this.hiddenThumb.chronus;
 
-            this.gallery.layer.add(img);
+            // for perfomrance reason, use a fresh layer
+            var scale = calcScale();
+            var layer = new Konva.Layer();
+            layer.add(img);
+            this.stage.add(layer);
+
+            var rad = toRad(230);
+            var dest = {
+                x: (stageRadius+Math.round(Math.cos(rad)*ringHeight*11))*scale.x,
+                y: (stageRadius+Math.round(Math.sin(rad)*ringHeight*11))*scale.y
+            };
             var anim = new Konva.Animation(function(frame) {
-                img.scaleY(img.getScaleY() * 1.2);
-                img.scaleX(img.getScaleX() * 1.2);
+                img.scaleX(img.getScaleX() * 1.1);
+                img.scaleY(img.getScaleY() * 1.1);
 
                 var last = img.position();
-                img.chronus.ring --;
-                var next = getPoint(img.chronus.age, img.chronus.ring);
-                console.log(last, next);
+                img.chronus.ring -= 0.15;
+                console.log(img.chronus.ring, img.chronus.age);
 
-                img.move({x: next.x-last.x, y: next.y-last.y});
+
+                img.move({x: (dest.x-last.x)*0.1, y: (dest.y-last.y)*0.1});
+
                 if (img.chronus.ring <= 0) {
                     // load the image
                     this.stop();
+                    layer.destroy();
                 }
                             
-            }, this.gallery.layer);
+            }, layer);
             anim.start();
         }
 	};
