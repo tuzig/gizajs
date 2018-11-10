@@ -427,7 +427,6 @@ function initGiza() {
 
 				pos = {x: (this.w - w) / 2,
 					   y: (this.stage.height() - h) / 2};
-				console.log(h, this.stage.height(), pos.y);
 				if (pos.y < 200) {
 					this.oldStageHeight = this.stage.height();
 					this.stage.height(this.stage.height()+h-650);
@@ -630,54 +629,63 @@ function initGiza() {
 			this.article.draw(shape.doc.description);
 		},
         zoomPhoto: function(imgNumber) {
-            var img;
+            var img, start;
             var that = this;
 
-            console.log(imgNumber);
             try {
-                this.hiddenThumb = this.gallery.images[imgNumber];
-                this.hiddenThumb.hide();
+                img = this.gallery.images[imgNumber];
+                start = img.position();
             } catch(error) {
                 setTimeout(function() {
                     that.zoomPhoto(imgNumber);
                 }, 50);
                 return;
             };
-            var img = new Konva.Rect({
-				  fill: theme.cardColor,
-				  width: this.hiddenThumb.width(),
-				  height: this.hiddenThumb.height(),
-				  opacity: 1
-				});
-            img.position(this.hiddenThumb.position());
-            img.chronus = this.hiddenThumb.chronus;
+            img.remove();
+
+            this.gallery.layer.draw();
 
             // for perfomrance reason, use a fresh layer
             var scale = calcScale();
             var layer = new Konva.Layer();
-            layer.add(img);
             this.stage.add(layer);
+            layer.add(img);
 
             var rad = toRad(230);
             var dest = {
                 x: (stageRadius+Math.round(Math.cos(rad)*ringHeight*11))*scale.x,
                 y: (stageRadius+Math.round(Math.sin(rad)*ringHeight*11))*scale.y
             };
+            var totalDistance = Math.hypot(dest.x-start.x, dest.y-start.y);
+            var angle = Math.atan2(dest.y-start.y, dest.x-start.x);
+            console.log(start, dest, totalDistance, angle*180/Math.PI);
             var anim = new Konva.Animation(function(frame) {
-                img.scaleX(img.getScaleX() * 1.1);
-                img.scaleY(img.getScaleY() * 1.1);
+                var duration = 3000,
+                    dist = totalDistance * frame.timeDiff / duration;
 
-                var last = img.position();
-                img.chronus.ring -= 0.15;
-                console.log(img.chronus.ring, img.chronus.age);
+                img.move({x: Math.cos(angle) * dist,
+                          y: Math.sin(angle) * dist});
+                /* Playing woth Bezier curve animation
+                var handle = {x:0, y:0};
+                var duration = 5000,
+                    prev = (frame.time - frame.timeDiff) / duration,
+                    now = frame.time / duration;
+                var moveTo = zoomAnimation(prev, now, start, handle, dest);
+                console.log(prev, now, moveTo);
+                img.move(moveTo);
+                */
+                img.scaleX(img.getScaleX() * 1.01);
+                img.scaleY(img.getScaleY() * 1.01);
 
-
-                img.move({x: (dest.x-last.x)*0.1, y: (dest.y-last.y)*0.1});
-
-                if (img.chronus.ring <= 0) {
+                if (frame.time >=duration) {
                     // load the image
                     this.stop();
+                    /* cleanup
+                    img.remove();
+                    layer.remove();
                     layer.destroy();
+                    that.gallery.layer.add(img);
+                    */
                 }
                             
             }, layer);
@@ -798,7 +806,6 @@ function initGiza() {
 
 	route(function(encodedName, chapter, id) {
         var name = decodeURIComponent(encodedName);
-        console.log(encodedName, chapter, id);
         initChronus(name, function (bio) { 
             var biochronus = document.getElementById('biochronus');
             var loading = document.getElementById("loading");
@@ -876,3 +883,39 @@ function initGiza() {
 	});
 }
 initGiza();
+
+/* TODO: add bezier curve animation, unused for now
+function zoomAnimation(lambdaStart, lambdaEnd, start, handlePoint, end) {
+    var handle = Object.assign({}, handlePoint);
+    var anchorStart = Object.assign({}, start);
+    var anchorEnd = Object.assign({}, end);
+
+  var x0, y0, x1, y1, path, txt;
+
+  if ( lambdaStart > 0.0 ) {
+   x0 =  anchorStart.x + lambdaStart * ( handle.x    - anchorStart.x );
+   y0 =  anchorStart.y + lambdaStart * ( handle.y    - anchorStart.y );
+   x1 =  handle.x      + lambdaStart * ( anchorEnd.x - handle.x      );
+   y1 =  handle.y      + lambdaStart * ( anchorEnd.y - handle.y      );
+
+   anchorStart.x = x0 + lambdaStart * ( x1 - x0 );
+   anchorStart.y = y0 + lambdaStart * ( y1 - y0 );
+   handle.x      = x1;
+   handle.y      = y1; 
+  }
+
+  if ( lambdaEnd < 1.0 ) {
+   x0 =  anchorStart.x + lambdaEnd * ( handle.x    - anchorStart.x );
+   y0 =  anchorStart.y + lambdaEnd * ( handle.y    - anchorStart.y );
+   x1 =  handle.x      + lambdaEnd * ( anchorEnd.x - handle.x      );
+   y1 =  handle.y      + lambdaEnd * ( anchorEnd.y - handle.y      );
+
+   handle.x    = x0;
+   handle.y    = y0;
+   anchorEnd.x = x0 + lambdaEnd * ( x1 - x0 );
+   anchorEnd.y = y0 + lambdaEnd * ( y1 - y0 );
+  }
+  
+  return {x: anchorEnd.x-anchorStart.x, y: anchorEnd.y-anchorStart.y};
+ }
+*/
