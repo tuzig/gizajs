@@ -25,12 +25,7 @@ function initGiza() {
 		messagingSenderId: "710538398471"
 	};
 
-	var stageLen = 1000,
-		stageRadius = stageLen / 2,
-		stageCenter = {x: stageLen / 2,
-					   y: stageLen / 2},
-		ringHeight = stageRadius / 12.5,
-		totalDeg = 350;
+	var totalDeg = 350;
 
 	var maxAge, years2deg;
 		// refactor to this.scale and remove maxAge
@@ -56,13 +51,6 @@ function initGiza() {
 	  return angle * (Math.PI / 180);
 	}
 
-	function getPoint(age, ring) {
-		var rad = toRad(age*years2deg-90);
-		return {
-			x: stageRadius+Math.round(Math.cos(rad)*ringHeight*ring),
-			y: stageRadius+Math.round(Math.sin(rad)*ringHeight*ring)
-		};
-	}
 	// from https://stackoverflow.com/a/901144
 	function getParameterByName(name, url) {
 		if (!url) url = window.location.href;
@@ -78,6 +66,7 @@ function initGiza() {
 	 * TODO: add buttons
 	 */
 	var TableLayer = function(params) {
+        this.chronus = params.chronus;
 		this.currentScale = {x:1,y:1};
 		this.stage = params.stage;
 		this.bio = params.bio;
@@ -133,7 +122,7 @@ function initGiza() {
 		},
 		getPath: function(config) {
 		  // config is expected to have ring, startDeg & endDeg
-		  var myRingWidth = (config.ring+0.5) * ringHeight;
+		  var myRingWidth = (config.ring+0.5) * this.chronus.ringHeight;
 		  var scale = this.arcsGroup.scale();
 
 		  var deg, rad, x, y;
@@ -177,10 +166,10 @@ function initGiza() {
 			arcShape = new Konva.Arc({
 					opacity: (fontStyle=='bold')?0.6:0.3,
 					angle: endDeg-startDeg,
-					x: stageRadius,
-					y: stageRadius,
-					outerRadius: (ring+1)*ringHeight,
-					innerRadius: ring*ringHeight,
+					x: this.chronus.stageRadius,
+					y: this.chronus.stageRadius,
+					outerRadius: (ring+1)*this.chronus.ringHeight,
+					innerRadius: ring*this.chronus.ringHeight,
 					fill: '#fff',
 					stroke: '#81aa8d',
 					strokeWidth: 3,
@@ -213,10 +202,10 @@ function initGiza() {
 				textShape.ring = arcShape.ring = ring;
 
 				arcShape.on('click tap', function(ev) {
-					window.chronus.showDescription(ev.target);
+					this.chronus.showDescription(ev.target);
 				});
 				textShape.on('click tap', function(ev) {
-					window.chronus.showDescription(ev.target);
+					this.chronus.showDescription(ev.target);
 				});
 			}
 		},
@@ -229,17 +218,17 @@ function initGiza() {
 				new Konva.Arc({
 					opacity: 0.3,
 					angle: totalDeg,
-					x: stageRadius,
-					y: stageRadius,
-					outerRadius: 12*ringHeight+4,
-					innerRadius: 12*ringHeight,
+					x: this.chronus.stageRadius,
+					y: this.chronus.stageRadius,
+					outerRadius: 12*this.chronus.ringHeight+4,
+					innerRadius: 12*this.chronus.ringHeight,
 					fill: '#81aa8d',
 					rotation: -90
 				})
 			);
 			for (var i=0; i <= maxAge; i++) {
-				var from = getPoint(i, 12);
-				var to = getPoint(i, 11.9);
+				var from = this.chronus.getPoint(i, 12);
+				var to = this.chronus.getPoint(i, 11.9);
 				this.dialsGroup.add(
 					new Konva.Line({
 						points: [from.x, from.y, to.x,to.y],
@@ -277,107 +266,6 @@ function initGiza() {
 			this.textsGroup.add(dob);
 			this.textsGroup.add(dop);
 		}
-	};
-
-	var GalleryLayer = function(params) {
-		this.stage = params.stage;
-		this.bio = params.bio;
-		this.layer = new Konva.Layer();
-		this.layer = new Konva.Layer();
-		this.images = [];
-		this.stage.add(this.layer);
-	};
-
-	GalleryLayer.prototype.scale = function (scale) {
-		var imageScale = Math.min(scale.x, scale.y);
-		for (var i=0; i < this.images.length; i++) {
-			this.images[i].x(this.images[i].loc.x*scale.x);
-			this.images[i].y(this.images[i].loc.y*scale.y);
-			this.images[i].width(this.images[i].spriteFrame.frame.w*imageScale);
-			this.images[i].height(this.images[i].spriteFrame.frame.h*imageScale);
-		}	
-		this.layer.draw();
-	};
-
-	GalleryLayer.prototype.draw = function () {
-		var that = this;
-		var ageRE = /^age_(\d+)/;
-		var spriteFrames = this.bio.thumbs.frames;
-		var scale = calcScale();
-		var	imageScale = Math.min(scale.x, scale.y);
-
-
-		this.psImages = [];
-
-
-		// create the array for PhotoSwipe
-		for(var i=0; i < spriteFrames.length; i++)
-			this.psImages.push(this.bio.images[spriteFrames[i].filename.slice(0,-4)]);
-
-		// create the sprite shhet element
-		var spriteSheet = new Image(
-						this.bio.thumbs.meta.width, this.bio.thumbs.meta.width);
-		spriteSheet.src = this.bio.thumbs.meta.sprite_url;
-
-        // update stuff
-		spriteSheet.onload = function () {
-			var ringMin = 5,
-				ringMax = 8,
-				ring = ringMin,
-				i,
-				age,
-				loc,
-				offset = {x:0, y:0},
-				img;
-
-			for (i = 0; i < spriteFrames.length; i++) {
-				age = Number(spriteFrames[i].filename.match(ageRE)[1]);
-				if (age == 0) {
-					loc = getPoint(0, 1);
-					offset = {x: 0, y: 0};
-                    /*
-					offset = {x: -0.5 * spriteFrames[i].frame.w*imageScale,
-							  y: -0.5 * spriteFrames[i].frame.h*imageScale};
-                    */
-				}
-				else {
-					loc = getPoint(age, ring);
-				}
-				img = new Konva.Image({
-					x: (loc.x+offset.x)*scale.x,
-					y: (loc.y+offset.y)*scale.y,
-					width: spriteFrames[i].frame.w*imageScale,
-					height: spriteFrames[i].frame.h*imageScale,
-					strokeWidth: 3,
-					stroke: '#5B946B',
-					image: spriteSheet,
-					shadowColor: 'black',
-					shadowBlur: 10,
-					shadowOffset: {x : 10, y : 10},
-					shadowOpacity: 0.3
-				});
-				img.crop({
-						width: spriteFrames[i].frame.w,
-						height: spriteFrames[i].frame.h,
-						x: 0 - spriteFrames[i].frame.x,
-						y: 0 - spriteFrames[i].frame.y
-				});
-				img.i = i;
-                img.chronus = {ring: ring, age: age};
-				img.spriteFrame = spriteFrames[i];
-				img.loc = loc;
-                img.scale = 1;
-				img.on('click tap', function () {
-                    route('/'+window.chronus.bio.slug+'/photo/'+this.i);
-                });
-				that.images.push(img);
-				that.layer.add(img);
-				img.draw();
-				ring++;
-				if (ring === ringMax)
-					ring = ringMin;
-			}
-		};
 	};
 
 	var ArticleLayer = function (params) {
@@ -472,14 +360,28 @@ function initGiza() {
 	var Chronus = function (params) {
 		this.params = params;
         this.state = "new";
+		this.stageLen = 1000,
+		this.stageRadius = this.stageLen / 2,
+		this.ringHeight = this.stageRadius / 12.5,
 		// todo: create the welcome and biochronus here and simplif index.html
 		this.welcome = document.getElementById('welcome');
 		
 		this.stage = new Konva.Stage(params);
-		this.scale(calcScale());
+		this.scale(this.calcScale());
 	};
 
 	Chronus.prototype = {
+        getPoint: function (age, ring) {
+            var rad = toRad(age*years2deg-90);
+            return {
+                x: this.stageRadius+Math.round(Math.cos(rad)*this.ringHeight*ring),
+                y: this.stageRadius+Math.round(Math.sin(rad)*this.ringHeight*ring)
+            };
+        },
+        calcScale: function () {
+            return {x: (window.innerWidth) / this.stageLen,
+                    y: (window.innerHeight * 0.92) / this.stageLen};
+        },
 		clear: function() {
 			// clear the chronus display
 			if (this.table)
@@ -488,8 +390,8 @@ function initGiza() {
 				this.gallery.layer.destroyChildren();
 		},
 		scale: function(scale) {
-			this.stage.width(stageLen * scale.x);
-			this.stage.height(stageLen * scale.y );
+			this.stage.width(this.stageLen * scale.x);
+			this.stage.height(this.stageLen * scale.y );
 			if (this.table) this.table.scale(scale);
 			if (this.gallery) this.gallery.scale(scale);
 			if (this.article) this.article.scale(scale);
@@ -515,7 +417,7 @@ function initGiza() {
 				// TODO: create that element on object init
 				var header = document.getElementById('biocHeader');
 				header.innerHTML = '<h1>' + bio.full_name + '</h1>';
-				that.createLayers({stage: that.stage, bio: bio});
+				that.createLayers({stage: that.stage, bio: bio, chronus: that});
 				cb(bio);
 			});
 		},
@@ -627,102 +529,7 @@ function initGiza() {
 		},
 		showDescription: function(shape) {
 			this.article.draw(shape.doc.description);
-		},
-        zoomPhoto: function(imgNumber) {
-            var img, start;
-            var that = this;
-
-            try {
-                img = this.gallery.images[imgNumber];
-                start = img.position();
-            } catch(error) {
-                setTimeout(function() {
-                    that.zoomPhoto(imgNumber);
-                }, 50);
-                return;
-            }
-
-            this.gallery.layer.draw();
-
-            // for perfomrance reason, use a fresh layer
-            var scale = calcScale();
-            var layer = new Konva.Layer();
-            this.stage.add(layer);
-            layer.add(img);
-
-            var psImage = this.gallery.psImages[imgNumber];
-            img.fullImage = new Image(
-                            psImage.w, psImage.h);
-            img.fullImage.src = psImage.src;
-
-            /* TODO: handle the case where zooming finishes before the image laods 
-            img.fullImage.onload = function () {
-                img.setImage(this);
-            }
-            */
-            
-            var alpha = Math.atan2(psImage.h, psImage.w)-Math.PI;
-            var dest = {
-                x: (stageRadius+Math.round(Math.cos(alpha)*ringHeight*11))*scale.x,
-                y: (stageRadius+Math.round(Math.sin(alpha)*ringHeight*11))*scale.y
-            };
-            alpha -=Math.PI;
-            var zoomedSize = 
-                Math.hypot((stageRadius+Math.round(Math.cos(alpha)*ringHeight*11))*scale.x-dest.x,
-                           (stageRadius+Math.round(Math.sin(alpha)*ringHeight*11))*scale.y-dest.y)
-
-            var zoomBy = zoomedSize / Math.hypot(img.width(), img.height())
-            var totalDistance = Math.hypot(dest.x-start.x, dest.y-start.y);
-            var teta = Math.atan2(dest.y-start.y, dest.x-start.x);
-            console.log(psImage);
-            var anim = new Konva.Animation(function(frame) {
-                var duration = 3000,
-                    dist = totalDistance * frame.timeDiff / duration,
-                    scale = zoomBy * frame.time / duration;
-
-                img.move({x: Math.cos(teta) * dist,
-                          y: Math.sin(teta) * dist});
-                /* Playing woth Bezier curve animation
-                var handle = {x:0, y:0};
-                var duration = 5000,
-                    prev = (frame.time - frame.timeDiff) / duration,
-                    now = frame.time / duration;
-                var moveTo = zoomAnimation(prev, now, start, handle, dest);
-                console.log(prev, now, moveTo);
-                img.move(moveTo);
-                */
-                img.scaleX(scale);
-                img.scaleY(scale);
-
-                if (frame.time >=duration) {
-                    // load the image
-                    this.stop();
-                    var colorImage = new Konva.Image({
-                        width: img.width()*scale,
-                        height: img.height()*scale,
-                        strokeWidth: 6,
-                        stroke: '#5B946B',
-                        image: img.fullImage,
-                        shadowColor: 'black',
-                        shadowBlur: 10,
-                        shadowOffset: {x : 10, y : 10},
-                        shadowOpacity: 0.3
-                    });
-                    img.hide()
-                    colorImage.position(img.position());
-                    layer.add(colorImage);
-                    layer.draw();
-                    /* cleanup
-                    img.remove();
-                    layer.remove();
-                    layer.destroy();
-                    that.gallery.layer.add(img);
-                    */
-                }
-                            
-            }, layer);
-            anim.start();
-        }
+		}
 	};
 	/* end of Chronus */
 
@@ -852,18 +659,14 @@ function initGiza() {
             loading.style.display = 'none';
 
             if (chapter == 'photo') {
-                window.chronus.zoomPhoto(Number(id));
+                window.chronus.gallery.zoom(Number(id));
             } 
         });
 	});
 
-	function calcScale() {
-		return {x: (window.innerWidth) / stageLen,
-				y: (window.innerHeight * 0.92) / stageLen};
-	}
 
 	function resizeBioChronus() {
-		var scale = calcScale();
+		var scale = window.chronus.calcScale();
 		var loading = document.getElementById("loading");
 		loading.style.display = '';
 		window.chronus.scale(scale);
