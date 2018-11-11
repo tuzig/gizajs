@@ -640,8 +640,7 @@ function initGiza() {
                     that.zoomPhoto(imgNumber);
                 }, 50);
                 return;
-            };
-            img.remove();
+            }
 
             this.gallery.layer.draw();
 
@@ -651,20 +650,38 @@ function initGiza() {
             this.stage.add(layer);
             layer.add(img);
 
-            var rad = toRad(230);
+            var psImage = this.gallery.psImages[imgNumber];
+            img.fullImage = new Image(
+                            psImage.w, psImage.h);
+            img.fullImage.src = psImage.src;
+
+            /* TODO: handle the case where zooming finishes before the image laods 
+            img.fullImage.onload = function () {
+                img.setImage(this);
+            }
+            */
+            
+            var alpha = Math.atan2(psImage.h, psImage.w)-Math.PI;
             var dest = {
-                x: (stageRadius+Math.round(Math.cos(rad)*ringHeight*11))*scale.x,
-                y: (stageRadius+Math.round(Math.sin(rad)*ringHeight*11))*scale.y
+                x: (stageRadius+Math.round(Math.cos(alpha)*ringHeight*11))*scale.x,
+                y: (stageRadius+Math.round(Math.sin(alpha)*ringHeight*11))*scale.y
             };
+            alpha -=Math.PI;
+            var zoomedSize = 
+                Math.hypot((stageRadius+Math.round(Math.cos(alpha)*ringHeight*11))*scale.x-dest.x,
+                           (stageRadius+Math.round(Math.sin(alpha)*ringHeight*11))*scale.y-dest.y)
+
+            var zoomBy = zoomedSize / Math.hypot(img.width(), img.height())
             var totalDistance = Math.hypot(dest.x-start.x, dest.y-start.y);
-            var angle = Math.atan2(dest.y-start.y, dest.x-start.x);
-            console.log(start, dest, totalDistance, angle*180/Math.PI);
+            var teta = Math.atan2(dest.y-start.y, dest.x-start.x);
+            console.log(psImage);
             var anim = new Konva.Animation(function(frame) {
                 var duration = 3000,
-                    dist = totalDistance * frame.timeDiff / duration;
+                    dist = totalDistance * frame.timeDiff / duration,
+                    scale = zoomBy * frame.time / duration;
 
-                img.move({x: Math.cos(angle) * dist,
-                          y: Math.sin(angle) * dist});
+                img.move({x: Math.cos(teta) * dist,
+                          y: Math.sin(teta) * dist});
                 /* Playing woth Bezier curve animation
                 var handle = {x:0, y:0};
                 var duration = 5000,
@@ -674,12 +691,27 @@ function initGiza() {
                 console.log(prev, now, moveTo);
                 img.move(moveTo);
                 */
-                img.scaleX(img.getScaleX() * 1.01);
-                img.scaleY(img.getScaleY() * 1.01);
+                img.scaleX(scale);
+                img.scaleY(scale);
 
                 if (frame.time >=duration) {
                     // load the image
                     this.stop();
+                    var colorImage = new Konva.Image({
+                        width: img.width()*scale,
+                        height: img.height()*scale,
+                        strokeWidth: 6,
+                        stroke: '#5B946B',
+                        image: img.fullImage,
+                        shadowColor: 'black',
+                        shadowBlur: 10,
+                        shadowOffset: {x : 10, y : 10},
+                        shadowOpacity: 0.3
+                    });
+                    img.hide()
+                    colorImage.position(img.position());
+                    layer.add(colorImage);
+                    layer.draw();
                     /* cleanup
                     img.remove();
                     layer.remove();
