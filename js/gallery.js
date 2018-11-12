@@ -16,29 +16,53 @@ var GalleryLayer = function(params) {
     this.images = [];
     this.zoomedImage = null;
     this.animationOn = false;
+    var hammertime = new Hammer(window, {});
+    hammertime.get('pan').set({ enable: false});
+    hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+
+
+    hammertime.on('swipeleft', function () {
+        if (window.chronus.state == 'zoom' && !that.animationOn)
+            that.gotoPrevImage();
+    });
+    hammertime.on('swiperight', function () {
+        if (window.chronus.state == 'zoom' && !that.animationOn)
+            that.gotoNextImage();
+    });
+    hammertime.on('swipeup', function () {
+        if (window.chronus.state == 'zoom' && !that.animationOn)
+            that.unzoom();
+    });
     window.addEventListener('keyup', function(e) {
         if (window.chronus.state == 'zoom' && !that.animationOn) {
             e.preventDefault();
             var next;
             switch(e.key) {
                 case "ArrowLeft":
-                    next = that.zoomedImage.i - 1;
-                    if (next < 0 ) next = that.images.length - 1;
+                    that.gotoPrevImage();
                     break;
                 case "ArrowRight":
-                    next = (that.zoomedImage.i + 1) % that.images.length;
+                    that.gotoNextImage();
                     break;
                 case "ArrowUp":
                     // put it back down
                     that.unzoom();
                     return;
             }
-            that.gotoPhoto(next);
         }
     });
 };
 
 GalleryLayer.prototype = {
+    gotoPrevImage: function () {
+        var prev = this.zoomedImage.i - 1;
+        if (prev < 0 ) prev = this.images.length - 1;
+        this.gotoPhoto(prev);
+    },
+    gotoNextImage: function () {
+        var next = (this.zoomedImage.i + 1) % this.images.length;
+        this.gotoPhoto(next);
+    },
     scale: function (scale) {
         for (var i=0; i < this.images.length; i++) {
             this.positionImage(i, scale);
