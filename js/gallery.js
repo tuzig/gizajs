@@ -8,23 +8,58 @@
 "use strict";
 
 var GalleryLayer = function(params) {
+    var that = this;
     this.chronus = params.chronus;
     this.stage = params.stage;
     this.bio = params.bio;
     this.layer = new Konva.Layer();
     this.images = [];
+    this.zoomedImage = null;
+    this.animationOn = false;
+    window.addEventListener('keyup', function(e) {
+        if (window.chronus.state == 'zoom' && !that.animationOn) {
+            e.preventDefault();
+            var next;
+            switch(e.key) {
+                case "ArrowLeft":
+                    next = that.zoomedImage.i - 1;
+                    if (next < 0 ) next = that.images.length - 1;
+                    break;
+                case "ArrowRight":
+                    next = (that.zoomedImage.i + 1) % that.images.length;
+                    break;
+                case "ArrowUp":
+                    // put it back down
+                    that.unzoom();
+                    return;
+            }
+            that.gotoPhoto(next);
+        }
+    });
 };
 
 GalleryLayer.prototype = {
     scale: function (scale) {
-        var imageScale = Math.min(scale.x, scale.y);
         for (var i=0; i < this.images.length; i++) {
-            this.images[i].x(this.images[i].loc.x*scale.x);
-            this.images[i].y(this.images[i].loc.y*scale.y);
-            this.images[i].width(this.images[i].spriteFrame.frame.w*imageScale);
-            this.images[i].height(this.images[i].spriteFrame.frame.h*imageScale);
+            this.positionImage(i, scale);
             this.images[i].getLayer().draw();
         }	
+    },
+    positionImage: function (i, scale) {
+        var img = this.images[i];
+        if (!scale) scale = this.chronus.calcScale();
+        var imageScale = Math.min(scale.x, scale.y);
+        img.x(this.images[i].loc.x*scale.x);
+        img.y(this.images[i].loc.y*scale.y);
+        img.width(this.images[i].spriteFrame.frame.w*imageScale);
+        img.height(this.images[i].spriteFrame.frame.h*imageScale);
+        if (img.colorImage) {
+            img.colorImage.position({
+                x: this.chronus.stageRadius*scale.x - img.colorImage.width()/2,
+                y: this.chronus.stageRadius*scale.y - img.colorImage.height()/2,
+            });
+        }
+            
     },
     zoom: function(photoNumber) {
         var img, start;
@@ -69,31 +104,23 @@ GalleryLayer.prototype = {
             x: this.chronus.stageRadius*scale.x - zoomBy*img.width()/2,
             y: this.chronus.stageRadius*scale.y - zoomBy*img.height()/2,
         };
-        var totalDistance = Math.hypot(dest.x-start.x, dest.y-start.y);
-        var teta = Math.atan2(dest.y-start.y, dest.x-start.x);
+        this.zoomBy = zoomBy;
+        this.zoomDistance = Math.hypot(dest.x-start.x, dest.y-start.y);
+        var teta = this.teta = Math.atan2(dest.y-start.y, dest.x-start.x);
         var anim = new Konva.Animation(function(frame) {
             var duration = 1000,
-                dist = totalDistance * frame.timeDiff / duration,
+                dist = that.zoomDistance * frame.timeDiff / duration,
                 scale = zoomBy * frame.time / duration;
 
             img.move({x: Math.cos(teta) * dist,
                       y: Math.sin(teta) * dist});
-            /* Playing woth Bezier curve animation
-            var handle = {x:0, y:0};
-            var duration = 5000,
-                prev = (frame.time - frame.timeDiff) / duration,
-                now = frame.time / duration;
-            var moveTo = zoomAnimation(prev, now, start, handle, dest);
-            console.log(prev, now, moveTo);
-            img.move(moveTo);
-            */
             img.scaleX(scale);
             img.scaleY(scale);
 
             if (frame.time >=duration) {
                 // load the image
                 this.stop();
-                var colorImage = new Konva.Image({
+                img.colorImage = new Konva.Image({
                     width: img.width()*scale,
                     height: img.height()*scale,
                     strokeWidth: 10,
@@ -104,17 +131,67 @@ GalleryLayer.prototype = {
                     shadowOffset: {x : 10, y : 10},
                     shadowOpacity: 0.3
                 });
+                that.chronus.state = "zoom";
+                that.animationOn = false;
+                that.zoomedImage = img;
+                
                 img.hide();
-                colorImage.position(img.position());
+                img.colorImage.position(img.position());
 
-                layer.add(colorImage);
+                layer.add(img.colorImage);
                 layer.draw();
             }
                         
         }, layer);
         layer.moveToTop();
+        that.animationOn = true;
 
         anim.start();
+    },
+    unzoom: function (cb) {
+        var that = this;
+        var img = this.zoomedImage.colorImage;
+        var anim = new Konva.Animation(function(frame) {
+            var duration = 1000,
+                teta = that.teta + Math.PI,
+                dist = that.zoomDistance * frame.timeDiff / duration,
+                scale = 1 - (1 - 1/that.zoomBy) * frame.time / duration;
+
+            img.move({x: Math.cos(teta) * dist,
+                      y: Math.sin(teta) * dist});
+            img.scaleX(scale);
+            img.scaleY(scale);
+
+            if (frame.time >=duration) {
+                // load the image
+                var i = that.zoomedImage.i;
+                this.stop();
+                img.hide();
+                that.zoomedImage.show();
+                that.zoomedImage.scaleX(1);
+                that.zoomedImage.scaleY(1);
+                that.positionImage(i);
+                that.chronus.state = "bio";
+                that.animationOn = false;
+                img.getLayer().draw();
+                cb();
+            }
+                        
+        }, img.getLayer());
+
+        that.animationOn = true;
+        anim.start();
+
+    },
+    gotoPhoto: function (i) {
+        var that = this;
+
+        if (this.chronus.state == "zoom")
+            this.unzoom(function () {
+                that.gotoPhoto(i);
+            });
+        else
+            route('/'+window.chronus.bio.slug+'/photo/'+i);
     },
     draw: function () {
         var that = this;
@@ -185,7 +262,7 @@ GalleryLayer.prototype = {
                 img.loc = loc;
                 img.scale = 1;
                 img.on('click tap', function () {
-                    route('/'+window.chronus.bio.slug+'/photo/'+this.i);
+                    that.gotoPhoto(this.i);
                 });
                 that.images.push(img);
                 var layer = new Konva.Layer();
