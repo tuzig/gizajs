@@ -174,7 +174,9 @@ GalleryLayer.prototype = {
                 that.chronus.state = "bio";
                 that.animationOn = false;
                 img.getLayer().draw();
-                cb();
+                if (cb) {
+                    cb();
+                }
             }
                         
         }, img.getLayer());
