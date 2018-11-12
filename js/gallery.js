@@ -55,17 +55,20 @@ GalleryLayer.prototype = {
         }
         */
         
-        var alpha = Math.atan2(psImage.h, psImage.w)-Math.PI;
-        var dest = {
-            x: (this.chronus.stageRadius+Math.round(Math.cos(alpha)*this.chronus.ringHeight*11))*scale.x,
-            y: (this.chronus.stageRadius+Math.round(Math.sin(alpha)*this.chronus.ringHeight*11))*scale.y
-        };
-        alpha -=Math.PI;
-        var zoomedSize = 
-            Math.hypot((this.chronus.stageRadius+Math.round(Math.cos(alpha)*this.chronus.ringHeight*11))*scale.x-dest.x,
-                       (this.chronus.stageRadius+Math.round(Math.sin(alpha)*this.chronus.ringHeight*11))*scale.y-dest.y)
+        var alpha = Math.atan2(psImage.h, psImage.w) - Math.PI;
+        var beta = Math.PI - alpha;
 
-        var zoomBy = zoomedSize / Math.hypot(img.width(), img.height());
+        var zoomBy;
+        if (psImage.w / psImage.h >
+            this.chronus.stage.width() / this.chronus.stage.height())
+            zoomBy = this.chronus.stageLen*scale.x*0.7 / img.width();
+        else
+            zoomBy = this.chronus.stageLen*scale.y*0.7 / img.height();
+
+        var dest = {
+            x: this.chronus.stageRadius*scale.x - zoomBy*img.width()/2,
+            y: this.chronus.stageRadius*scale.y - zoomBy*img.height()/2,
+        };
         var totalDistance = Math.hypot(dest.x-start.x, dest.y-start.y);
         var teta = Math.atan2(dest.y-start.y, dest.x-start.x);
         var anim = new Konva.Animation(function(frame) {
@@ -93,7 +96,7 @@ GalleryLayer.prototype = {
                 var colorImage = new Konva.Image({
                     width: img.width()*scale,
                     height: img.height()*scale,
-                    strokeWidth: 6,
+                    strokeWidth: 10,
                     stroke: '#5B946B',
                     image: img.fullImage,
                     shadowColor: 'black',
