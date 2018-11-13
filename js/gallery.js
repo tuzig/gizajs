@@ -104,15 +104,16 @@ GalleryLayer.prototype = {
         var scale = this.chronus.calcScale();
 
         var psImage = this.psImages[photoNumber];
-        img.fullImage = new Image(
-                        psImage.w, psImage.h);
-        img.fullImage.src = psImage.src;
+        if (!img .fullImage) {
+            img.fullImage = new Image(
+                            psImage.w, psImage.h);
+            img.fullImage.src = psImage.src;
 
-        /* TODO: handle the case where zooming finishes before the image laods 
-        img.fullImage.onload = function () {
-            img.setImage(this);
+            img.fullImage.onload = function () {
+                if (!that.animationOn)
+                    img.setImage(this);
+            };
         }
-        */
         
         var alpha = Math.atan2(psImage.h, psImage.w) - Math.PI;
         var beta = Math.PI - alpha;
@@ -149,7 +150,7 @@ GalleryLayer.prototype = {
                     height: img.height()*scale,
                     strokeWidth: 10,
                     stroke: '#5B946B',
-                    image: img.fullImage,
+                    image: img.fullImage || img.getImage(),
                     shadowColor: 'black',
                     shadowBlur: 10,
                     shadowOffset: {x : 10, y : 10},
@@ -283,7 +284,7 @@ GalleryLayer.prototype = {
                         y: 0 - spriteFrames[i].frame.y
                 });
                 img.i = i;
-                img.chronus = {ring: ring, age: age};
+                img.age = age;
                 img.spriteFrame = spriteFrames[i];
                 img.loc = loc;
                 img.scale = 1;
