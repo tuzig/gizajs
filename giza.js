@@ -228,7 +228,7 @@ function initGiza() {
 			);
 			for (var i=0; i <= maxAge; i++) {
 				var from = this.chronus.getPoint(i, 12);
-				var to = this.chronus.getPoint(i, 11.9);
+				var to = this.chronus.getPoint(i, (i % 10 == 0)?11.7:11.9);
 				this.dialsGroup.add(
 					new Konva.Line({
 						points: [from.x, from.y, to.x,to.y],
