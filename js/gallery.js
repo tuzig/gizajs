@@ -169,19 +169,6 @@ GalleryLayer.prototype = {
                         
         }, layer);
         layer.moveToTop();
-        if (!img.ageDial) {
-            img.ageDial = new Konva.Circle({
-                stroke: '#5B946B',
-                strokeWidth: 5,
-                radius:20
-            });
-            img.ageDial.position(that.chronus.getPoint(img.age, 12));
-            layer.add(img.ageDial);
-        }
-        else
-            img.ageDial.show();
-        img.ageDial.scale(scale);
-
         that.animationOn = true;
 
         anim.start();
@@ -205,7 +192,6 @@ GalleryLayer.prototype = {
                 var i = that.zoomedImage.i;
                 this.stop();
                 img.hide();
-                that.zoomedImage.ageDial.hide();
                 that.zoomedImage.show();
                 that.zoomedImage.scaleX(1);
                 that.zoomedImage.scaleY(1);
@@ -268,7 +254,7 @@ GalleryLayer.prototype = {
             for (i = 0; i < spriteFrames.length; i++) {
                 age = Number(spriteFrames[i].filename.match(ageRE)[1]);
                 if (age == 0) {
-                    loc = that.chronus.getPoint(0, 1);
+                    loc = getPoint(0, 1);
                     offset = {x: 0, y: 0};
                     /*
                     offset = {x: -0.5 * spriteFrames[i].frame.w*imageScale,
