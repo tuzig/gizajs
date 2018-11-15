@@ -126,9 +126,9 @@ GalleryLayer.prototype = {
         var zoomBy;
         if (psImage.w / psImage.h >
             this.chronus.stage.width() / this.chronus.stage.height())
-            zoomBy = this.chronus.stageLen*scale.x*0.7 / img.width();
+            zoomBy = this.chronus.stageLen*scale.x*0.9 / img.width();
         else
-            zoomBy = this.chronus.stageLen*scale.y*0.7 / img.height();
+            zoomBy = this.chronus.stageLen*scale.y*0.9 / img.height();
 
         var dest = {
             x: this.chronus.stageRadius*scale.x - zoomBy*img.width()/2,
