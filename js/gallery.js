@@ -124,7 +124,7 @@ GalleryLayer.prototype = {
             img.fullImage.onload = function () {
                 if (!that.animationOn) {
                     img.setImage(this);
-                    img.getLayer().batchDraw;
+                    img.getLayer().draw();
                 }
             };
         }
@@ -305,7 +305,7 @@ GalleryLayer.prototype = {
                 });
                 img.scale = 1;
                 that.positionImage(i);
-                img.getLayer().batchDraw();
+                img.draw();
                 img.on('click tap', function () {
                     that.gotoPhoto(this.i);
                 });
