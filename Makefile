@@ -17,7 +17,6 @@ build:
 	cp -a fonts $(TARGET)
 	cp -a angleface.js $(TARGET)
 	cp -a fscreen.js $(TARGET)
-	cp -a GitHub-Mark-32px.png $(TARGET)
 	cp -a giza.js $(TARGET)
 	cp -a index.html $(TARGET)
 	cp -a konva.min.js $(TARGET)
