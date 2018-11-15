@@ -96,7 +96,6 @@ function initGiza() {
 					}
 				}
 
-			this.layer.draw();
 		},
 		scale: function (scale) {
 			var fontScale = Math.min(scale.x, scale.y);
@@ -118,7 +117,6 @@ function initGiza() {
 				path.setAttrs(attrs);
 			}
 			this.currentScale = scale;
-			this.layer.draw();
 		},
 		getPath: function(config) {
 		  // config is expected to have ring, startDeg & endDeg
@@ -390,11 +388,15 @@ function initGiza() {
 				this.gallery.layer.destroyChildren();
 		},
 		scale: function(scale) {
+            if (this.state == "welcome")
+                return;
+
 			this.stage.width(this.stageLen * scale.x);
 			this.stage.height(this.stageLen * scale.y );
 			if (this.table) this.table.scale(scale);
 			if (this.gallery) this.gallery.scale(scale);
 			if (this.article) this.article.scale(scale);
+            this.stage.draw();
 		},
 		get: function(slug, cb) {
 			// get a bio and display the chronus
@@ -615,7 +617,7 @@ function initGiza() {
 			window.chronus = new Chronus(
 				{container: 'biocFace', visible: true });
 			window.addEventListener('resize', resizeBioChronus);
-			fscreen.addEventListener('fullscreenchange', resizeBioChronus);
+			// fscreen.addEventListener('fullscreenchange', resizeBioChronus);
 		}
 		if (window.chronus.slug != slug)
 			window.chronus.get(slug, cb);
@@ -625,13 +627,15 @@ function initGiza() {
 	route('/*', function(encodedName) {
 		var name = decodeURIComponent(encodedName);
 		var loading = document.getElementById("loading");
-		loading.style.display = 'none';
+        loading.style.display = '';
 		initChronus(name, function (bio) {
 			var welcome = document.getElementById('welcome');
+            window.chronus.state = "welcome";
 			if (bio.date_of_passing)
 				window.chronus.drawMemorial(welcome);
 			else
 				window.chronus.drawWelcome(welcome);
+            loading.style.display = 'none';
 			welcome.style.display = '';
 			document.getElementsByName('enter').forEach(function (elm) {
 				elm.addEventListener("click", function () {
@@ -645,9 +649,10 @@ function initGiza() {
 
 	route(function(encodedName, chapter, id) {
         var name = decodeURIComponent(encodedName);
+        var loading = document.getElementById("loading");
+        loading.style.display = '';
         initChronus(name, function (bio) { 
             var biochronus = document.getElementById('biochronus');
-            var loading = document.getElementById("loading");
 
             if (window.chronus.state == "new") {
                 window.chronus.draw();
@@ -673,7 +678,8 @@ function initGiza() {
 		if (window.chronus.state == "new") {
 			route('/'+window.chronus.bio.slug+'/bio');
 		}
-		loading.style.display = 'none';
+        else
+            loading.style.display = 'none';
 	}
 
 

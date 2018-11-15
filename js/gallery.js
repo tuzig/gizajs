@@ -37,7 +37,6 @@ var GalleryLayer = function(params) {
         if (window.chronus.state == 'zoom' && !that.animationOn) {
             e.preventDefault();
             var next;
-            console.log(e.key);
             switch(e.key) {
 
                 case "h":
@@ -72,21 +71,24 @@ GalleryLayer.prototype = {
     scale: function (scale) {
         for (var i=0; i < this.images.length; i++) {
             this.positionImage(i, scale);
-            this.images[i].getLayer().draw();
         }	
     },
     positionImage: function (i, scale) {
-        var img = this.images[i],
-            scale = this.chronus.calcScale(),
-            offset = {x: -this.chronus.ringHeight*scale.x,
-                      y: -this.chronus.ringHeight*scale.y};
+        var offset,
+            imageScale,
+            img = this.images[i],
+            frame = window.chronus.gallery.images[i].spriteFrame.frame,
+            loc = this.chronus.getPoint(img.age, img.ring);
 
-        if (!scale) scale = this.chronus.calcScale();
-        var imageScale = Math.min(scale.x, scale.y);
-        img.x(this.images[i].loc.x*scale.x + offset.x);
-        img.y(this.images[i].loc.y*scale.y + offset.y);
-        img.width(this.images[i].spriteFrame.frame.w*imageScale);
-        img.height(this.images[i].spriteFrame.frame.h*imageScale);
+        scale = scale || this.chronus.calcScale();
+        offset = {x: -this.chronus.ringHeight*scale.x,
+                  y: -this.chronus.ringHeight*scale.y};
+        imageScale = Math.min(scale.x, scale.y);
+
+        img.x(loc.x*scale.x + offset.x);
+        img.y(loc.y*scale.y + offset.y);
+        img.width(frame.w*imageScale);
+        img.height(frame.h*imageScale);
         if (img.colorImage) {
             img.colorImage.position({
                 x: this.chronus.stageRadius*scale.x - img.colorImage.width()/2,
@@ -233,17 +235,49 @@ GalleryLayer.prototype = {
     draw: function () {
         var that = this;
         var ageRE = /^age_(\d+)/;
-        var spriteFrames = this.bio.thumbs.frames;
+        var frames = this.bio.thumbs.frames;
         var scale = this.chronus.calcScale();
         var	imageScale = Math.min(scale.x, scale.y);
+        var ringMin = 4,
+            ringMax = 8,
+            ring = ringMin;
 
 
         this.psImages = [];
 
 
         // create the array for PhotoSwipe
-        for(var i=0; i < spriteFrames.length; i++)
-            this.psImages.push(this.bio.images[spriteFrames[i].filename.slice(0,-4)]);
+        for(var i=0; i < frames.length; i++) {
+            var img,
+                frame = frames[i],
+                age = Number(frame.filename.match(ageRE)[1]);
+            this.psImages.push(this.bio.images[frame.filename.slice(0,-4)]);
+            img = new Konva.Image({
+                width: frame.frame.w*imageScale,
+                height: frame.frame.h*imageScale,
+                strokeWidth: 3,
+                stroke: '#5B946B',
+                shadowColor: 'black',
+                shadowBlur: 10,
+                shadowOffset: {x : 10, y : 10},
+                shadowOpacity: 0.3
+            });
+            img.i = i;
+            img.age = age;
+            img.ring = (age == 0)? 1 : ring;
+            img.spriteFrame = frame;
+            img.scale = 1;
+            img.on('click tap', function () {
+                that.gotoPhoto(this.i);
+            });
+            this.images.push(img);
+            var layer = new Konva.Layer();
+            layer.add(img);
+            that.stage.add(layer);
+            ring++;
+            if (ring === ringMax)
+                ring = ringMin;
+        }
 
         // create the sprite shhet element
         var spriteSheet = new Image(
@@ -252,53 +286,29 @@ GalleryLayer.prototype = {
 
         // update stuff
         spriteSheet.onload = function () {
-            var ringMin = 5,
-                ringMax = 8,
-                ring = ringMin,
-                scale = that.chronus.calcScale(),
+            var scale = that.chronus.calcScale(),
+                loading = document.getElementById("loading"),
                 i,
-                age,
                 loc,
                 img;
 
-            for (i = 0; i < spriteFrames.length; i++) {
-                age = Number(spriteFrames[i].filename.match(ageRE)[1]);
-                loc = that.chronus.getPoint(age, (age == 0)? 1 : ring);
-                img = new Konva.Image({
-                    width: spriteFrames[i].frame.w*imageScale,
-                    height: spriteFrames[i].frame.h*imageScale,
-                    strokeWidth: 3,
-                    stroke: '#5B946B',
-                    image: spriteSheet,
-                    shadowColor: 'black',
-                    shadowBlur: 10,
-                    shadowOffset: {x : 10, y : 10},
-                    shadowOpacity: 0.3
-                });
+            for (i = 0; i < frames.length; i++) {
+                img =  that.images[i];
+                img.setImage(spriteSheet);
                 img.crop({
-                        width: spriteFrames[i].frame.w,
-                        height: spriteFrames[i].frame.h,
-                        x: 0 - spriteFrames[i].frame.x,
-                        y: 0 - spriteFrames[i].frame.y
+                        width: frames[i].frame.w,
+                        height: frames[i].frame.h,
+                        x: 0 - frames[i].frame.x,
+                        y: 0 - frames[i].frame.y
                 });
-                img.i = i;
-                img.age = age;
-                img.spriteFrame = spriteFrames[i];
-                img.loc = loc;
                 img.scale = 1;
+                that.positionImage(i);
+                img.getLayer().batchDraw();
                 img.on('click tap', function () {
                     that.gotoPhoto(this.i);
                 });
-                that.images.push(img);
-                that.positionImage(i);
-                var layer = new Konva.Layer();
-                layer.add(img);
-                that.stage.add(layer);
-                layer.draw();
-                ring++;
-                if (ring === ringMax)
-                    ring = ringMin;
             }
+            loading.style.display = 'none';
         };
     }
 };
