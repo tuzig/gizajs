@@ -526,7 +526,7 @@ function initGiza() {
 			section.className = 'centered';
 			section.innerHTML = '\
 				<div style="clear:both"></div>\
-				<a href="https://github.com/daonb/biochronus"><img src="GitHub-Mark-32px.png" alt="GitHub logo"></a>';
+				<a href="https://github.com/daonb/biochronus"><img src="/images/GitHub-Mark-32px.png" alt="GitHub logo"></a>';
 			container.appendChild(section);
 		},
 		showDescription: function(shape) {

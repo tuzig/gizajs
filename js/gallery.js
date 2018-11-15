@@ -122,8 +122,10 @@ GalleryLayer.prototype = {
             img.fullImage.src = psImage.src;
 
             img.fullImage.onload = function () {
-                if (!that.animationOn)
+                if (!that.animationOn) {
                     img.setImage(this);
+                    img.getLayer().batchDraw;
+                }
             };
         }
         
