@@ -37,13 +37,19 @@ var GalleryLayer = function(params) {
         if (window.chronus.state == 'zoom' && !that.animationOn) {
             e.preventDefault();
             var next;
+            console.log(e.key);
             switch(e.key) {
+
+                case "h":
                 case "ArrowLeft":
                     that.gotoPrevImage();
                     break;
+                case " ":
+                case "l":
                 case "ArrowRight":
                     that.gotoNextImage();
                     break;
+                case "Escape":
                 case "ArrowUp":
                     // put it back down
                     that.unzoom();
@@ -75,7 +81,6 @@ GalleryLayer.prototype = {
             offset = {x: -this.chronus.ringHeight*scale.x,
                       y: -this.chronus.ringHeight*scale.y};
 
-        console.log(offset);
         if (!scale) scale = this.chronus.calcScale();
         var imageScale = Math.min(scale.x, scale.y);
         img.x(this.images[i].loc.x*scale.x + offset.x);
