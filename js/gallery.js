@@ -70,11 +70,16 @@ GalleryLayer.prototype = {
         }	
     },
     positionImage: function (i, scale) {
-        var img = this.images[i];
+        var img = this.images[i],
+            scale = this.chronus.calcScale(),
+            offset = {x: -this.chronus.ringHeight*scale.x,
+                      y: -this.chronus.ringHeight*scale.y};
+
+        console.log(offset);
         if (!scale) scale = this.chronus.calcScale();
         var imageScale = Math.min(scale.x, scale.y);
-        img.x(this.images[i].loc.x*scale.x);
-        img.y(this.images[i].loc.y*scale.y);
+        img.x(this.images[i].loc.x*scale.x + offset.x);
+        img.y(this.images[i].loc.y*scale.y + offset.y);
         img.width(this.images[i].spriteFrame.frame.w*imageScale);
         img.height(this.images[i].spriteFrame.frame.h*imageScale);
         if (img.colorImage) {
@@ -245,28 +250,16 @@ GalleryLayer.prototype = {
             var ringMin = 5,
                 ringMax = 8,
                 ring = ringMin,
+                scale = that.chronus.calcScale(),
                 i,
                 age,
                 loc,
-                offset = {x:0, y:0},
                 img;
 
             for (i = 0; i < spriteFrames.length; i++) {
                 age = Number(spriteFrames[i].filename.match(ageRE)[1]);
-                if (age == 0) {
-                    loc = getPoint(0, 1);
-                    offset = {x: 0, y: 0};
-                    /*
-                    offset = {x: -0.5 * spriteFrames[i].frame.w*imageScale,
-                              y: -0.5 * spriteFrames[i].frame.h*imageScale};
-                    */
-                }
-                else {
-                    loc = that.chronus.getPoint(age, ring);
-                }
+                loc = that.chronus.getPoint(age, (age == 0)? 1 : ring);
                 img = new Konva.Image({
-                    x: (loc.x+offset.x)*scale.x,
-                    y: (loc.y+offset.y)*scale.y,
                     width: spriteFrames[i].frame.w*imageScale,
                     height: spriteFrames[i].frame.h*imageScale,
                     strokeWidth: 3,
@@ -292,6 +285,7 @@ GalleryLayer.prototype = {
                     that.gotoPhoto(this.i);
                 });
                 that.images.push(img);
+                that.positionImage(i);
                 var layer = new Konva.Layer();
                 layer.add(img);
                 that.stage.add(layer);
