@@ -123,8 +123,8 @@ Chronus.prototype = {
         elm = document.createElement('button');
         elm.setAttribute('name', 'enter');
         elm.className = 'enter';
-        elm.style.backgroundColor = theme.fill_color;
-        elm.style.color = theme.textColor;
+        elm.style.backgroundColor = this.theme.fill_color;
+        elm.style.color = this.theme.textColor;
         elm.innerHTML = "הכנסו";
         section.appendChild(elm);
         container.appendChild(section);
@@ -183,8 +183,8 @@ Chronus.prototype = {
         elm = document.createElement('button');
         elm.setAttribute('name', 'enter');
         elm.className = 'enter';
-        elm.style.backgroundColor = theme.fill_color;
-        elm.style.color = theme.textColor;
+        elm.style.backgroundColor = this.theme.fill_color;
+        elm.style.color = this.theme.textColor;
         elm.innerHTML = "הכנסו";
         section.appendChild(elm);
         container.appendChild(section);
