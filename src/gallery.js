@@ -7,7 +7,7 @@
  */
 "use strict";
 
-var GalleryLayer = function(params) {
+export default function GalleryLayer(params) {
     var that = this;
     this.chronus = params.chronus;
     this.stage = params.stage;

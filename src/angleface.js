@@ -1,6 +1,6 @@
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
- Konva , reverse
+ Konva
 */
 'use strict';
 
@@ -78,7 +78,7 @@ AngleFace.prototype = {
             displayText = params.text;
         } else {
             glyphRotation = 0;
-            displayText = reverse(params.text);
+            displayText = params.text.split("").reverse().join("");
         }
         // add the arc 
         arcShape = new Konva.Arc({

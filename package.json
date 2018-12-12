@@ -2,12 +2,17 @@
   "dependencies": {
     "cypress": "^3.0.2",
     "live-server": "^1.2.0",
-    "start-server-and-test": "^1.5.0"
+    "start-server-and-test": "^1.5.0",
+    "webpack": "^4.27.1",
+    "webpack-dev-server": "^3.1.10"
   },
   "scripts": {
-    "dev": "live-server --port=8888 --entry-file=index.html",
+    "dev": "webpack-dev-server",
     "silent": "live-server --no-browser -q --port=8080  --entry-file=index.html",
     "cy:run": "cypress run",
     "test": "start-server-and-test silent http://localhost:8080 cy:run"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.1.2"
   }
 }

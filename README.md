@@ -22,8 +22,10 @@ the code.
 
 $ npm install
 $ make test
-$ make dev
+$ npm dev
 ```
+
+And point your browser at http://localhost:8080
 
 
 ## Contribuiting
