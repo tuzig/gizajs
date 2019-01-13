@@ -142,10 +142,10 @@ export default class TableLayer {
             textShape.ring = arcShape.ring = ring;
 
             arcShape.on('click tap', function(ev) {
-                this.chronus.showDescription(ev.target);
+                window.chronus.showDescription(ev.target);
             });
             textShape.on('click tap', function(ev) {
-                this.chronus.showDescription(ev.target);
+                window.chronus.showDescription(ev.target);
             });
         }
     }

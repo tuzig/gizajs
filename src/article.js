@@ -1,6 +1,7 @@
 export default function ArticleLayer(params) {
     this.params = params;
     this.stage = params.stage;
+    this.theme = params.theme;
     this.layer = new Konva.Layer();
     this.layer.on('click tap', function(ev) {
         ev.evt.stopPropagation();
@@ -19,7 +20,8 @@ ArticleLayer.prototype = {
     },
     width: function() {
         this.w = this.stage.width();
-        return (this.w > 600/theme.articleSize)? 600 : this.w*theme.articleSize;
+        return (this.w > 600 / this.theme.articleSize)? 600
+               : this.w * this.theme.articleSize;
     },
     draw: function(text) {
         /* draws text in a box. pass a false to clear */
@@ -34,8 +36,8 @@ ArticleLayer.prototype = {
                                     y: 0,
                                     text: text,
                                     fontSize: 22,
-                                    fontFamily: theme.fontFamily,
-                                    fill: theme.textColor,
+                                    fontFamily: this.theme.fontFamily,
+                                    fill: this.theme.textColor,
                                     width: this.width(),
                                     padding: 20,
                                     align: 'right'
@@ -52,9 +54,9 @@ ArticleLayer.prototype = {
             }
 
             this.konvaBox = new Konva.Rect({
-              stroke: theme.stroke_color,
+              stroke: this.theme.stroke_color,
               strokeWidth: 5,
-              fill: theme.fill_color,
+              fill: this.theme.fill_color,
               width: w,
               height: h,
               shadowColor: 'black',
@@ -65,7 +67,7 @@ ArticleLayer.prototype = {
             });
 
             this.konvaBack = new Konva.Rect({
-              fill: theme.fill_color,
+              fill: this.theme.fill_color,
               width: this.w,
               height: this.stage.height(),
               opacity: 0.4
