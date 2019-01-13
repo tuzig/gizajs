@@ -12,7 +12,7 @@ install:
 build:
 	mkdir -p $(TARGET)/css
 	mkdir -p $(TARGET)/lib
-	webpack -o $(TARGET)/lib/giza.js
+	webpack --mode production -o $(TARGET)/lib/giza.js
 	cp -a lib $(TARGET)
 	cp -a css $(TARGET)
 	cp -a images $(TARGET)
