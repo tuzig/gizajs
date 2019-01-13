@@ -213,9 +213,10 @@ GalleryLayer.prototype = {
                 that.chronus.state = "bio";
                 that.animationOn = false;
                 img.getLayer().draw();
-                if (cb) {
+                if (cb)
                     cb();
-                }
+                else
+                    route('/'+window.chronus.bio.slug+'/bio');
             }
                         
         }, img.getLayer());
