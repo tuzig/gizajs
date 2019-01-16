@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "npm": "^6.5.0",
     "webpack": "^4.28.4"
   },
   "scripts": {

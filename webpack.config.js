@@ -2,7 +2,7 @@ var path = require('path');
 
 module.exports = {
     output: {
-        filename: 'dist/lib/giza.js'
+        filename: 'dist/giza.min.js'
     },
 
     devServer: {
