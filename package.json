@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "npm": "^6.5.0",
-    "webpack": "^4.28.4"
+    "npm": "^6.7.0",
+    "webpack": "^4.29.3"
   },
   "scripts": {
-    "dev": "webpack-dev-server --mode development",
+    "dev": "webpack-dev-server --mode development --open firefox",
     "silent": "webpack-dev-server --no-browser -q --port=8080  --entry-file=index.html",
     "cy:run": "cypress run",
     "test": "start-server-and-test silent http://localhost:8080 cy:run"
