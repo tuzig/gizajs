@@ -1,6 +1,6 @@
 /*jslint white: true, browser: true, devel: true,  forin: true, vars: true, nomen: true, plusplus: true, bitwise: true, regexp: true, sloppy: true, indent: 4, maxerr: 50 */
 /*global
- Konva, PhotoSwipe, PhotoSwipeUI_Default, fscreen, AngleFace, firebase, route
+ Konva, fscreen, AngleFace, firebase, route,Hammer
 */
 /*
  * giza.js - perpetuating lives since 2018
@@ -14,6 +14,7 @@ export default function GalleryLayer(params) {
     this.bio = params.bio;
     this.layer = new Konva.Layer();
     this.images = [];
+    this.cropParams = [];
     this.zoomedImage = null;
     this.animationOn = false;
     var hammertime = new Hammer(window, {});
@@ -270,11 +271,11 @@ GalleryLayer.prototype = {
 			img.setImage(this.spriteSheet);
 			img.crop(this.cropParams[i])
 		}
+        this.images[i] = img;
 		that.positionImage(i);
         img.on('click tap', function () {
             that.gotoPhoto(this.i);
 		});
-        this.images[i] = img;
 		// TODO: why a new layer?
         var layer = new Konva.Layer();
 		layer.add(img);
@@ -293,7 +294,7 @@ GalleryLayer.prototype = {
                 this.bio.thumbs.meta.width, this.bio.thumbs.meta.width);
 
         // update stuff
-        spriteSheet.onload = function () {
+        this.spriteSheet.onload = function () {
             var loading = document.getElementById("loading"),
                 i,
                 img;
@@ -305,7 +306,7 @@ GalleryLayer.prototype = {
                         x: 0 - frames[i].frame.x,
                         y: 0 - frames[i].frame.y
                 };
-				that.spriteCrop[i] = cropParams;
+				that.cropParams[i] = cropParams;
 				if (that.images[i]) {
 					that.images[i].setImage(this.spriteSheet);
 					that.images[i].crop(cropParams);
@@ -313,6 +314,6 @@ GalleryLayer.prototype = {
             }
             loading.style.display = 'none';
         };
-        spriteSheet.src = this.bio.thumbs.meta.sprite_url;
+        this.spriteSheet.src = this.bio.thumbs.meta.sprite_url;
     }
 };

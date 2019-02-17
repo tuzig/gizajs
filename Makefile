@@ -4,6 +4,11 @@ test:
 	npm run test
 
 dev:
+	cp -a lib $(TARGET)
+	cp -a css $(TARGET)
+	cp -a images $(TARGET)
+	cp -a fonts $(TARGET)
+	cp -a index.html $(TARGET)
 	npm run dev
 
 install:
