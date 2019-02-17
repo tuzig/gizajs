@@ -8,7 +8,7 @@
 "use strict";
 import Chronus from "./chronus";
 
-function initGiza() {
+export default function initGiza() {
 	var fb_config = {
 		apiKey: "AIzaSyD0d0qCzvALRaBWdVdgAgrLucodjgWNu0Y",
 		authDomain: "bios-tuzig.firebaseapp.com",

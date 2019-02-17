@@ -1,15 +1,16 @@
 var path = require('path');
 
 module.exports = {
+	// entry: {main: "src/index.js"},
+    mode: 'development',
+	devtool: 'inline-source-map',
+
     output: {
-        filename: 'dist/giza.min.js'
+		path: path.resolve(__dirname, './dist'),
+        filename: 'giza.js'
     },
 
     devServer: {
-        contentBase: path.join(__dirname, 'dist'),
-        compress: true,
-        historyApiFallback: true,
-        port: 9000,
-        open: 'chrome'
+		contentBase: './dist'
     }
 };

@@ -1,3 +1,4 @@
+/*global setInterval, clearInterval */
 "use strict";
 import TableLayer from "./table";
 import ArticleLayer from "./article";
@@ -60,7 +61,6 @@ Chronus.prototype = {
 		this.maxAge = age || 120; 
 		this.years2deg = this.totalDeg / this.maxAge;
 	},
-
     get: function(slug, cb) {
         // get a bio and display the chronus
         var that = this;
@@ -95,10 +95,57 @@ Chronus.prototype = {
         this.article = new ArticleLayer(layerParams);
     },
     draw: function() {
+		// use animation to show the chronus
+		var i,
+			that = this,
+		    frame = 0;
+
+		setInterval(function() {
+			var thumbs = that.bio.thumbs.frames,
+			    spans = that.bio.spans,
+				photosStart= 5 + spans.length;
+
+			console.log(frame);
+			if (frame==0)
+				that.table.drawDates();
+			else if (frame==2)
+				that.gallery.drawImage(0);
+			else if (frame==4)
+				that.table.drawDials();
+			else if (frame>5 && frame<photosStart) {
+				var ring = frame-5,
+					ringSpans = spans[ring];
+				for (i=0; i < ringSpans.length; i++) {
+					var span = ringSpans[i];
+
+					that.table.drawSpan(span, 11-ring);
+				}
+			}
+			else if (frame >= photosStart) {
+				var i=frame-photosStart+1,
+					img,
+				    thumb = that.bio.thumbs.frames[i],
+					//TODO: using file name form age should stop
+					age = Number(thumb.filename.match(/^age_(\d+)/)[1]);
+
+				if (i > thumbs.length)
+					clearInterval(this);
+				that.gallery.drawImage(i, age, thumb);
+			}
+
+
+			frame++;
+
+		// update stuff
+		  }, 200);
+
+	  // anim();
+		/*
         this.table.draw();
         if (this.bio.thumbs)
             this.gallery.draw();
         this.stage.draw();
+		*/
     },
     drawWelcome: function(container) {
         var section, elm;

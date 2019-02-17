@@ -59,6 +59,9 @@ export default function GalleryLayer(params) {
 };
 
 GalleryLayer.prototype = {
+    ringMin: 4,
+    ringMax: 8,
+    ring: 4,
     gotoPrevImage: function () {
         var prev = this.zoomedImage.i - 1;
         if (prev < 0 ) prev = this.images.length - 1;
@@ -235,83 +238,81 @@ GalleryLayer.prototype = {
         else
             route('/'+window.chronus.bio.slug+'/photo/'+i);
     },
-    draw: function () {
-        var that = this;
-        var ageRE = /^age_(\d+)/;
-        var frames = this.bio.thumbs.frames;
-        var scale = this.chronus.calcScale();
-        var	imageScale = Math.min(scale.x, scale.y);
-        var ringMin = 4,
-            ringMax = 8,
-            ring = ringMin;
+    drawImage: function (i, age, frame) {
+		// TODO: refactor to draw a single image and take the rest of the code
+		// a level higher to chronus.draw()
+		var img,
+			that = this,
+            scale = this.chronus.calcScale(),
+            imageScale = Math.min(scale.x, scale.y);
 
 
+		/*
         this.psImages = [];
-
-
-        // create the array for PhotoSwipe
-        for(var i=0; i < frames.length; i++) {
-            var img,
-                frame = frames[i],
-                age = Number(frame.filename.match(ageRE)[1]);
-            this.psImages.push(this.bio.images[frame.filename.slice(0,-4)]);
-            img = new Konva.Image({
-                width: frame.frame.w*imageScale,
-                height: frame.frame.h*imageScale,
-                strokeWidth: 3,
-                stroke: '#5B946B',
-                shadowColor: 'black',
-                shadowBlur: 10,
-                shadowOffset: {x : 10, y : 10},
-                shadowOpacity: 0.3
-            });
-            img.i = i;
-            img.age = age;
-            img.ring = (age == 0)? 1 : ring;
-            img.spriteFrame = frame;
-            img.scale = 1;
-            img.on('click tap', function () {
-                that.gotoPhoto(this.i);
-            });
-            this.images.push(img);
-            var layer = new Konva.Layer();
-            layer.add(img);
-            that.stage.add(layer);
-            ring++;
-            if (ring === ringMax)
-                ring = ringMin;
-        }
-
+		this.psImages.push(this.bio.images[frame.filename.slice(0,-4)]);
+		*/
+		img = new Konva.Image({
+			width: frame.frame.w*imageScale,
+			height: frame.frame.h*imageScale,
+			strokeWidth: 3,
+			stroke: '#5B946B',
+			shadowColor: 'black',
+			shadowBlur: 10,
+			shadowOffset: {x : 10, y : 10},
+			shadowOpacity: 0.3
+		});
+		img.i = i;
+		img.age = age;
+		img.ring = (age == 0)? 1 : this.ring;
+		img.spriteFrame = frame;
+        img.scale = 1;
+		if (this.spriteSheet) {
+			img.setImage(this.spriteSheet);
+			img.crop(this.cropParams[i])
+		}
+		that.positionImage(i);
+        img.on('click tap', function () {
+            that.gotoPhoto(this.i);
+		});
+        this.images[i] = img;
+		// TODO: why a new layer?
+        var layer = new Konva.Layer();
+		layer.add(img);
+		that.stage.add(layer);
+		this.ring++;
+		if (this.ring === this.ringMax)
+			this.ring = this.ringMin;
+    },
+	loadSprite: function () {
+		//
         // create the sprite shhet element
-        var spriteSheet = new Image(
-                        this.bio.thumbs.meta.width, this.bio.thumbs.meta.width);
-        spriteSheet.src = this.bio.thumbs.meta.sprite_url;
+		var that = this,
+			frames = this.bio.thumbs.frames;
+
+		this.spriteSheet = new Image(
+                this.bio.thumbs.meta.width, this.bio.thumbs.meta.width);
 
         // update stuff
         spriteSheet.onload = function () {
-            var scale = that.chronus.calcScale(),
-                loading = document.getElementById("loading"),
+            var loading = document.getElementById("loading"),
                 i,
-                loc,
                 img;
 
             for (i = 0; i < frames.length; i++) {
-                img =  that.images[i];
-                img.setImage(spriteSheet);
-                img.crop({
+				var cropParams = {
                         width: frames[i].frame.w,
                         height: frames[i].frame.h,
                         x: 0 - frames[i].frame.x,
                         y: 0 - frames[i].frame.y
-                });
-                img.scale = 1;
-                that.positionImage(i);
-                img.draw();
-                img.on('click tap', function () {
-                    that.gotoPhoto(this.i);
-                });
+                };
+				that.spriteCrop[i] = cropParams;
+				if (that.images[i]) {
+					that.images[i].setImage(this.spriteSheet);
+					that.images[i].crop(cropParams);
+				}
             }
             loading.style.display = 'none';
         };
+        spriteSheet.src = this.bio.thumbs.meta.sprite_url;
     }
 };
