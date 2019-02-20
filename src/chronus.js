@@ -1,4 +1,4 @@
-/*global setInterval, clearInterval */
+/*global document, Konva, setInterval, clearInterval */
 "use strict";
 import TableLayer from "./table";
 import ArticleLayer from "./article";
@@ -66,13 +66,14 @@ Chronus.prototype = {
         var that = this;
         // TODO: loading....
         this.readBio(slug, function (bio) {
+            var lastYear = parseInt(bio.date_of_passing.match(/\d{4}$/)),
+                firstYear = parseInt(bio.date_of_birth.match(/\d{4}$/));
+
             that.clear();
             that.slug = slug;
             that.bio = bio;
             document.title = bio.full_name;
             // TODO: that one is still a global make it a property
-            var lastYear = parseInt(bio.date_of_passing.match(/\d{4}$/));
-            var firstYear = parseInt(bio.date_of_birth.match(/\d{4}$/))
             if (!lastYear)
                lastYear = (new Date()).getFullYear();
             that.setMaxAge(lastYear - firstYear );
@@ -97,48 +98,60 @@ Chronus.prototype = {
     },
     draw: function() {
 		// use animation to show the chronus
-		var drawer,
-            that = this,
-		    frame = 0;
+	    var bio 			= this.bio,
+			drawer,
+			frame 			= 0,
+			frames 			= bio.thumbs.frames,
+			galleryMS 		= 5 + bio.spans.length,
+			scene 			= 0,
+			spans 			= bio.spans,
+            that 			= this,
+			timeline 		= [2, 4, 5]; // partial timeline, more in the code below
+
+		timeline.push(galleryMS);
 
 		drawer = setInterval(function() {
-			var i,
-                thumbs = that.bio.thumbs.frames,
-			    spans = that.bio.spans,
-				photosStart= 5 + spans.length;
+			var step,
+				lastScene = (scene == timeline.length - 1);
+				
 
-			console.log(frame);
-			if (frame==0) {
+			if (frame == 0) {
 				that.table.drawDates();
 				that.table.layer.draw();
 		    }
-			else if (frame==2)
-				that.gallery.drawImage(0, 0, that.bio.thumbs.frames[0]);
-			else if (frame==4)
+			else if (!lastScene && frame == timeline[scene])
+				scene ++;
+
+			step = frame - timeline[scene-1];
+			// Each animation scene has a function in the array below
+			[function() {
+				that.gallery.drawImage(0, 0, frames[0]);
+			 },
+			 function() {
 				that.table.drawDials();
-			else if (frame>5 && frame<photosStart) {
-				var ring = frame-5,
-					ringSpans = spans[ring];
-				for (i=0; i < ringSpans.length; i++) {
+				that.table.dialsGroup.scale(that.calcScale());
+			 },
+			 function() {
+				var ringSpans = spans[step];
+				
+				for (var i=0; i < ringSpans.length; i++) {
 					var span = ringSpans[i];
-
-					that.table.drawSpan(span, 11-ring);
+					that.table.drawSpan(span, 11-step);
 				}
-			}
-			else if (frame >= photosStart) {
-				i=frame-photosStart+1;
-
-				if (i == that.bio.thumbs.frames.length)
+			 },
+			 function() {
+				if (step == frames.length)
 					clearInterval(drawer);
-                else {
-                    var img,
-                        thumb = that.bio.thumbs.frames[i],
-                        //TODO: using file name form age should stop
-                        age = Number(thumb.filename.match(/^age_(\d+)/)[1]);
+				else {
+					var img,
+						frame = frames[step],
+						//TODO: stop using file name as the source of `age`
+						age = Number(frame.filename.match(/^age_(\d+)/)[1]);
 
-                    that.gallery.drawImage(i, age, thumb);
-                }
-			}
+					that.gallery.drawImage(step, age, frame);
+				}
+			 }
+			][scene]();
 
 
 			frame++;
