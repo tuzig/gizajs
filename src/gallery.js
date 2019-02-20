@@ -310,6 +310,7 @@ GalleryLayer.prototype = {
 				if (that.images[i]) {
 					that.images[i].setImage(this.spriteSheet);
 					that.images[i].crop(cropParams);
+					that.images[i].draw();
 				}
             }
             loading.style.display = 'none';

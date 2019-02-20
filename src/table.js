@@ -36,25 +36,32 @@ export default class TableLayer {
 
     }
 
+	scaleTextPath(path) {
+		var fontScale,
+			scale = this.chronus.calcScale();
+
+        fontScale = Math.min(scale.x, scale.y);
+
+		var attrs = {
+			x: this.layer.width()/2,
+			y: this.layer.height()/2
+		};
+		if (path.pathConfig)
+			attrs.data = this.getPath(path.pathConfig);
+		if (path.initialFontSize)
+			attrs.fontSize = path.initialFontSize*fontScale;
+		path.setAttrs(attrs);
+	}
+
     scale(scale) {
-        var fontScale = Math.min(scale.x, scale.y);
+		var that = this;
+
         this.arcsGroup.scale(scale);
         this.dialsGroup.scale(scale);
-
-        // scaling the movingShapes
-        var movingShapes = this.textsGroup.getChildren();
-        for (var i=0; i < movingShapes.length; i++ ) {
-            var path = movingShapes[i];
-            var attrs = {
-                x: this.layer.width()/2,
-                y: this.layer.height()/2
-            };
-            if (path.pathConfig)
-                attrs.data = this.getPath(path.pathConfig);
-            if (path.initialFontSize)
-                attrs.fontSize = path.initialFontSize*fontScale;
-            path.setAttrs(attrs);
-        }
+        // special scaling for the texts
+		this.textsGroup.getChildren().forEach(function (path) {
+			that.scaleTextPath(path)
+		});
         this.currentScale = scale;
     }
 
@@ -136,6 +143,7 @@ export default class TableLayer {
          textShape.initialFontSize = fontSize;
          textShape.pathConfig = {ring: ring, startDeg: startDeg, endDeg: endDeg,
                             group:this.textsGroup};
+		 this.scaleTextPath(textShape);
         if (doc.description) {
 
             textShape.doc = arcShape.doc = doc;

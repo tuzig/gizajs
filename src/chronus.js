@@ -106,7 +106,7 @@ Chronus.prototype = {
 			scene 			= 0,
 			spans 			= bio.spans,
             that 			= this,
-			timeline 		= [2, 4, 5]; // partial timeline, more in the code below
+			timeline 		= [2, 4, 7]; // partial timeline, more in the code below
 
 		timeline.push(galleryMS);
 
@@ -130,14 +130,17 @@ Chronus.prototype = {
 			 function() {
 				that.table.drawDials();
 				that.table.dialsGroup.scale(that.calcScale());
+				that.stage.draw();
 			 },
 			 function() {
-				var ringSpans = spans[step];
-				
+				var ring = 11-step,
+					ringSpans = spans[step];
+
 				for (var i=0; i < ringSpans.length; i++) {
 					var span = ringSpans[i];
-					that.table.drawSpan(span, 11-step);
+					that.table.drawSpan(span, ring);
 				}
+				that.stage.draw();
 			 },
 			 function() {
 				if (step == frames.length)
