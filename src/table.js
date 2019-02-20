@@ -183,9 +183,9 @@ export default class TableLayer {
     }
 
     drawDates() {
-        var fontSize = 40; 
-
-        var dob = new Konva.TextPath({
+		var that = this,
+			fontSize = 40, 
+            dob = new Konva.TextPath({
                                       fill: this.theme.stroke_color,
                                       fontSize: fontSize,
                                       fontFamily: this.theme.fontFamily,
@@ -198,15 +198,26 @@ export default class TableLayer {
                                       fontStyle: 'bold',
                                       fontFamily: this.theme.fontFamily,
                                       text: this.bio.date_of_passing
-                                     });
+									 }),
+			endOfVars;
+
         dob.initialFontSize = fontSize;
         dop.initialFontSize = fontSize;
         dob.pathConfig = {ring: 9.8, startDeg: -92, endDeg: 100.4,
                                group: this.textsGroup};
         dop.pathConfig = {ring: 8.5, startDeg: -100, endDeg: 0.4,
                                group: this.textsGroup};
+		[dob, dop].forEach(function (path) {
+			
+            var attrs = {x: that.layer.width()/2, y: that.layer.height()/2};
+
+            if (path.pathConfig)
+                attrs.data = that.getPath(path.pathConfig);
+            if (path.initialFontSize)
+				attrs.fontSize = path.initialFontSize; // *that.currentScale;
+            path.setAttrs(attrs);
+		});
         this.textsGroup.add(dob);
         this.textsGroup.add(dop);
     }
-};
-
+}
