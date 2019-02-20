@@ -167,6 +167,7 @@ export default class TableLayer {
                 rotation: -90
             })
         );
+		// add the years
         for (var i=0; i <= this.chronus.maxAge; i++) {
             var from = this.chronus.getPoint(i, 12);
             var to = this.chronus.getPoint(i, (i % 10 == 0)?11.7:11.9);
