@@ -108,6 +108,7 @@ Chronus.prototype = {
             that 			= this,
 			timeline 		= [2, 4, 7]; // partial timeline, more in the code below
 
+        this.gallery.clear();
 		timeline.push(galleryMS);
 
 		drawer = setInterval(function() {
@@ -125,7 +126,7 @@ Chronus.prototype = {
 			step = frame - timeline[scene-1];
 			// Each animation scene has a function in the array below
 			[function() {
-				that.gallery.drawImage(0, 0, frames[0]);
+				// that.gallery.drawFrame(0, 0, frames[0]);
 			 },
 			 function() {
 				that.table.drawDials();
@@ -151,7 +152,7 @@ Chronus.prototype = {
 						//TODO: stop using file name as the source of `age`
 						age = Number(frame.filename.match(/^age_(\d+)/)[1]);
 
-					that.gallery.drawImage(step, age, frame);
+					that.gallery.drawFrame(step, age, frame);
 				}
 			 }
 			][scene]();

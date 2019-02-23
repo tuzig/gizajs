@@ -76,6 +76,7 @@ GalleryLayer.prototype = {
         for (var i=0; i < this.images.length; i++) {
             this.positionImage(i, scale);
         }	
+		this.layer.draw();
     },
     positionImage: function (i, scale) {
         var offset,
@@ -239,9 +240,13 @@ GalleryLayer.prototype = {
         else
             route('/'+window.chronus.bio.slug+'/photo/'+i);
     },
-    drawImage: function (i, age, frame) {
-		// TODO: refactor to draw a single image and take the rest of the code
-		// a level higher to chronus.draw()
+	clear: function () {
+		this.images.forEach(function(img) {
+			img.destroy();
+		});
+		this.images = [];
+	},
+    drawFrame: function (i, age, frame) {
 		var img,
 			that = this,
             scale = this.chronus.calcScale(),
