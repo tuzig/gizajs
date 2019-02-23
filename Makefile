@@ -4,6 +4,8 @@ test:
 	npm run test
 
 dev:
+	mkdir -p $(TARGET)/css
+	mkdir -p $(TARGET)/lib
 	cp -a lib $(TARGET)
 	cp -a css $(TARGET)
 	cp -a images $(TARGET)
