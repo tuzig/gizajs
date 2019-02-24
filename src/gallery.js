@@ -17,6 +17,7 @@ export default function GalleryLayer(params) {
     this.cropParams = [];
     this.zoomedImage = null;
     this.animationOn = false;
+	this.clear();
     var hammertime = new Hammer(window, {});
     hammertime.get('pan').set({ enable: false});
     hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
@@ -245,6 +246,7 @@ GalleryLayer.prototype = {
 			img.destroy();
 		});
 		this.images = [];
+        this.psImages = [];
 	},
     drawFrame: function (i, age, frame) {
 		var img,
@@ -253,10 +255,7 @@ GalleryLayer.prototype = {
             imageScale = Math.min(scale.x, scale.y);
 
 
-		/*
-        this.psImages = [];
 		this.psImages.push(this.bio.images[frame.filename.slice(0,-4)]);
-		*/
 		img = new Konva.Image({
 			width: frame.frame.w*imageScale,
 			height: frame.frame.h*imageScale,
@@ -274,7 +273,7 @@ GalleryLayer.prototype = {
         img.scale = 1;
 		if (this.spriteSheet) {
 			img.setImage(this.spriteSheet);
-			img.crop(this.cropParams[i])
+			img.crop(this.cropParams[i]);
 		}
         this.images[i] = img;
 		that.positionImage(i);
