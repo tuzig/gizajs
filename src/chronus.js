@@ -1,4 +1,4 @@
-/*global document, Konva, setInterval, clearInterval */
+/*global window, document, Konva, setInterval, clearInterval */
 "use strict";
 import TableLayer from "./table";
 import ArticleLayer from "./article";
@@ -21,6 +21,7 @@ Chronus.prototype = {
     totalDeg: 350,
 	theme: {
 		fontFamily: 'Assistant',
+		dateFontSize: 40,
 		stroke_color: '#81aa8d',
 		textColor: '#fffadf',
 		fill_color: '#5B946B',
@@ -87,7 +88,7 @@ Chronus.prototype = {
                                bio: bio,
                                chronus: that,
                                theme: that.theme});
-            that.gallery.loadSprite()
+            that.gallery.loadSprite();
             cb(bio);
         });
     },
@@ -100,58 +101,72 @@ Chronus.prototype = {
 		// use animation to show the chronus
 	    var bio 			= this.bio,
 			drawer,
+			drawingPhotos   = false,
 			frame 			= 0,
 			frames 			= bio.thumbs.frames,
 			galleryMS 		= 5 + bio.spans.length,
 			scene 			= 0,
+			sceneFunction,
 			spans 			= bio.spans,
             that 			= this,
 			timeline 		= [2, 4, 7]; // partial timeline, more in the code below
 
+		sceneFunction = [
+			function() {
+				// that.gallery.drawFrame(0, 0, frames[0]);
+			},
+			function() {
+				that.table.drawDials();
+				that.table.dialsGroup.scale(that.calcScale());
+				that.stage.draw();
+			},
+			function(step) {
+				var ring = 11-step,
+					ringSpans = spans[step];
+
+				for (var i=0; i < ringSpans.length; i++) {
+					var span = ringSpans[i];
+					that.table.drawSpan(span, ring);
+				}
+				that.stage.draw();
+			 },
+			 function(step) {
+				var i = 0;
+
+				function drawImage(){
+					var frame = frames[i],
+						//TODO: stop using file name as the source of `age`
+						age = Number(frame.filename.match(/^age_(\d+)/)[1]);
+					that.gallery.drawFrame(i, age, frame);
+					i ++;
+					if (i < frames.length)
+						window.requestAnimationFrame(drawImage);
+					else
+						drawingPhotos = false;
+				}
+
+			 	if (step == 0) {
+					drawingPhotos = true;
+					drawImage();
+				}
+				if (!drawingPhotos)
+					scene ++;
+			 },
+			 function() {
+				that.table.drawDoP();
+				that.table.layer.draw();
+				clearInterval(drawer);
+			}
+		];
         this.gallery.clear();
 		timeline.push(galleryMS);
 
 		drawer = setInterval(function() {
 			var lastScene = (scene == timeline.length - 1),
-				step,
-				sceneFunction = [
-					function() {
-						// that.gallery.drawFrame(0, 0, frames[0]);
-					},
-					function() {
-						that.table.drawDials();
-						that.table.dialsGroup.scale(that.calcScale());
-						that.stage.draw();
-					},
-					function(step) {
-						var ring = 11-step,
-							ringSpans = spans[step];
-
-						for (var i=0; i < ringSpans.length; i++) {
-							var span = ringSpans[i];
-							that.table.drawSpan(span, ring);
-						}
-						that.stage.draw();
-					 },
-					 function(step) {
-						if (step == frames.length)
-							clearInterval(drawer);
-						else {
-							var img,
-								frame = frames[step],
-								//TODO: stop using file name as the source of `age`
-								age = Number(frame.filename.match(/^age_(\d+)/)[1]);
-
-							that.gallery.drawFrame(step, age, frame);
-						}
-					 }
-				];
+				step;
 				
-			
-				
-
 			if (frame == 0) {
-				that.table.drawDates();
+				that.table.drawDoB();
 				that.table.layer.draw();
 		    }
 			else if (!lastScene && frame == timeline[scene])

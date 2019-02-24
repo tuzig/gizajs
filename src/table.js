@@ -190,43 +190,43 @@ export default class TableLayer {
             );
        }
     }
+	setDateAttrs(path){
+		var attrs = {x: this.layer.width()/2, y: this.layer.height()/2};
 
-    drawDates() {
-		var that = this,
-			fontSize = 40, 
-            dob = new Konva.TextPath({
+		if (path.pathConfig)
+			attrs.data = this.getPath(path.pathConfig);
+        path.initialFontSize = this.theme.dateFontSize;
+		if (path.initialFontSize)
+			attrs.fontSize = path.initialFontSize; // *this.currentScale;
+		path.setAttrs(attrs);
+        this.textsGroup.add(path);
+	}
+
+    drawDoB() {
+        var dob = new Konva.TextPath({
                                       fill: this.theme.stroke_color,
-                                      fontSize: fontSize,
+                                      fontSize: this.theme.dateFontSize,
                                       fontFamily: this.theme.fontFamily,
                                       fontStyle: 'bold',
                                       text: this.bio.date_of_birth,
-                                      }),
-            dop = new Konva.TextPath({
+				  });
+
+        dob.pathConfig = {ring: 9.8, startDeg: -92, endDeg: 100.4,
+                               group: this.textsGroup};
+		this.setDateAttrs(dob);
+    }
+    drawDoP() {
+		var dop = new Konva.TextPath({
                                       fill: this.theme.stroke_color,
-                                      fontSize: fontSize,
+                                      fontSize: this.theme.dateFontSize,
                                       fontStyle: 'bold',
                                       fontFamily: this.theme.fontFamily,
                                       text: this.bio.date_of_passing
-									 }),
-			endOfVars;
+									 });
 
-        dob.initialFontSize = fontSize;
-        dop.initialFontSize = fontSize;
-        dob.pathConfig = {ring: 9.8, startDeg: -92, endDeg: 100.4,
-                               group: this.textsGroup};
+        dop.initialFontSize = this.theme.dateFontSize;
         dop.pathConfig = {ring: 8.5, startDeg: -100, endDeg: 0.4,
                                group: this.textsGroup};
-		[dob, dop].forEach(function (path) {
-			
-            var attrs = {x: that.layer.width()/2, y: that.layer.height()/2};
-
-            if (path.pathConfig)
-                attrs.data = that.getPath(path.pathConfig);
-            if (path.initialFontSize)
-				attrs.fontSize = path.initialFontSize; // *that.currentScale;
-            path.setAttrs(attrs);
-		});
-        this.textsGroup.add(dob);
-        this.textsGroup.add(dop);
+		this.setDateAttrs(dop);
     }
 }
