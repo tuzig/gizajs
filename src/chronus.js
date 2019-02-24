@@ -112,8 +112,42 @@ Chronus.prototype = {
 		timeline.push(galleryMS);
 
 		drawer = setInterval(function() {
-			var step,
-				lastScene = (scene == timeline.length - 1);
+			var lastScene = (scene == timeline.length - 1),
+				step,
+				sceneFunction = [
+					function() {
+						// that.gallery.drawFrame(0, 0, frames[0]);
+					},
+					function() {
+						that.table.drawDials();
+						that.table.dialsGroup.scale(that.calcScale());
+						that.stage.draw();
+					},
+					function(step) {
+						var ring = 11-step,
+							ringSpans = spans[step];
+
+						for (var i=0; i < ringSpans.length; i++) {
+							var span = ringSpans[i];
+							that.table.drawSpan(span, ring);
+						}
+						that.stage.draw();
+					 },
+					 function(step) {
+						if (step == frames.length)
+							clearInterval(drawer);
+						else {
+							var img,
+								frame = frames[step],
+								//TODO: stop using file name as the source of `age`
+								age = Number(frame.filename.match(/^age_(\d+)/)[1]);
+
+							that.gallery.drawFrame(step, age, frame);
+						}
+					 }
+				];
+				
+			
 				
 
 			if (frame == 0) {
@@ -125,37 +159,7 @@ Chronus.prototype = {
 
 			step = frame - timeline[scene-1];
 			// Each animation scene has a function in the array below
-			[function() {
-				// that.gallery.drawFrame(0, 0, frames[0]);
-			 },
-			 function() {
-				that.table.drawDials();
-				that.table.dialsGroup.scale(that.calcScale());
-				that.stage.draw();
-			 },
-			 function() {
-				var ring = 11-step,
-					ringSpans = spans[step];
-
-				for (var i=0; i < ringSpans.length; i++) {
-					var span = ringSpans[i];
-					that.table.drawSpan(span, ring);
-				}
-				that.stage.draw();
-			 },
-			 function() {
-				if (step == frames.length)
-					clearInterval(drawer);
-				else {
-					var img,
-						frame = frames[step],
-						//TODO: stop using file name as the source of `age`
-						age = Number(frame.filename.match(/^age_(\d+)/)[1]);
-
-					that.gallery.drawFrame(step, age, frame);
-				}
-			 }
-			][scene]();
+			sceneFunction[scene](step);
 
 
 			frame++;
