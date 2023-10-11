@@ -124,6 +124,8 @@ Chronus.prototype = {
 				var ring = 11-step,
 					ringSpans = spans[step];
 
+                if (ringSpans === undefined)
+                    return;
 				for (var i=0; i < ringSpans.length; i++) {
 					var span = ringSpans[i];
 					that.table.drawSpan(span, ring);

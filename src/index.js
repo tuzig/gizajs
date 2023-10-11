@@ -40,6 +40,7 @@ export default function initGiza() {
 	}
 
 
+    // TODO: needs refactoring, not used for now
 	function drawMyFamily() {
 		var family = [['נויה דאון'],
 					  ['ליבי דאון לבית בלודז',
@@ -192,3 +193,4 @@ export default function initGiza() {
 	});
 }
 initGiza();
+// document.addEventListener("DOMContentLoaded", initGiza);

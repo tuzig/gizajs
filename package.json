@@ -1,22 +1,22 @@
 {
   "name": "gizajs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Showing a person's life",
-  "main": "webpack.config.js",
   "repository": "git@github.com:tuzig/gizajs.git",
   "author": "Benny Daon <benny@tuzig.com>",
   "license": "GPL-2.0-only",
   "scripts": {
-    "dev": "node_modules/.bin/webpack-dev-server --mode development",
-    "watch": "node_modules/.bin/webpack --mode development --watch",
-    "build": "node_modules/.bin/webpack",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "cy:run": "cypress run",
     "test": "start-server-and-test silent http://localhost:8080 cy:run"
   },
   "devDependencies": {
     "cypress": "^3.1.5",
-    "webpack": "^4.29.4",
-    "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.1.14"
+    "vite": "^4.4.11"
+  },
+  "dependencies": {
+    "start-server-and-test": "^2.0.1"
   }
 }

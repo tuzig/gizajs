@@ -35,9 +35,6 @@
     <link href="https://fonts.googleapis.com/css?family=Assistant|Rubik" rel="stylesheet"> 
     <link rel="stylesheet" href="/css/biochronus.css" rel="stylesheet">
            
-    <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
 </head>
 
  <body dir="rtl" class="onepage" data-spy="scroll" data-target=".navigation">
@@ -447,7 +444,7 @@
          It's a separate element as animating opacity is faster than rgba(). -->
     <div class="pswp__bg"></div>
 
-    <!- Slides wrapper with overflow:hidden. -->
+    <!-- Slides wrapper with overflow:hidden. -->
     <div class="pswp__scroll-wrap">
 
         <!-- Container that holds slides. 
@@ -507,7 +504,7 @@
 </div>
 <!-- JARVIS THEME SCRIPTS -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>         
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>         
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>         
 <!--<script type="text/javascript" src="js/jquery.tweet.js"></script>-->         
 <script type="text/javascript" src="/lib/jquery.form.js"></script>
 <script type="text/javascript" src="/lib/jquery.queryloader2.js"></script>        
@@ -533,6 +530,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-database.js"></script>
-<script src="/giza.js"></script>
+<script type="module" src="/src/index.js"></script>
 </body>
 </html>

@@ -69,7 +69,7 @@ button.enter {
 	  font-size: 1.2em;
 }
 	
-button..enter:hover {
+button.enter:hover {
 	  -webkit-transition: background-color 1s ease-in;  
 	 	   -moz-transition: background-color 1s ease-in;  
 	 	  	 -o-transition: background-color 1s ease-in;  
